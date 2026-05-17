@@ -1,0 +1,117 @@
+---
+import { SITE_METADATA } from "@/constants/ui";
+import PerfumeBottle from "./PerfumeBottle.astro";
+---
+
+<section class="hero" id="inicio">
+  <div class="hero-content">
+    <p class="hero-accent" aria-hidden="true">{SITE_METADATA.arabicAccent}</p>
+    <h1 class="hero-title">
+      Perfumes árabes
+      <em>de colección</em>
+    </h1>
+    <p class="hero-description">
+      Fragancias originales importadas de Emiratos. Notas de oud, ámbar,
+      azafrán y rosa damascena, en formato 100 ml.
+    </p>
+    <a href="/catalogo" class="hero-cta">Ver catálogo</a>
+  </div>
+
+  <div class="hero-visual">
+    <PerfumeBottle
+      label="Oudora"
+      caption="100 ML · EDP"
+      variant="warm"
+      size="lg"
+      ariaLabel="Frasco de perfume OUDORA"
+    />
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding: clamp(40px, 6vw, 64px) clamp(20px, 5vw, 56px);
+    background: radial-gradient(
+      ellipse 70% 80% at 75% 50%,
+      #1c1910 0%,
+      var(--color-bg) 70%
+    );
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: var(--space-lg);
+    align-items: center;
+    min-height: 360px;
+  }
+
+  .hero-accent {
+    font-family: var(--font-serif);
+    font-size: 13px;
+    letter-spacing: 6px;
+    color: var(--color-gold);
+    opacity: 0.55;
+    margin-bottom: 10px;
+  }
+
+  .hero-title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(28px, 4.5vw, 44px);
+    line-height: 1.1;
+    color: var(--color-cream);
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+  }
+  .hero-title em {
+    color: var(--color-gold);
+    font-style: italic;
+    font-weight: 500;
+    display: block;
+  }
+
+  .hero-description {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--color-text-muted);
+    margin-bottom: 24px;
+    max-width: 380px;
+  }
+
+  .hero-cta {
+    display: inline-block;
+    padding: 12px 28px;
+    border: 0.5px solid var(--color-gold);
+    background: rgba(201, 168, 76, 0.08);
+    color: var(--color-gold-light);
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    border-radius: var(--radius-pill);
+    transition: all var(--transition-default);
+  }
+  .hero-cta:hover {
+    background: rgba(201, 168, 76, 0.18);
+    transform: translateY(-1px);
+  }
+
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  @media (max-width: 720px) {
+    .hero {
+      grid-template-columns: 1fr;
+      text-align: center;
+      padding-top: 32px;
+    }
+    .hero-description {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-visual {
+      order: -1;
+    }
+  }
+</style>

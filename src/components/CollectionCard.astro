@@ -1,0 +1,98 @@
+---
+import type { Gender } from "@/types/catalog";
+import { GENDER_DESCRIPTIONS, GENDER_LABELS } from "@/constants/ui";
+import PerfumeBottle from "./PerfumeBottle.astro";
+
+interface Props {
+  gender: Gender;
+}
+
+const { gender } = Astro.props;
+const label = GENDER_LABELS[gender];
+const description = GENDER_DESCRIPTIONS[gender];
+const variant = gender === "femenino" ? "warm" : gender === "masculino" ? "default" : "deep";
+---
+
+<a class="collection-card" href={`#catalogo`} data-collection={gender}>
+  <div class="collection-bg" aria-hidden="true">
+    <PerfumeBottle variant={variant} size="md" />
+  </div>
+  <div class="collection-content">
+    <p class="collection-overline">{description}</p>
+    <h3 class="collection-title">{label}</h3>
+    <span class="collection-btn">Ver más</span>
+  </div>
+</a>
+
+<style>
+  .collection-card {
+    position: relative;
+    aspect-ratio: 1 / 1.15;
+    background: var(--color-bg-card);
+    border: 0.5px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 22px 14px 18px;
+    transition: all var(--transition-default);
+  }
+  .collection-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-gold);
+  }
+
+  .collection-bg {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.45;
+    transition: opacity var(--transition-default);
+  }
+  .collection-card:hover .collection-bg {
+    opacity: 0.6;
+  }
+
+  .collection-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .collection-overline {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .collection-title {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    color: var(--color-cream);
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+
+  .collection-btn {
+    margin-top: 8px;
+    padding: 8px 18px;
+    border: 0.5px solid var(--color-gold);
+    background: rgba(0, 0, 0, 0.5);
+    color: var(--color-gold-light);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: var(--radius-pill);
+  }
+</style>

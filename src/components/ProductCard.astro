@@ -1,0 +1,203 @@
+---
+import type { Brand, Product } from "@/types/catalog";
+import { formatArs, formatPresentation } from "@/lib/format";
+import { getStockLabel } from "@/lib/grouping";
+import PerfumeBottle from "@/components/PerfumeBottle.astro";
+import Ribbon from "@/components/Ribbon.astro";
+
+interface Props {
+  product: Product;
+  brand: Brand;
+}
+
+const { product, brand } = Astro.props;
+const stockLabel = getStockLabel(product.stock);
+const presentation = formatPresentation(product.concentration, product.volumeMl);
+const formattedPrice = formatArs(product.priceArs);
+const detailHref = `/producto/${product.slug}`;
+const variant = product.gender === "femenino"
+  ? "warm"
+  : product.gender === "masculino"
+    ? "default"
+    : "deep";
+const searchText =
+  `${product.name} ${brand.name} ${product.concentration} ${(product.notes ?? []).join(" ")}`.toLowerCase();
+---
+
+<article
+  class="product-card"
+  data-product-card
+  data-product-id={product.id}
+  data-brand={product.brandId}
+  data-catalog={product.catalog}
+  data-gender={product.gender}
+  data-price={product.priceArs}
+  data-search-text={searchText}
+>
+  <a class="product-image" href={detailHref} aria-label={`Ver detalle de ${product.name}`}>
+    <Ribbon gender={product.gender} />
+    <PerfumeBottle
+      label={product.name.length <= 10 ? product.name : undefined}
+      variant={variant}
+      size="md"
+      ariaLabel={`${brand.name} ${product.name}`}
+    />
+    {stockLabel && <span class="product-stock">{stockLabel}</span>}
+  </a>
+
+  <div class="product-body">
+    <p class="product-brand">
+      <a href={`/marcas/${brand.slug}`}>{brand.name}</a>
+    </p>
+    <h3 class="product-name">
+      <a href={detailHref}>{product.name}</a>
+    </h3>
+    <p class="product-presentation">{presentation}</p>
+
+    <div class="product-footer">
+      <p class="product-price">{formattedPrice}</p>
+      <button
+        type="button"
+        class="product-add"
+        data-add-to-cart
+        data-product-id={product.id}
+        aria-label={`Agregar ${product.name} al carrito`}
+      >
+        Agregar
+      </button>
+    </div>
+  </div>
+</article>
+
+<style>
+  .product-card {
+    background: var(--color-bg-card);
+    border: 0.5px solid rgba(201, 168, 76, 0.12);
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    transition: all var(--transition-default);
+  }
+  .product-card:hover {
+    background: var(--color-bg-card-hover);
+    border-color: rgba(201, 168, 76, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .product-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: radial-gradient(
+      ellipse at center,
+      #1c1910 0%,
+      var(--color-bg) 80%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: inherit;
+  }
+
+  .product-stock {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-gold-light);
+    background: rgba(0, 0, 0, 0.6);
+    padding: 3px 9px;
+    border-radius: 10px;
+  }
+
+  .product-body {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+  }
+
+  .product-brand a {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--color-text-muted);
+    letter-spacing: 0.5px;
+    transition: color var(--transition-fast);
+  }
+  .product-brand a:hover {
+    color: var(--color-gold-light);
+  }
+
+  .product-name a {
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--color-cream);
+    font-weight: 500;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 38px;
+    transition: color var(--transition-fast);
+  }
+  .product-name a:hover {
+    color: var(--color-gold-light);
+  }
+  .product-name {
+    line-height: 1.35;
+  }
+
+  .product-presentation {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+  }
+
+  .product-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 10px;
+    gap: 8px;
+  }
+
+  .product-price {
+    font-family: var(--font-serif);
+    font-size: 20px;
+    color: var(--color-gold);
+    letter-spacing: 0.5px;
+    line-height: 1;
+  }
+
+  .product-add {
+    background: rgba(201, 168, 76, 0.12);
+    border: 0.5px solid var(--color-gold);
+    color: var(--color-gold-light);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+    transition: all var(--transition-fast);
+  }
+  .product-add:hover {
+    background: rgba(201, 168, 76, 0.25);
+  }
+  .product-add:active {
+    transform: scale(0.96);
+  }
+</style>

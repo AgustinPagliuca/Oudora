@@ -1,0 +1,368 @@
+---
+import type {
+  BrandWithCount,
+  Catalog,
+  Gender,
+  PriceRange,
+} from "@/types/catalog";
+import {
+  ALL_CATALOGS,
+  ALL_GENDERS,
+  CATALOG_LABELS,
+  GENDER_LABELS,
+} from "@/constants/ui";
+import { formatArs } from "@/lib/format";
+
+interface CatalogGroup {
+  readonly catalog: Catalog;
+  readonly brands: readonly BrandWithCount[];
+  readonly totalProducts: number;
+  readonly priceRange: PriceRange;
+}
+
+interface Props {
+  groups: readonly CatalogGroup[];
+  activeCatalog: Catalog;
+}
+
+const { groups, activeCatalog } = Astro.props;
+---
+
+<aside class="sidebar" aria-label="Filtros del catálogo" data-sidebar>
+  <button
+    type="button"
+    class="sidebar-close-mobile"
+    aria-label="Cerrar filtros"
+    data-sidebar-close
+  >
+    Cerrar filtros ×
+  </button>
+
+  <div class="sidebar-section sidebar-tabs">
+    {
+      ALL_CATALOGS.map((catalog) => (
+        <button
+          type="button"
+          class={`sidebar-tab ${catalog === activeCatalog ? "active" : ""}`}
+          aria-pressed={catalog === activeCatalog ? "true" : "false"}
+          data-catalog-tab={catalog}
+        >
+          {CATALOG_LABELS[catalog]}
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="sidebar-section">
+    <p class="sidebar-label">Buscar</p>
+    <label class="sidebar-search">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <line x1="16.5" y1="16.5" x2="21" y2="21" stroke-linecap="round" />
+      </svg>
+      <input
+        type="search"
+        placeholder="Nombre, marca o nota…"
+        data-filter-search
+        autocomplete="off"
+        aria-label="Buscar fragancia"
+      />
+    </label>
+  </div>
+
+  {
+    groups.map((group) => (
+      <div
+        class="sidebar-section"
+        data-catalog-group={group.catalog}
+        data-hidden={group.catalog === activeCatalog ? "false" : "true"}
+      >
+        <p class="sidebar-label">Marca</p>
+        <div class="sidebar-list">
+          <button
+            type="button"
+            class="sidebar-row active"
+            data-filter-brand=""
+            data-catalog={group.catalog}
+            aria-pressed="true"
+          >
+            <span>Todas</span>
+            <strong>{group.totalProducts}</strong>
+          </button>
+          {group.brands.map((brand) => (
+            <button
+              type="button"
+              class="sidebar-row"
+              data-filter-brand={brand.id}
+              data-catalog={group.catalog}
+              aria-pressed="false"
+            >
+              <span>{brand.name}</span>
+              <strong>{brand.productCount}</strong>
+            </button>
+          ))}
+        </div>
+      </div>
+    ))
+  }
+
+  <div class="sidebar-section">
+    <p class="sidebar-label">Género</p>
+    <div class="sidebar-chips">
+      <button
+        type="button"
+        class="sidebar-chip active"
+        data-filter-gender=""
+        aria-pressed="true"
+      >
+        Todos
+      </button>
+      {
+        ALL_GENDERS.map((gender: Gender) => (
+          <button
+            type="button"
+            class="sidebar-chip"
+            data-filter-gender={gender}
+            aria-pressed="false"
+          >
+            {GENDER_LABELS[gender]}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  {
+    groups.map((group) => (
+      <div
+        class="sidebar-section"
+        data-catalog-group={group.catalog}
+        data-hidden={group.catalog === activeCatalog ? "false" : "true"}
+      >
+        <p class="sidebar-label">Rango de precio</p>
+        <div class="sidebar-price">
+          <p class="sidebar-price-display">
+            <span data-price-min={group.priceRange.min}>
+              {formatArs(group.priceRange.min)}
+            </span>
+            <span>—</span>
+            <span data-price-max={group.priceRange.max}>
+              {formatArs(group.priceRange.max)}
+            </span>
+          </p>
+        </div>
+      </div>
+    ))
+  }
+
+  <button type="button" class="sidebar-clear" data-filter-clear>
+    Limpiar filtros
+  </button>
+</aside>
+
+<style>
+  .sidebar {
+    background: var(--color-bg-deep);
+    border: 0.5px solid rgba(201, 168, 76, 0.14);
+    border-radius: var(--radius-md);
+    padding: 22px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    align-self: start;
+    position: sticky;
+    top: 84px;
+  }
+
+  .sidebar-close-mobile {
+    display: none;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-gold-light);
+    align-self: flex-end;
+    padding: 6px 10px;
+  }
+
+  .sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sidebar-section[data-hidden="true"] {
+    display: none;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .sidebar-tabs {
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 18px;
+    border-bottom: 0.5px solid rgba(201, 168, 76, 0.12);
+  }
+
+  .sidebar-tab {
+    text-align: left;
+    font-family: var(--font-serif);
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border-left: 2px solid transparent;
+    transition: all var(--transition-fast);
+  }
+  .sidebar-tab:hover {
+    color: var(--color-cream);
+  }
+  .sidebar-tab.active {
+    color: var(--color-gold-light);
+    border-left-color: var(--color-gold);
+    background: rgba(201, 168, 76, 0.06);
+  }
+
+  .sidebar-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 0.5px solid rgba(201, 168, 76, 0.18);
+    border-radius: var(--radius-pill);
+    padding: 9px 14px;
+    color: var(--color-gold);
+    transition: border-color var(--transition-fast);
+  }
+  .sidebar-search:focus-within {
+    border-color: var(--color-gold);
+  }
+  .sidebar-search input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--color-cream);
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    min-width: 0;
+  }
+  .sidebar-search input::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  .sidebar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sidebar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 10px;
+    font-size: 12px;
+    color: var(--color-text-muted);
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.3px;
+    transition: all var(--transition-fast);
+  }
+  .sidebar-row:hover {
+    background: rgba(201, 168, 76, 0.05);
+    color: var(--color-gold-light);
+  }
+  .sidebar-row.active {
+    color: var(--color-gold-light);
+    background: rgba(201, 168, 76, 0.08);
+  }
+  .sidebar-row strong {
+    color: var(--color-text-faint);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+  .sidebar-row.active strong {
+    color: var(--color-gold);
+  }
+
+  .sidebar-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .sidebar-chip {
+    border: 0.5px solid rgba(255, 255, 255, 0.12);
+    color: var(--color-text-muted);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 11px;
+    border-radius: var(--radius-pill);
+    transition: all var(--transition-fast);
+  }
+  .sidebar-chip:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: var(--color-cream);
+  }
+  .sidebar-chip.active {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: var(--color-cream);
+  }
+
+  .sidebar-price-display {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--color-text-muted);
+    font-family: var(--font-serif);
+  }
+
+  .sidebar-clear {
+    margin-top: 6px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    align-self: center;
+    transition: color var(--transition-fast);
+  }
+  .sidebar-clear:hover {
+    color: var(--color-gold-light);
+  }
+
+  /* ── Mobile: drawer ────────────────────────────────────── */
+  @media (max-width: 920px) {
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: min(320px, 85vw);
+      z-index: 90;
+      transform: translateX(-100%);
+      transition: transform var(--transition-default);
+      border-radius: 0;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+    .sidebar[data-open="true"] {
+      transform: translateX(0);
+      box-shadow: 4px 0 30px rgba(0, 0, 0, 0.6);
+    }
+    .sidebar-close-mobile {
+      display: inline-flex;
+    }
+  }
+</style>

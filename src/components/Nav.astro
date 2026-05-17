@@ -1,0 +1,157 @@
+---
+import { NAV_LINKS, SITE_METADATA } from "@/constants/ui";
+
+const currentPath = Astro.url.pathname;
+
+function isActive(href: string): boolean {
+  if (href === "/") return currentPath === "/";
+  return currentPath === href || currentPath.startsWith(`${href}/`);
+}
+---
+
+<nav class="nav" aria-label="Navegación principal">
+  <a href="/" class="nav-logo" aria-label={`${SITE_METADATA.name} inicio`}>
+    Oud<em>ora</em>
+  </a>
+
+  <ul class="nav-menu" role="menubar">
+    {
+      NAV_LINKS.map((link) => (
+        <li role="none">
+          <a
+            href={link.href}
+            role="menuitem"
+            class={isActive(link.href) ? "active" : ""}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="nav-icons">
+    <button
+      type="button"
+      class="nav-filter-toggle"
+      aria-label="Abrir filtros"
+      data-sidebar-toggle
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <line x1="4" y1="7" x2="20" y2="7" />
+        <line x1="7" y1="12" x2="17" y2="12" />
+        <line x1="10" y1="17" x2="14" y2="17" />
+      </svg>
+    </button>
+    <button type="button" aria-label="Buscar" data-action="search">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="7" />
+        <line x1="16.5" y1="16.5" x2="21" y2="21" stroke-linecap="round" />
+      </svg>
+    </button>
+    <button type="button" aria-label="Ver carrito" data-action="cart" data-cart-button>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M6 7h12l-1.5 11a2 2 0 0 1-2 1.7H9.5a2 2 0 0 1-2-1.7L6 7z" stroke-linejoin="round" />
+        <path d="M9 7V5a3 3 0 0 1 6 0v2" stroke-linecap="round" />
+      </svg>
+      <span class="nav-cart-count" data-cart-count hidden>0</span>
+    </button>
+  </div>
+</nav>
+
+<style>
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: 14px clamp(16px, 4vw, 32px);
+    background: var(--color-bg-deep);
+    border-bottom: 0.5px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(6px);
+  }
+
+  .nav-logo {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    color: var(--color-gold-light);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  .nav-logo em {
+    color: var(--color-gold);
+    font-style: italic;
+  }
+
+  .nav-menu {
+    display: flex;
+    gap: clamp(14px, 2.5vw, 28px);
+    list-style: none;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+  .nav-menu a {
+    transition: color var(--transition-fast);
+  }
+  .nav-menu a:hover,
+  .nav-menu a.active {
+    color: var(--color-gold-light);
+  }
+
+  .nav-icons {
+    display: flex;
+    gap: 8px;
+    color: var(--color-gold-light);
+  }
+  .nav-icons button {
+    position: relative;
+    padding: 8px;
+    border-radius: var(--radius-circle);
+    transition: background var(--transition-fast);
+  }
+  .nav-icons button:hover {
+    background: rgba(201, 168, 76, 0.1);
+  }
+
+  .nav-filter-toggle {
+    display: none;
+  }
+
+  .nav-cart-count {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: var(--color-gold);
+    color: var(--color-bg);
+    font-size: 10px;
+    font-weight: 500;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+  }
+  .nav-cart-count[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 720px) {
+    .nav-menu {
+      display: none;
+    }
+  }
+  @media (max-width: 920px) {
+    .nav-filter-toggle {
+      display: inline-flex;
+    }
+  }
+</style>

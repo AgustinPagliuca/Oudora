@@ -1,0 +1,150 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/Nav.astro";
+import PageHeader from "@/components/PageHeader.astro";
+import Sidebar from "@/components/Sidebar.astro";
+import BrandSection from "@/components/BrandSection.astro";
+import Footer from "@/components/Footer.astro";
+import CartDrawer from "@/components/CartDrawer.astro";
+
+import { getBrandsByCatalog } from "@/data/brands";
+import { PRODUCTS } from "@/data/products";
+import {
+  ALL_CATALOGS,
+  CATALOG_LABELS,
+  DEFAULT_CATALOG,
+} from "@/constants/ui";
+import {
+  countProductsByBrand,
+  groupProductsByBrand,
+} from "@/lib/grouping";
+import {
+  getPriceRangeFor,
+  getProductsByCatalog,
+} from "@/lib/filters";
+
+/**
+ * Catálogo: sidebar de filtros + grilla por marca.
+ * En tiempo de build agrupamos productos por marca dentro de cada
+ * catálogo y construimos los conteos. El controller del cliente
+ * solo aplica visibilidad sobre lo ya renderizado.
+ */
+
+const sidebarGroups = ALL_CATALOGS.map((catalog) => {
+  const productsInCatalog = getProductsByCatalog(PRODUCTS, catalog);
+  const brandsInCatalog = getBrandsByCatalog(catalog);
+  const brandsWithCount = countProductsByBrand(
+    productsInCatalog,
+    brandsInCatalog,
+  ).filter((brand) => brand.productCount > 0);
+  return {
+    catalog,
+    brands: brandsWithCount,
+    totalProducts: productsInCatalog.length,
+    priceRange: getPriceRangeFor(productsInCatalog),
+  };
+});
+
+const productGroupsByCatalog = ALL_CATALOGS.map((catalog) => {
+  const productsInCatalog = getProductsByCatalog(PRODUCTS, catalog);
+  const brandsInCatalog = getBrandsByCatalog(catalog);
+  return {
+    catalog,
+    productsByBrand: groupProductsByBrand(productsInCatalog, brandsInCatalog),
+  };
+});
+
+const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
+---
+
+<Layout title={CATALOG_LABELS[DEFAULT_CATALOG]}>
+  <Nav />
+  <PageHeader
+    title="Nuestro"
+    highlight="catálogo"
+    subtitle="Fragancias importadas, originales y listas para enviar"
+  />
+
+  <div class="catalog-shell">
+    <Sidebar groups={sidebarGroups} activeCatalog={DEFAULT_CATALOG} />
+
+    <main class="catalog-main">
+      <div class="catalog-toolbar">
+        <p class="catalog-result" data-result-count>{totalArabes} fragancias</p>
+      </div>
+
+      <div class="catalog-content">
+        {
+          productGroupsByCatalog.map((group) =>
+            group.productsByBrand.map((entry) => (
+              <BrandSection brand={entry.brand} products={entry.products} />
+            )),
+          )
+        }
+      </div>
+    </main>
+  </div>
+
+  <Footer />
+  <CartDrawer />
+</Layout>
+
+<script>
+  import { initCatalogController } from "@/scripts/catalog-controller";
+  import { initCartController } from "@/scripts/cart-controller";
+
+  function boot(): void {
+    initCatalogController();
+    initCartController();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot, { once: true });
+  } else {
+    boot();
+  }
+</script>
+
+<style>
+  .catalog-shell {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 22px;
+    padding: 22px clamp(16px, 3vw, 32px) 32px;
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+  }
+
+  .catalog-main {
+    min-width: 0;
+  }
+
+  .catalog-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+    padding: 0 4px;
+  }
+
+  .catalog-result {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+  }
+
+  .catalog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  @media (max-width: 920px) {
+    .catalog-shell {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

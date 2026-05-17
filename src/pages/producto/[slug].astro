@@ -1,0 +1,361 @@
+---
+import type { GetStaticPaths } from "astro";
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/Nav.astro";
+import Footer from "@/components/Footer.astro";
+import CartDrawer from "@/components/CartDrawer.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import PerfumeBottle from "@/components/PerfumeBottle.astro";
+import Ribbon from "@/components/Ribbon.astro";
+import ProductCard from "@/components/ProductCard.astro";
+
+import { PRODUCTS } from "@/data/products";
+import { getBrandById } from "@/data/brands";
+import {
+  CATALOG_LABELS,
+  GENDER_LABELS,
+} from "@/constants/ui";
+import { formatArs, formatPresentation } from "@/lib/format";
+import { getStockLabel } from "@/lib/grouping";
+
+export const getStaticPaths = (() => {
+  return PRODUCTS.map((product) => ({
+    params: { slug: product.slug },
+    props: { product },
+  }));
+}) satisfies GetStaticPaths;
+
+const { product } = Astro.props;
+const brand = getBrandById(product.brandId);
+
+if (brand === undefined) {
+  return Astro.redirect("/catalogo");
+}
+
+const presentation = formatPresentation(product.concentration, product.volumeMl);
+const formattedPrice = formatArs(product.priceArs);
+const stockLabel = getStockLabel(product.stock);
+const variant = product.gender === "femenino"
+  ? "warm"
+  : product.gender === "masculino"
+    ? "default"
+    : "deep";
+
+const relatedProducts = PRODUCTS
+  .filter((p) => p.brandId === product.brandId && p.id !== product.id)
+  .slice(0, 4);
+
+const breadcrumbsTrail = [
+  { label: "Inicio", href: "/" },
+  { label: "Catálogo", href: "/catalogo" },
+  { label: CATALOG_LABELS[product.catalog], href: "/catalogo" },
+  { label: brand.name, href: `/marcas/${brand.slug}` },
+  { label: product.name },
+];
+---
+
+<Layout
+  title={`${brand.name} ${product.name}`}
+  description={`${brand.name} ${product.name}, ${presentation}. Perfume árabe original en Buenos Aires.`}
+>
+  <Nav />
+  <Breadcrumbs trail={breadcrumbsTrail} />
+
+  <article class="product-detail">
+    <div class="product-detail-visual">
+      <Ribbon gender={product.gender} />
+      <PerfumeBottle
+        label={product.name.length <= 10 ? product.name : undefined}
+        caption={`${product.volumeMl} ML · ${product.concentration}`}
+        variant={variant}
+        size="lg"
+        ariaLabel={`${brand.name} ${product.name}`}
+      />
+      {stockLabel && <span class="product-detail-stock">{stockLabel}</span>}
+    </div>
+
+    <div class="product-detail-info">
+      <p class="product-detail-brand">
+        <a href={`/marcas/${brand.slug}`}>{brand.name}</a>
+      </p>
+      <h1 class="product-detail-name">{product.name}</h1>
+      <p class="product-detail-pres">{presentation}</p>
+
+      <dl class="product-detail-meta">
+        <div>
+          <dt>Género</dt>
+          <dd>{GENDER_LABELS[product.gender]}</dd>
+        </div>
+        <div>
+          <dt>Concentración</dt>
+          <dd>{product.concentration}</dd>
+        </div>
+        <div>
+          <dt>Volumen</dt>
+          <dd>{product.volumeMl} ml</dd>
+        </div>
+        <div>
+          <dt>Catálogo</dt>
+          <dd>{CATALOG_LABELS[product.catalog]}</dd>
+        </div>
+      </dl>
+
+      {product.notes && product.notes.length > 0 && (
+        <section class="product-detail-notes">
+          <h2>Notas olfativas</h2>
+          <ul>
+            {product.notes.map((note) => <li>{note}</li>)}
+          </ul>
+        </section>
+      )}
+
+      {product.description && (
+        <p class="product-detail-description">{product.description}</p>
+      )}
+
+      <div class="product-detail-buy">
+        <p class="product-detail-price">{formattedPrice}</p>
+        <button
+          type="button"
+          class="product-detail-add"
+          data-add-to-cart
+          data-product-id={product.id}
+        >
+          Agregar al carrito
+        </button>
+      </div>
+    </div>
+  </article>
+
+  {relatedProducts.length > 0 && (
+    <section class="product-related">
+      <h2 class="product-related-title">
+        Más de <em>{brand.name}</em>
+      </h2>
+      <div class="product-related-grid">
+        {relatedProducts.map((relProduct) => (
+          <ProductCard product={relProduct} brand={brand} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  <Footer />
+  <CartDrawer />
+</Layout>
+
+<script>
+  import { initCartController } from "@/scripts/cart-controller";
+
+  function boot(): void {
+    initCartController();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot, { once: true });
+  } else {
+    boot();
+  }
+</script>
+
+<style>
+  .product-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding: 28px clamp(16px, 4vw, 40px) 48px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .product-detail-visual {
+    position: relative;
+    background: radial-gradient(
+      ellipse at center,
+      #1c1910 0%,
+      var(--color-bg) 80%
+    );
+    border: 0.5px solid rgba(201, 168, 76, 0.15);
+    border-radius: var(--radius-md);
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .product-detail-stock {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-gold-light);
+    background: rgba(0, 0, 0, 0.7);
+    padding: 5px 11px;
+    border-radius: var(--radius-pill);
+  }
+
+  .product-detail-info {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .product-detail-brand a {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--color-gold);
+    letter-spacing: 2px;
+    transition: color var(--transition-fast);
+  }
+  .product-detail-brand a:hover {
+    color: var(--color-gold-light);
+  }
+
+  .product-detail-name {
+    font-family: var(--font-serif);
+    font-size: clamp(28px, 4vw, 42px);
+    color: var(--color-cream);
+    letter-spacing: 1px;
+    line-height: 1.1;
+    font-weight: 400;
+  }
+
+  .product-detail-pres {
+    font-size: 12px;
+    letter-spacing: 2.5px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+  }
+
+  .product-detail-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 24px;
+    padding: 18px 0;
+    border-top: 0.5px solid var(--color-border);
+    border-bottom: 0.5px solid var(--color-border);
+    margin-top: 6px;
+  }
+  .product-detail-meta dt {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .product-detail-meta dd {
+    font-size: 14px;
+    color: var(--color-cream);
+    letter-spacing: 0.5px;
+  }
+
+  .product-detail-notes h2 {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    color: var(--color-gold-light);
+    letter-spacing: 2px;
+    font-weight: 400;
+    margin-bottom: 10px;
+  }
+  .product-detail-notes ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    list-style: none;
+  }
+  .product-detail-notes li {
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: capitalize;
+    color: var(--color-text);
+    background: rgba(201, 168, 76, 0.08);
+    border: 0.5px solid rgba(201, 168, 76, 0.2);
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+  }
+
+  .product-detail-description {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--color-text);
+  }
+
+  .product-detail-buy {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 0.5px solid var(--color-border);
+    flex-wrap: wrap;
+  }
+
+  .product-detail-price {
+    font-family: var(--font-serif);
+    font-size: 32px;
+    color: var(--color-gold);
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+
+  .product-detail-add {
+    flex: 1;
+    min-width: 180px;
+    background: rgba(201, 168, 76, 0.14);
+    border: 0.5px solid var(--color-gold);
+    color: var(--color-gold-light);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 14px 24px;
+    border-radius: var(--radius-pill);
+    transition: all var(--transition-fast);
+  }
+  .product-detail-add:hover {
+    background: rgba(201, 168, 76, 0.25);
+  }
+  .product-detail-add:active {
+    transform: scale(0.98);
+  }
+
+  .product-related {
+    padding: 24px clamp(16px, 4vw, 32px) 48px;
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+  }
+
+  .product-related-title {
+    font-family: var(--font-serif);
+    font-size: clamp(20px, 3vw, 26px);
+    color: var(--color-cream);
+    letter-spacing: 1px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .product-related-title em {
+    color: var(--color-gold);
+    font-style: italic;
+  }
+
+  .product-related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 4px;
+  }
+
+  @media (max-width: 768px) {
+    .product-detail {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .product-detail-meta {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

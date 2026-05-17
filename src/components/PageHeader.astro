@@ -1,0 +1,50 @@
+---
+interface Props {
+  title: string;
+  highlight?: string;
+  subtitle?: string;
+}
+
+const { title, highlight, subtitle } = Astro.props;
+---
+
+<header class="page-header">
+  <h1 class="page-header-title">
+    {title}
+    {highlight && <em>{highlight}</em>}
+  </h1>
+  {subtitle && <p class="page-header-subtitle">{subtitle}</p>}
+</header>
+
+<style>
+  .page-header {
+    padding: 40px 24px 28px;
+    text-align: center;
+    background: radial-gradient(
+      ellipse 60% 80% at 50% 0%,
+      #1c1910 0%,
+      var(--color-bg) 70%
+    );
+  }
+
+  .page-header-title {
+    font-family: var(--font-serif);
+    font-size: clamp(26px, 4vw, 38px);
+    color: var(--color-cream);
+    letter-spacing: 1px;
+    font-weight: 400;
+    line-height: 1.1;
+  }
+  .page-header-title em {
+    color: var(--color-gold);
+    font-style: italic;
+  }
+
+  .page-header-subtitle {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--color-text-muted);
+    margin-top: 8px;
+    text-transform: uppercase;
+  }
+</style>

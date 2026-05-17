@@ -1,0 +1,80 @@
+---
+import type { Product } from "@/types/catalog";
+import { getBrandById } from "@/data/brands";
+import ProductCard from "@/components/ProductCard.astro";
+
+interface Props {
+  title: string;
+  highlight?: string;
+  products: readonly Product[];
+}
+
+const { title, highlight, products } = Astro.props;
+const visibleProducts = products.slice(0, 8);
+---
+
+<section class="featured">
+  <header class="featured-header">
+    <h2 class="featured-title">
+      {title}
+      {highlight && <em>{highlight}</em>}
+    </h2>
+    <a href="/catalogo" class="featured-link">Ver todo el catálogo →</a>
+  </header>
+
+  <div class="featured-grid">
+    {
+      visibleProducts.map((product) => {
+        const brand = getBrandById(product.brandId);
+        if (brand === undefined) return null;
+        return <ProductCard product={product} brand={brand} />;
+      })
+    }
+  </div>
+</section>
+
+<style>
+  .featured {
+    padding: 48px clamp(16px, 4vw, 32px) 32px;
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+  }
+
+  .featured-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .featured-title {
+    font-family: var(--font-serif);
+    font-size: clamp(22px, 3vw, 28px);
+    color: var(--color-cream);
+    letter-spacing: 1px;
+    font-weight: 400;
+  }
+  .featured-title em {
+    color: var(--color-gold);
+    font-style: italic;
+  }
+
+  .featured-link {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-gold-light);
+    transition: color var(--transition-fast);
+  }
+  .featured-link:hover {
+    color: var(--color-cream);
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 4px;
+  }
+</style>

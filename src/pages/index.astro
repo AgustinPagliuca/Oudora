@@ -1,0 +1,60 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/Nav.astro";
+import Hero from "@/components/Hero.astro";
+import CollectionCards from "@/components/CollectionCards.astro";
+import FeaturedStrip from "@/components/FeaturedStrip.astro";
+import Footer from "@/components/Footer.astro";
+import CartDrawer from "@/components/CartDrawer.astro";
+
+import { PRODUCTS } from "@/data/products";
+import { getProductsByCatalog } from "@/lib/filters";
+
+/**
+ * Home: vitrina de bienvenida y entrada al catálogo.
+ * Muestra una selección de fragancias destacadas por cada catálogo.
+ */
+
+const arabesFeatured = getProductsByCatalog(PRODUCTS, "arabe")
+  .filter((product) => product.featured === true)
+  .slice(0, 8);
+
+const disenadorFeatured = getProductsByCatalog(PRODUCTS, "disenador")
+  .filter((product) => product.featured === true)
+  .slice(0, 8);
+---
+
+<Layout>
+  <Nav />
+  <Hero />
+  <CollectionCards />
+
+  <FeaturedStrip
+    title="Destacados"
+    highlight="árabes"
+    products={arabesFeatured}
+  />
+
+  <FeaturedStrip
+    title="Destacados"
+    highlight="diseñador"
+    products={disenadorFeatured}
+  />
+
+  <Footer />
+  <CartDrawer />
+</Layout>
+
+<script>
+  import { initCartController } from "@/scripts/cart-controller";
+
+  function boot(): void {
+    initCartController();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot, { once: true });
+  } else {
+    boot();
+  }
+</script>

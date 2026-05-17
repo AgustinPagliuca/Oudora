@@ -1,0 +1,38 @@
+---
+import type { Gender } from "@/types/catalog";
+import { GENDER_SHORT_LABELS } from "@/constants/ui";
+
+interface Props {
+  gender: Gender;
+}
+
+const { gender } = Astro.props;
+const label = GENDER_SHORT_LABELS[gender];
+---
+
+<span class={`ribbon ribbon-${gender}`}>{label}</span>
+
+<style>
+  .ribbon {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    padding: 4px 12px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 500;
+    border-radius: 0 14px 14px 0;
+    color: #fff;
+    z-index: 2;
+  }
+  .ribbon-femenino {
+    background: var(--color-gender-fem);
+  }
+  .ribbon-masculino {
+    background: var(--color-gender-masc);
+  }
+  .ribbon-unisex {
+    background: var(--color-gender-uni);
+  }
+</style>

@@ -1,0 +1,59 @@
+/**
+ * Tokens de diseño OUDORA.
+ * Fuente única de verdad para colores, tipografía y espaciado.
+ * Cambiar acá impacta a todos los componentes.
+ */
+
+:root {
+  /* ── Colores: paleta negro absoluto + dorado ─────────────── */
+  --color-bg: #0a0908;
+  --color-bg-elevated: #121008;
+  --color-bg-deep: #070605;
+  --color-bg-card: #121008;
+  --color-bg-card-hover: #1c1910;
+
+  --color-gold: #c9a84c;
+  --color-gold-light: #e8c97a;
+  --color-gold-dark: #9a7535;
+
+  --color-cream: #f5edd8;
+  --color-text: #ddd5c0;
+  --color-text-muted: #9a8e78;
+  --color-text-faint: #6b6557;
+
+  --color-border: rgba(201, 168, 76, 0.18);
+  --color-border-strong: rgba(201, 168, 76, 0.35);
+  --color-border-subtle: rgba(255, 255, 255, 0.05);
+
+  /* ── Colores semánticos de género (ribbons) ──────────────── */
+  --color-gender-fem: rgba(200, 70, 105, 0.9);
+  --color-gender-masc: rgba(55, 105, 210, 0.9);
+  --color-gender-uni: rgba(115, 80, 190, 0.9);
+
+  /* ── Tipografía ──────────────────────────────────────────── */
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Raleway", -apple-system, system-ui, sans-serif;
+
+  /* ── Layout ──────────────────────────────────────────────── */
+  --max-content-width: 1240px;
+  --grid-card-min: 200px;
+
+  /* ── Espaciado ───────────────────────────────────────────── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+
+  /* ── Radios ──────────────────────────────────────────────── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-pill: 24px;
+  --radius-circle: 50%;
+
+  /* ── Transiciones ────────────────────────────────────────── */
+  --transition-fast: 0.15s ease;
+  --transition-default: 0.25s ease;
+  --transition-slow: 0.4s ease;
+}

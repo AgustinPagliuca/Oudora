@@ -1,0 +1,93 @@
+---
+import type { GetStaticPaths } from "astro";
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/Nav.astro";
+import Footer from "@/components/Footer.astro";
+import CartDrawer from "@/components/CartDrawer.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import PageHeader from "@/components/PageHeader.astro";
+import ProductCard from "@/components/ProductCard.astro";
+
+import { BRANDS } from "@/data/brands";
+import { PRODUCTS } from "@/data/products";
+import { CATALOG_LABELS } from "@/constants/ui";
+
+export const getStaticPaths = (() => {
+  return BRANDS.map((brand) => ({
+    params: { slug: brand.slug },
+    props: { brand },
+  }));
+}) satisfies GetStaticPaths;
+
+const { brand } = Astro.props;
+const productsOfBrand = PRODUCTS.filter((p) => p.brandId === brand.id);
+
+const breadcrumbsTrail = [
+  { label: "Inicio", href: "/" },
+  { label: "Catálogo", href: "/catalogo" },
+  { label: CATALOG_LABELS[brand.catalog], href: "/catalogo" },
+  { label: brand.name },
+];
+---
+
+<Layout
+  title={brand.name}
+  description={`Catálogo completo de ${brand.name} en OUDORA: ${productsOfBrand.length} fragancias originales con envío a todo el país.`}
+>
+  <Nav />
+  <Breadcrumbs trail={breadcrumbsTrail} />
+  <PageHeader
+    title={brand.name}
+    subtitle={`${productsOfBrand.length} fragancias · ${CATALOG_LABELS[brand.catalog]}`}
+  />
+
+  <section class="brand-page">
+    {productsOfBrand.length === 0 ? (
+      <p class="brand-empty">Próximamente: sumamos productos de esta marca al catálogo.</p>
+    ) : (
+      <div class="brand-grid">
+        {productsOfBrand.map((product) => (
+          <ProductCard product={product} brand={brand} />
+        ))}
+      </div>
+    )}
+  </section>
+
+  <Footer />
+  <CartDrawer />
+</Layout>
+
+<script>
+  import { initCartController } from "@/scripts/cart-controller";
+
+  function boot(): void {
+    initCartController();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot, { once: true });
+  } else {
+    boot();
+  }
+</script>
+
+<style>
+  .brand-page {
+    padding: 24px clamp(16px, 4vw, 32px) 48px;
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+  }
+
+  .brand-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 4px;
+  }
+
+  .brand-empty {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    padding: 60px 20px;
+  }
+</style>

@@ -1,0 +1,78 @@
+---
+import type { Brand, Product } from "@/types/catalog";
+import ProductCard from "./ProductCard.astro";
+
+interface Props {
+  brand: Brand;
+  products: readonly Product[];
+}
+
+const { brand, products } = Astro.props;
+---
+
+<section
+  class="brand-section"
+  data-brand-section
+  data-brand={brand.id}
+  data-catalog={brand.catalog}
+>
+  <header class="brand-header">
+    <h2 class="brand-name">{brand.name}</h2>
+    <span class="brand-line" aria-hidden="true"></span>
+    <span class="brand-count" data-brand-count>{products.length} piezas</span>
+  </header>
+
+  <div class="product-grid">
+    {products.map((product) => <ProductCard product={product} brand={brand} />)}
+  </div>
+</section>
+
+<style>
+  .brand-section {
+    margin-bottom: var(--space-lg);
+  }
+
+  .brand-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding: 0 4px;
+  }
+
+  .brand-name {
+    font-family: var(--font-serif);
+    font-size: clamp(20px, 3vw, 26px);
+    font-weight: 400;
+    letter-spacing: 3px;
+    color: var(--color-gold-light);
+    white-space: nowrap;
+  }
+
+  .brand-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      rgba(201, 168, 76, 0.4),
+      transparent
+    );
+  }
+
+  .brand-count {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(var(--grid-card-min), 1fr)
+    );
+    gap: 4px;
+  }
+</style>

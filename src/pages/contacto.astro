@@ -1,0 +1,192 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/Nav.astro";
+import Footer from "@/components/Footer.astro";
+import CartDrawer from "@/components/CartDrawer.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import PageHeader from "@/components/PageHeader.astro";
+
+import { CONTACT, SITE_METADATA } from "@/constants/ui";
+
+const breadcrumbsTrail = [
+  { label: "Inicio", href: "/" },
+  { label: "Contacto" },
+];
+
+const whatsappLink = `https://wa.me/${CONTACT.whatsappE164}`;
+---
+
+<Layout title="Contacto">
+  <Nav />
+  <Breadcrumbs trail={breadcrumbsTrail} />
+  <PageHeader
+    title="Hablemos por"
+    highlight="WhatsApp"
+    subtitle="Atención personalizada · Envíos a todo el país"
+  />
+
+  <section class="contact">
+    <p class="contact-lead">
+      Escribinos por WhatsApp con tu pedido o consulta. Te respondemos con
+      disponibilidad, forma de pago y costo de envío en el mismo día.
+    </p>
+
+    <div class="contact-channels">
+      <a class="contact-channel contact-wa" href={whatsappLink} target="_blank" rel="noopener noreferrer">
+        <div class="contact-channel-label">WhatsApp</div>
+        <div class="contact-channel-value">{CONTACT.whatsappDisplay}</div>
+        <div class="contact-channel-action">Iniciar conversación →</div>
+      </a>
+
+      <a class="contact-channel contact-ig" href={CONTACT.instagramUrl} target="_blank" rel="noopener noreferrer">
+        <div class="contact-channel-label">Instagram</div>
+        <div class="contact-channel-value">{CONTACT.instagram}</div>
+        <div class="contact-channel-action">Ver Instagram →</div>
+      </a>
+    </div>
+
+    <div class="contact-info">
+      <div class="contact-info-item">
+        <h3>Envíos</h3>
+        <p>Todo el país por Correo Argentino o Andreani. CABA y GBA con cadetería.</p>
+      </div>
+      <div class="contact-info-item">
+        <h3>Pagos</h3>
+        <p>Transferencia, MercadoPago y efectivo en CABA. Coordinamos por WhatsApp.</p>
+      </div>
+      <div class="contact-info-item">
+        <h3>Originales</h3>
+        <p>Todas nuestras fragancias son importadas y originales de Emiratos.</p>
+      </div>
+    </div>
+
+    <p class="contact-location">{SITE_METADATA.location}</p>
+  </section>
+
+  <Footer />
+  <CartDrawer />
+</Layout>
+
+<script>
+  import { initCartController } from "@/scripts/cart-controller";
+
+  function boot(): void {
+    initCartController();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot, { once: true });
+  } else {
+    boot();
+  }
+</script>
+
+<style>
+  .contact {
+    padding: 32px clamp(16px, 4vw, 32px) 64px;
+    max-width: 880px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .contact-lead {
+    font-family: var(--font-serif);
+    font-size: clamp(16px, 2.5vw, 20px);
+    line-height: 1.6;
+    color: var(--color-cream);
+    text-align: center;
+    font-style: italic;
+  }
+
+  .contact-channels {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .contact-channel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 26px 24px;
+    border: 0.5px solid rgba(201, 168, 76, 0.25);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-card);
+    transition: all var(--transition-default);
+  }
+  .contact-channel:hover {
+    border-color: var(--color-gold);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .contact-channel-label {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+  }
+
+  .contact-channel-value {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    color: var(--color-cream);
+    letter-spacing: 1px;
+  }
+
+  .contact-channel-action {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-gold-light);
+    margin-top: 4px;
+  }
+
+  .contact-wa .contact-channel-action {
+    color: #25d366;
+  }
+
+  .contact-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding-top: 28px;
+    border-top: 0.5px solid var(--color-border);
+  }
+
+  .contact-info-item h3 {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--color-gold-light);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    font-weight: 400;
+  }
+  .contact-info-item p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--color-text-muted);
+  }
+
+  .contact-location {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    padding-top: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .contact-channels {
+      grid-template-columns: 1fr;
+    }
+    .contact-info {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+</style>

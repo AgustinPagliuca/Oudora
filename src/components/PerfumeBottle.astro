@@ -1,0 +1,99 @@
+---
+interface Props {
+  label?: string;
+  caption?: string;
+  variant?: "default" | "warm" | "deep";
+  size?: "sm" | "md" | "lg";
+  ariaLabel?: string;
+}
+
+const {
+  label,
+  caption,
+  variant = "default",
+  size = "md",
+  ariaLabel,
+} = Astro.props;
+
+const bodyFill = {
+  default: "#100c08",
+  warm: "#120d08",
+  deep: "#0e0a06",
+}[variant];
+
+const capFill = {
+  default: "#15110c",
+  warm: "#17120c",
+  deep: "#130f0a",
+}[variant];
+
+const sizeClass = `bottle-${size}`;
+---
+
+<svg
+  class={`bottle ${sizeClass}`}
+  viewBox="0 0 120 200"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-label={ariaLabel ?? label ?? "Frasco de perfume"}
+>
+  <rect x="50" y="4" width="20" height="5" fill="#1a1612" stroke="#c9a84c" stroke-width="0.5" />
+  <rect x="44" y="9" width="32" height="24" rx="1" fill={capFill} stroke="#c9a84c" stroke-width="0.6" />
+  <rect x="48" y="14" width="24" height="2" fill="#c9a84c" opacity="0.4" />
+  <rect x="48" y="20" width="24" height="2" fill="#c9a84c" opacity="0.4" />
+  <rect x="52" y="33" width="16" height="10" fill="#0e0b07" stroke="#c9a84c" stroke-width="0.4" />
+  <path
+    d="M38 43 L38 50 Q38 58 42 62 L42 188 Q42 194 48 194 L72 194 Q78 194 78 188 L78 62 Q82 58 82 50 L82 43 Z"
+    fill={bodyFill}
+    stroke="#c9a84c"
+    stroke-width="0.8"
+  />
+  <ellipse cx="52" cy="100" rx="3" ry="40" fill="#c9a84c" opacity="0.12" />
+  {label && (
+    <text
+      x="60"
+      y="128"
+      text-anchor="middle"
+      fill="#c9a84c"
+      font-family="Cormorant Garamond, serif"
+      font-size="11"
+      font-style="italic"
+      opacity="0.9"
+    >
+      {label}
+    </text>
+  )}
+  {label && caption && (
+    <line x1="48" y1="138" x2="72" y2="138" stroke="#c9a84c" stroke-width="0.4" opacity="0.5" />
+  )}
+  {caption && (
+    <text
+      x="60"
+      y="150"
+      text-anchor="middle"
+      fill="#9a8e78"
+      font-family="Raleway, sans-serif"
+      font-size="5"
+      letter-spacing="1.5"
+    >
+      {caption}
+    </text>
+  )}
+</svg>
+
+<style>
+  .bottle {
+    width: auto;
+    filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7));
+  }
+  .bottle-sm {
+    height: 100px;
+  }
+  .bottle-md {
+    height: 180px;
+  }
+  .bottle-lg {
+    height: 280px;
+  }
+</style>
