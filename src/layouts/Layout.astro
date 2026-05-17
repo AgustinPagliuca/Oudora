@@ -1,6 +1,8 @@
 ---
 import "@/styles/global.css";
 import { SITE_METADATA } from "@/constants/ui";
+import CartDrawer from "@/components/CartDrawer.astro";
+import SearchOverlay from "@/components/SearchOverlay.astro";
 
 interface Props {
   title?: string;
@@ -33,5 +35,23 @@ const pageDescription = description ?? SITE_METADATA.description;
   </head>
   <body>
     <slot />
+    <CartDrawer />
+    <SearchOverlay />
+
+    <script>
+      import { initCartController } from "@/scripts/cart-controller";
+      import { initSearchController } from "@/scripts/search-controller";
+
+      function bootGlobal(): void {
+        initCartController();
+        initSearchController();
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", bootGlobal, { once: true });
+      } else {
+        bootGlobal();
+      }
+    </script>
   </body>
 </html>

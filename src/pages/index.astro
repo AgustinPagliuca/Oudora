@@ -5,7 +5,6 @@ import Hero from "@/components/Hero.astro";
 import CollectionCards from "@/components/CollectionCards.astro";
 import FeaturedStrip from "@/components/FeaturedStrip.astro";
 import Footer from "@/components/Footer.astro";
-import CartDrawer from "@/components/CartDrawer.astro";
 
 import { PRODUCTS } from "@/data/products";
 import { getProductsByCatalog } from "@/lib/filters";
@@ -42,19 +41,5 @@ const disenadorFeatured = getProductsByCatalog(PRODUCTS, "disenador")
   />
 
   <Footer />
-  <CartDrawer />
 </Layout>
 
-<script>
-  import { initCartController } from "@/scripts/cart-controller";
-
-  function boot(): void {
-    initCartController();
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot, { once: true });
-  } else {
-    boot();
-  }
-</script>

@@ -47,21 +47,31 @@
         El pedido se envía por WhatsApp. Te confirmamos disponibilidad y forma
         de pago antes de cerrar la compra.
       </p>
-      <a
-        class="cart-checkout"
-        href="#"
-        target="_blank"
-        rel="noopener noreferrer"
-        data-cart-checkout
-      >
-        Finalizar por WhatsApp
-      </a>
+      <div class="cart-cta-row">
+        <button
+          type="button"
+          class="cart-continue"
+          data-cart-continue
+        >
+          Seguir comprando
+        </button>
+        <a
+          class="cart-checkout"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-cart-checkout
+        >
+          Finalizar por WhatsApp
+        </a>
+      </div>
       <button
         type="button"
         class="cart-clear"
         data-cart-clear
+        data-confirming="false"
       >
-        Vaciar carrito
+        <span data-cart-clear-label>Vaciar carrito</span>
       </button>
     </footer>
   </div>
@@ -297,21 +307,57 @@
     color: var(--color-text-muted);
   }
 
+  .cart-cta-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .cart-continue {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 16px;
+    background: rgba(201, 168, 76, 0.1);
+    border: 0.5px solid var(--color-gold);
+    color: var(--color-gold-light);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: var(--radius-pill);
+    transition: all var(--transition-fast);
+  }
+  .cart-continue:hover {
+    background: rgba(201, 168, 76, 0.2);
+  }
+  .cart-continue:active {
+    transform: scale(0.97);
+  }
+
   .cart-checkout {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    padding: 14px 24px;
+    padding: 14px 16px;
     background: #25d366;
     color: #fff;
     font-size: 12px;
     font-weight: 500;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     border-radius: var(--radius-pill);
     transition: opacity var(--transition-fast);
   }
   .cart-checkout:hover {
     opacity: 0.9;
+  }
+
+  @media (max-width: 360px) {
+    .cart-cta-row {
+      grid-template-columns: 1fr;
+    }
   }
 
   .cart-clear {
@@ -322,9 +368,21 @@
     text-decoration: underline;
     text-underline-offset: 3px;
     align-self: center;
-    transition: color var(--transition-fast);
+    transition: all var(--transition-fast);
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
   }
   .cart-clear:hover {
     color: var(--color-gold-light);
+  }
+  .cart-clear[data-confirming="true"] {
+    background: rgba(200, 70, 70, 0.18);
+    border: 0.5px solid rgba(200, 70, 70, 0.5);
+    color: #ffb3b3;
+    text-decoration: none;
+  }
+  .cart-clear[data-confirming="true"]:hover {
+    background: rgba(200, 70, 70, 0.28);
+    color: #fff;
   }
 </style>

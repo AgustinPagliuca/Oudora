@@ -28,15 +28,23 @@ interface Props {
 const { groups, activeCatalog } = Astro.props;
 ---
 
-<aside class="sidebar" aria-label="Filtros del catálogo" data-sidebar>
-  <button
-    type="button"
-    class="sidebar-close-mobile"
-    aria-label="Cerrar filtros"
-    data-sidebar-close
-  >
-    Cerrar filtros ×
-  </button>
+<div class="sidebar-backdrop" data-sidebar-backdrop aria-hidden="true"></div>
+
+<aside class="sidebar" aria-label="Filtros del catálogo" data-sidebar data-open="false">
+  <header class="sidebar-mobile-header">
+    <span class="sidebar-mobile-title">Filtros</span>
+    <button
+      type="button"
+      class="sidebar-close-mobile"
+      aria-label="Cerrar filtros"
+      data-sidebar-close
+    >
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <line x1="6" y1="6" x2="18" y2="18" />
+        <line x1="18" y1="6" x2="6" y2="18" />
+      </svg>
+    </button>
+  </header>
 
   <div class="sidebar-section sidebar-tabs">
     {
@@ -56,11 +64,12 @@ const { groups, activeCatalog } = Astro.props;
   <div class="sidebar-section">
     <p class="sidebar-label">Buscar</p>
     <label class="sidebar-search">
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
         <circle cx="11" cy="11" r="7" />
         <line x1="16.5" y1="16.5" x2="21" y2="21" stroke-linecap="round" />
       </svg>
       <input
+        id="filter-search"
         type="search"
         placeholder="Nombre, marca o nota…"
         data-filter-search
@@ -133,26 +142,57 @@ const { groups, activeCatalog } = Astro.props;
   </div>
 
   {
-    groups.map((group) => (
-      <div
-        class="sidebar-section"
-        data-catalog-group={group.catalog}
-        data-hidden={group.catalog === activeCatalog ? "false" : "true"}
-      >
-        <p class="sidebar-label">Rango de precio</p>
-        <div class="sidebar-price">
-          <p class="sidebar-price-display">
-            <span data-price-min={group.priceRange.min}>
+    groups.map((group) => {
+      const range = group.priceRange.max - group.priceRange.min;
+      const step = range > 100000 ? 5000 : range > 30000 ? 1000 : 500;
+      return (
+        <div
+          class="sidebar-section"
+          data-catalog-group={group.catalog}
+          data-hidden={group.catalog === activeCatalog ? "false" : "true"}
+        >
+          <p class="sidebar-label">Rango de precio</p>
+          <div class="price-slider" data-price-slider data-catalog={group.catalog}>
+            <div class="price-slider-track"></div>
+            <div class="price-slider-fill" data-price-fill></div>
+            <input
+              type="range"
+              class="price-slider-input price-slider-input-min"
+              min={group.priceRange.min}
+              max={group.priceRange.max}
+              value={group.priceRange.min}
+              step={step}
+              data-filter-price-min
+              data-catalog={group.catalog}
+              data-min-bound={group.priceRange.min}
+              data-max-bound={group.priceRange.max}
+              aria-label={`Precio mínimo (${CATALOG_LABELS[group.catalog]})`}
+            />
+            <input
+              type="range"
+              class="price-slider-input price-slider-input-max"
+              min={group.priceRange.min}
+              max={group.priceRange.max}
+              value={group.priceRange.max}
+              step={step}
+              data-filter-price-max
+              data-catalog={group.catalog}
+              data-min-bound={group.priceRange.min}
+              data-max-bound={group.priceRange.max}
+              aria-label={`Precio máximo (${CATALOG_LABELS[group.catalog]})`}
+            />
+          </div>
+          <div class="price-slider-values">
+            <span data-price-display-min data-catalog={group.catalog}>
               {formatArs(group.priceRange.min)}
             </span>
-            <span>—</span>
-            <span data-price-max={group.priceRange.max}>
+            <span data-price-display-max data-catalog={group.catalog}>
               {formatArs(group.priceRange.max)}
             </span>
-          </p>
+          </div>
         </div>
-      </div>
-    ))
+      );
+    })
   }
 
   <button type="button" class="sidebar-clear" data-filter-clear>
@@ -161,6 +201,17 @@ const { groups, activeCatalog } = Astro.props;
 </aside>
 
 <style>
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 89;
+    opacity: 0;
+    transition: opacity var(--transition-default);
+    pointer-events: none;
+  }
+
   .sidebar {
     background: var(--color-bg-deep);
     border: 0.5px solid rgba(201, 168, 76, 0.14);
@@ -174,20 +225,37 @@ const { groups, activeCatalog } = Astro.props;
     top: 84px;
   }
 
-  .sidebar-close-mobile {
+  .sidebar-mobile-header {
     display: none;
-    font-size: 11px;
-    letter-spacing: 2px;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 14px;
+    border-bottom: 0.5px solid var(--color-border);
+  }
+
+  .sidebar-mobile-title {
+    font-family: var(--font-serif);
+    font-size: 20px;
+    color: var(--color-cream);
+    letter-spacing: 3px;
     text-transform: uppercase;
+  }
+
+  .sidebar-close-mobile {
     color: var(--color-gold-light);
-    align-self: flex-end;
-    padding: 6px 10px;
+    padding: 6px;
+    border-radius: var(--radius-circle);
+    transition: background var(--transition-fast);
+    display: inline-flex;
+  }
+  .sidebar-close-mobile:hover {
+    background: rgba(201, 168, 76, 0.1);
   }
 
   .sidebar-section {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
   }
 
   .sidebar-section[data-hidden="true"] {
@@ -195,7 +263,7 @@ const { groups, activeCatalog } = Astro.props;
   }
 
   .sidebar-label {
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 2.5px;
     color: var(--color-text-muted);
     text-transform: uppercase;
@@ -212,11 +280,11 @@ const { groups, activeCatalog } = Astro.props;
   .sidebar-tab {
     text-align: left;
     font-family: var(--font-serif);
-    font-size: 16px;
+    font-size: 17px;
     letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--color-text-muted);
-    padding: 10px 12px;
+    padding: 11px 12px;
     border-radius: var(--radius-sm);
     border-left: 2px solid transparent;
     transition: all var(--transition-fast);
@@ -237,7 +305,7 @@ const { groups, activeCatalog } = Astro.props;
     background: rgba(255, 255, 255, 0.04);
     border: 0.5px solid rgba(201, 168, 76, 0.18);
     border-radius: var(--radius-pill);
-    padding: 9px 14px;
+    padding: 10px 16px;
     color: var(--color-gold);
     transition: border-color var(--transition-fast);
   }
@@ -250,7 +318,7 @@ const { groups, activeCatalog } = Astro.props;
     border: none;
     outline: none;
     color: var(--color-cream);
-    font-size: 12px;
+    font-size: 14px;
     letter-spacing: 0.3px;
     min-width: 0;
   }
@@ -268,8 +336,8 @@ const { groups, activeCatalog } = Astro.props;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 7px 10px;
-    font-size: 12px;
+    padding: 9px 10px;
+    font-size: 14px;
     color: var(--color-text-muted);
     border-radius: var(--radius-sm);
     letter-spacing: 0.3px;
@@ -286,7 +354,7 @@ const { groups, activeCatalog } = Astro.props;
   .sidebar-row strong {
     color: var(--color-text-faint);
     font-weight: 500;
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 1px;
   }
   .sidebar-row.active strong {
@@ -296,16 +364,16 @@ const { groups, activeCatalog } = Astro.props;
   .sidebar-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 6px;
   }
 
   .sidebar-chip {
     border: 0.5px solid rgba(255, 255, 255, 0.12);
     color: var(--color-text-muted);
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    padding: 6px 11px;
+    padding: 7px 13px;
     border-radius: var(--radius-pill);
     transition: all var(--transition-fast);
   }
@@ -319,37 +387,137 @@ const { groups, activeCatalog } = Astro.props;
     color: var(--color-cream);
   }
 
-  .sidebar-price-display {
+  .price-slider {
+    position: relative;
+    height: 28px;
+    margin: 4px 6px 0;
+  }
+
+  .price-slider-track {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(201, 168, 76, 0.18);
+    border-radius: 1px;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .price-slider-fill {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    right: 0%;
+    height: 3px;
+    background: var(--color-gold);
+    border-radius: 2px;
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: left 0.05s linear, right 0.05s linear;
+  }
+
+  .price-slider-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    background: none;
+    pointer-events: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .price-slider-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--color-gold-light);
+    border: 1.5px solid var(--color-gold);
+    border-radius: 50%;
+    cursor: grab;
+    pointer-events: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    transition: transform var(--transition-fast);
+  }
+  .price-slider-input::-webkit-slider-thumb:hover,
+  .price-slider-input::-webkit-slider-thumb:active {
+    transform: scale(1.15);
+  }
+
+  .price-slider-input::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--color-gold-light);
+    border: 1.5px solid var(--color-gold);
+    border-radius: 50%;
+    cursor: grab;
+    pointer-events: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  }
+
+  .price-slider-input::-webkit-slider-runnable-track,
+  .price-slider-input::-moz-range-track {
+    background: none;
+  }
+
+  .price-slider-input-min {
+    z-index: 2;
+  }
+  .price-slider-input-max {
+    z-index: 3;
+  }
+  /* Trick: when min thumb is at the right end, raise its z-index so it stays grabbable */
+  .price-slider-input-min[data-thumb-up="true"] {
+    z-index: 4;
+  }
+
+  .price-slider-values {
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
-    color: var(--color-text-muted);
     font-family: var(--font-serif);
+    font-size: 13px;
+    color: var(--color-gold-light);
+    padding: 8px 4px 0;
   }
 
   .sidebar-clear {
     margin-top: 6px;
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
     color: var(--color-text-muted);
     text-decoration: underline;
     text-underline-offset: 3px;
     align-self: center;
+    padding: 6px 12px;
     transition: color var(--transition-fast);
   }
   .sidebar-clear:hover {
     color: var(--color-gold-light);
   }
 
-  /* ── Mobile: drawer ────────────────────────────────────── */
+  /* ── Mobile: drawer con backdrop ───────────────────────── */
   @media (max-width: 920px) {
+    .sidebar-backdrop {
+      display: block;
+    }
+    body[data-sidebar-open="true"] .sidebar-backdrop {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     .sidebar {
       position: fixed;
       top: 0;
       left: 0;
       bottom: 0;
-      width: min(320px, 85vw);
+      width: min(340px, 88vw);
       z-index: 90;
       transform: translateX(-100%);
       transition: transform var(--transition-default);
@@ -361,8 +529,9 @@ const { groups, activeCatalog } = Astro.props;
       transform: translateX(0);
       box-shadow: 4px 0 30px rgba(0, 0, 0, 0.6);
     }
-    .sidebar-close-mobile {
-      display: inline-flex;
+
+    .sidebar-mobile-header {
+      display: flex;
     }
   }
 </style>

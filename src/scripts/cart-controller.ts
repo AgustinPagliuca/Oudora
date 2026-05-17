@@ -23,6 +23,35 @@ function setDrawerOpen(open: boolean): void {
   if (drawer === null) return;
   drawer.setAttribute("aria-hidden", open ? "false" : "true");
   document.body.style.overflow = open ? "hidden" : "";
+  resetClearConfirmation();
+}
+
+const CLEAR_CONFIRM_LABEL = "Confirmar vaciado";
+const CLEAR_DEFAULT_LABEL = "Vaciar carrito";
+const CLEAR_CONFIRM_TIMEOUT_MS = 4000;
+let clearConfirmTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+function enterClearConfirmation(button: HTMLButtonElement): void {
+  button.dataset.confirming = "true";
+  const label = button.querySelector<HTMLElement>("[data-cart-clear-label]");
+  if (label !== null) label.textContent = CLEAR_CONFIRM_LABEL;
+  if (clearConfirmTimeoutId !== null) clearTimeout(clearConfirmTimeoutId);
+  clearConfirmTimeoutId = setTimeout(() => {
+    resetClearConfirmation();
+  }, CLEAR_CONFIRM_TIMEOUT_MS);
+}
+
+function resetClearConfirmation(): void {
+  if (clearConfirmTimeoutId !== null) {
+    clearTimeout(clearConfirmTimeoutId);
+    clearConfirmTimeoutId = null;
+  }
+  const button = document.querySelector<HTMLButtonElement>(
+    "[data-cart-clear]",
+  );
+  if (button !== null) button.dataset.confirming = "false";
+  const label = document.querySelector<HTMLElement>("[data-cart-clear-label]");
+  if (label !== null) label.textContent = CLEAR_DEFAULT_LABEL;
 }
 
 function updateCartCount(snapshot: CartSnapshot): void {
@@ -156,13 +185,21 @@ function setupDrawerControls(store: CartStore): void {
     ?.addEventListener("click", () => setDrawerOpen(false));
 
   document
+    .querySelector<HTMLButtonElement>("[data-cart-continue]")
+    ?.addEventListener("click", () => setDrawerOpen(false));
+
+  document
     .querySelector<HTMLButtonElement>("[data-cart-clear]")
-    ?.addEventListener("click", () => {
-      if (typeof window !== "undefined") {
-        const confirmed = window.confirm("¿Vaciar el carrito completo?");
-        if (!confirmed) return;
+    ?.addEventListener("click", (event) => {
+      const button = event.currentTarget;
+      if (!(button instanceof HTMLButtonElement)) return;
+      const isConfirming = button.dataset.confirming === "true";
+      if (isConfirming) {
+        store.clear();
+        resetClearConfirmation();
+        return;
       }
-      store.clear();
+      enterClearConfirmation(button);
     });
 
   document.addEventListener("keydown", (event) => {

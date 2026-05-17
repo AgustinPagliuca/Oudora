@@ -2,6 +2,7 @@
 import { NAV_LINKS, SITE_METADATA } from "@/constants/ui";
 
 const currentPath = Astro.url.pathname;
+const isCatalogPage = currentPath === "/catalogo";
 
 function isActive(href: string): boolean {
   if (href === "/") return currentPath === "/";
@@ -31,26 +32,33 @@ function isActive(href: string): boolean {
   </ul>
 
   <div class="nav-icons">
+    {isCatalogPage && (
+      <button
+        type="button"
+        class="nav-filter-toggle"
+        aria-label="Abrir filtros"
+        data-sidebar-toggle
+      >
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <line x1="4" y1="7" x2="20" y2="7" />
+          <line x1="7" y1="12" x2="17" y2="12" />
+          <line x1="10" y1="17" x2="14" y2="17" />
+        </svg>
+      </button>
+    )}
     <button
       type="button"
-      class="nav-filter-toggle"
-      aria-label="Abrir filtros"
-      data-sidebar-toggle
+      class="nav-icon-btn"
+      aria-label="Buscar fragancia"
+      data-search-trigger
     >
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-        <line x1="4" y1="7" x2="20" y2="7" />
-        <line x1="7" y1="12" x2="17" y2="12" />
-        <line x1="10" y1="17" x2="14" y2="17" />
-      </svg>
-    </button>
-    <button type="button" aria-label="Buscar" data-action="search">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5">
         <circle cx="11" cy="11" r="7" />
         <line x1="16.5" y1="16.5" x2="21" y2="21" stroke-linecap="round" />
       </svg>
     </button>
-    <button type="button" aria-label="Ver carrito" data-action="cart" data-cart-button>
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5">
+    <button type="button" class="nav-icon-btn" aria-label="Ver carrito" data-cart-button>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M6 7h12l-1.5 11a2 2 0 0 1-2 1.7H9.5a2 2 0 0 1-2-1.7L6 7z" stroke-linejoin="round" />
         <path d="M9 7V5a3 3 0 0 1 6 0v2" stroke-linecap="round" />
       </svg>
@@ -76,7 +84,7 @@ function isActive(href: string): boolean {
 
   .nav-logo {
     font-family: var(--font-serif);
-    font-size: 22px;
+    font-size: 24px;
     color: var(--color-gold-light);
     letter-spacing: 6px;
     text-transform: uppercase;
@@ -92,7 +100,7 @@ function isActive(href: string): boolean {
     display: flex;
     gap: clamp(14px, 2.5vw, 28px);
     list-style: none;
-    font-size: 12px;
+    font-size: 13px;
     letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--color-text-muted);
@@ -109,19 +117,22 @@ function isActive(href: string): boolean {
     display: flex;
     gap: 8px;
     color: var(--color-gold-light);
+    align-items: center;
   }
-  .nav-icons button {
+  .nav-icon-btn,
+  .nav-filter-toggle {
     position: relative;
     padding: 8px;
     border-radius: var(--radius-circle);
     transition: background var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gold-light);
   }
-  .nav-icons button:hover {
+  .nav-icon-btn:hover,
+  .nav-filter-toggle:hover {
     background: rgba(201, 168, 76, 0.1);
-  }
-
-  .nav-filter-toggle {
-    display: none;
   }
 
   .nav-cart-count {
@@ -130,15 +141,15 @@ function isActive(href: string): boolean {
     right: 2px;
     background: var(--color-gold);
     color: var(--color-bg);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 500;
-    min-width: 16px;
-    height: 16px;
-    border-radius: 8px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 4px;
+    padding: 0 5px;
   }
   .nav-cart-count[hidden] {
     display: none;
@@ -147,11 +158,6 @@ function isActive(href: string): boolean {
   @media (max-width: 720px) {
     .nav-menu {
       display: none;
-    }
-  }
-  @media (max-width: 920px) {
-    .nav-filter-toggle {
-      display: inline-flex;
     }
   }
 </style>

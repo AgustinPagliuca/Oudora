@@ -3,7 +3,6 @@ import type { GetStaticPaths } from "astro";
 import Layout from "@/layouts/Layout.astro";
 import Nav from "@/components/Nav.astro";
 import Footer from "@/components/Footer.astro";
-import CartDrawer from "@/components/CartDrawer.astro";
 import Breadcrumbs from "@/components/Breadcrumbs.astro";
 import PerfumeBottle from "@/components/PerfumeBottle.astro";
 import Ribbon from "@/components/Ribbon.astro";
@@ -141,22 +140,8 @@ const breadcrumbsTrail = [
   )}
 
   <Footer />
-  <CartDrawer />
 </Layout>
 
-<script>
-  import { initCartController } from "@/scripts/cart-controller";
-
-  function boot(): void {
-    initCartController();
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot, { once: true });
-  } else {
-    boot();
-  }
-</script>
 
 <style>
   .product-detail {
