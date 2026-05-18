@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Catálogo de perfumería árabe",
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "scripts": {
     "dev": "astro dev",
