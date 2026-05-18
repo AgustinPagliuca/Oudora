@@ -85,15 +85,17 @@ const sizeClass = `bottle-${size}`;
 <style>
   .bottle {
     width: auto;
+    max-width: 100%;
+    max-height: 100%;
     filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7));
   }
   .bottle-sm {
-    height: 100px;
+    height: clamp(80px, 18vw, 110px);
   }
   .bottle-md {
-    height: 180px;
+    height: clamp(140px, 90%, 200px);
   }
   .bottle-lg {
-    height: 280px;
+    height: clamp(220px, 50vw, 320px);
   }
 </style>

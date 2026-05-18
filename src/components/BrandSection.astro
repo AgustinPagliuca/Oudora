@@ -69,10 +69,14 @@ const { brand, products } = Astro.props;
 
   .product-grid {
     display: grid;
-    grid-template-columns: repeat(
-      auto-fill,
-      minmax(var(--grid-card-min), 1fr)
-    );
-    gap: 4px;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 230px));
+    gap: 6px;
+    justify-content: start;
+  }
+
+  @media (max-width: 480px) {
+    .product-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
   }
 </style>

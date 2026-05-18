@@ -453,7 +453,7 @@ function setupClearButton(
 
 function setupSidebarMobile(): void {
   const sidebar = document.querySelector<HTMLElement>("[data-sidebar]");
-  const openBtn = document.querySelector<HTMLButtonElement>(
+  const toggleBtn = document.querySelector<HTMLButtonElement>(
     "[data-sidebar-toggle]",
   );
   const closeBtn = document.querySelector<HTMLButtonElement>(
@@ -464,30 +464,41 @@ function setupSidebarMobile(): void {
   );
   if (sidebar === null) return;
 
+  const isOpen = (): boolean => sidebar.dataset.open === "true";
+
   const open = (): void => {
     sidebar.dataset.open = "true";
     document.body.setAttribute(SIDEBAR_OPEN_BODY_ATTR, "true");
     document.body.style.overflow = "hidden";
+    toggleBtn?.setAttribute("aria-expanded", "true");
+    toggleBtn?.setAttribute("aria-label", "Cerrar filtros");
   };
   const close = (): void => {
     sidebar.dataset.open = "false";
     document.body.removeAttribute(SIDEBAR_OPEN_BODY_ATTR);
     document.body.style.overflow = "";
+    toggleBtn?.setAttribute("aria-expanded", "false");
+    toggleBtn?.setAttribute("aria-label", "Abrir filtros");
   };
 
-  openBtn?.addEventListener("click", open);
+  toggleBtn?.addEventListener("click", () => {
+    if (isOpen()) {
+      close();
+    } else {
+      open();
+    }
+  });
   closeBtn?.addEventListener("click", close);
   backdrop?.addEventListener("click", close);
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && sidebar.dataset.open === "true") {
+    if (event.key === "Escape" && isOpen()) {
       close();
     }
   });
 
-  // Auto-close on desktop resize: si el viewport supera el breakpoint
-  // mientras el drawer está abierto, lo cerramos para no dejar estado
-  // colgado.
+  // Auto-close si pasamos de mobile a desktop: el sidebar pasa a ser
+  // permanente y no debería quedar el estado abierto colgado.
   const desktopQuery = window.matchMedia("(min-width: 921px)");
   const handleViewportChange = (event: MediaQueryListEvent | MediaQueryList): void => {
     if (event.matches) close();

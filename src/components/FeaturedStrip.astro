@@ -74,7 +74,14 @@ const visibleProducts = products.slice(0, 8);
 
   .featured-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    gap: 4px;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 230px));
+    gap: 6px;
+    justify-content: start;
+  }
+
+  @media (max-width: 480px) {
+    .featured-grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
   }
 </style>
