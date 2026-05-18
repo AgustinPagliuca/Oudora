@@ -61,8 +61,8 @@ export const SITE_METADATA = {
 export const CONTACT = {
   whatsappE164: "5491100000000",
   whatsappDisplay: "+54 9 11 0000-0000",
-  instagram: "@oudora",
-  instagramUrl: "https://instagram.com/oudora",
+  instagram: "@oudora.perfumes",
+  instagramUrl: "https://www.instagram.com/oudora.perfumes/",
 } as const;
 
 /**
