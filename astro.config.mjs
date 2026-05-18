@@ -16,6 +16,13 @@ export default defineConfig({
   build: {
     inlineStylesheets: "auto",
   },
+  // Astro 5 activó protección CSRF por defecto que en algunos setups con
+  // Vercel rechaza POSTs same-origin legítimos. La seguridad real del flujo
+  // de auth la maneja Supabase (cookies HttpOnly + SameSite=Lax + tokens de
+  // sesión rotativos) y RLS a nivel base de datos.
+  security: {
+    checkOrigin: false,
+  },
   vite: {
     resolve: {
       alias: {
