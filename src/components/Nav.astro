@@ -175,6 +175,17 @@ function isActive(href: string): boolean {
     display: none;
   }
 
+  /* El botón de filtros solo tiene sentido en mobile, donde el sidebar
+     es un drawer. En desktop el sidebar es permanente. */
+  .nav-filter-toggle {
+    display: none;
+  }
+  @media (max-width: 920px) {
+    .nav-filter-toggle {
+      display: inline-flex;
+    }
+  }
+
   @media (max-width: 720px) {
     .nav-menu {
       display: none;
