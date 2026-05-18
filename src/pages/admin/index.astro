@@ -1,0 +1,64 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+
+const user = Astro.locals.user;
+---
+
+<AdminLayout title="Panel">
+  <div class="dashboard">
+    <header class="dashboard-header">
+      <h1>Bienvenido</h1>
+      <p class="dashboard-greeting">
+        Conectado como <strong>{user?.email}</strong>
+      </p>
+    </header>
+
+    <section class="panel placeholder">
+      <h2>Próximamente</h2>
+      <ul class="placeholder-list">
+        <li>Listado y edición de productos</li>
+        <li>Gestión de marcas</li>
+        <li>Subida de imágenes</li>
+        <li>Publicar cambios a producción</li>
+      </ul>
+    </section>
+  </div>
+</AdminLayout>
+
+<style>
+  .dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .dashboard-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dashboard-greeting {
+    color: var(--admin-text-muted);
+    font-size: 14px;
+  }
+
+  .placeholder {
+    padding: 24px 28px;
+  }
+
+  .placeholder h2 {
+    margin-bottom: 12px;
+  }
+
+  .placeholder-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--admin-text-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+</style>

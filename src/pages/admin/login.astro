@@ -1,0 +1,89 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+
+const errorParam = Astro.url.searchParams.get("error");
+const errorMessage =
+  errorParam !== null && errorParam.length > 0
+    ? decodeURIComponent(errorParam)
+    : null;
+---
+
+<AdminLayout title="Iniciar sesión" bare>
+  <div class="login-card panel">
+    <div class="login-brand">
+      <span class="login-mark">OUDORA</span>
+      <span class="login-sub">Panel de administración</span>
+    </div>
+
+    {errorMessage !== null && <div class="alert alert-error">{errorMessage}</div>}
+
+    <form method="POST" action="/api/auth/login" class="login-form">
+      <div class="field">
+        <label class="field-label" for="email">Email</label>
+        <input
+          id="email"
+          class="field-input"
+          type="email"
+          name="email"
+          required
+          autocomplete="email"
+          autofocus
+        />
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="password">Contraseña</label>
+        <input
+          id="password"
+          class="field-input"
+          type="password"
+          name="password"
+          required
+          autocomplete="current-password"
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">
+        Iniciar sesión
+      </button>
+    </form>
+  </div>
+</AdminLayout>
+
+<style>
+  .login-card {
+    padding: 36px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .login-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .login-mark {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--admin-text);
+  }
+
+  .login-sub {
+    font-size: 14px;
+    color: var(--admin-text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+</style>

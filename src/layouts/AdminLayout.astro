@@ -1,0 +1,324 @@
+---
+interface Props {
+  title: string;
+  /** Oculta el chrome del admin (header, sidebar). Útil en login. */
+  bare?: boolean;
+}
+
+const { title, bare = false } = Astro.props;
+const pageTitle = `${title} · OUDORA Admin`;
+const userEmail = Astro.locals.user?.email;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>{pageTitle}</title>
+  </head>
+
+  <body class={bare ? "is-bare" : ""}>
+    {
+      !bare && (
+        <header class="admin-topbar">
+          <div class="admin-topbar-brand">
+            <span class="admin-topbar-mark">OUDORA</span>
+            <span class="admin-topbar-divider" aria-hidden="true">/</span>
+            <span class="admin-topbar-section">Admin</span>
+          </div>
+
+          <div class="admin-topbar-user">
+            <span class="admin-topbar-email">{userEmail}</span>
+            <form method="POST" action="/api/auth/logout">
+              <button type="submit" class="btn btn-ghost">
+                Cerrar sesión
+              </button>
+            </form>
+          </div>
+        </header>
+      )
+    }
+
+    <main class={bare ? "admin-main-bare" : "admin-main"}>
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    /* Paleta neutra del admin: NO usar los tokens del sitio público */
+    --admin-bg: #f5f6f8;
+    --admin-bg-panel: #ffffff;
+    --admin-bg-input: #ffffff;
+    --admin-border: #e4e6eb;
+    --admin-border-strong: #cdd2d8;
+    --admin-text: #1a1d21;
+    --admin-text-muted: #5b6470;
+    --admin-text-faint: #8a929c;
+    --admin-primary: #1f2937;
+    --admin-primary-hover: #0f172a;
+    --admin-accent: #2563eb;
+    --admin-accent-hover: #1d4ed8;
+    --admin-danger: #dc2626;
+    --admin-danger-hover: #b91c1c;
+    --admin-success: #059669;
+    --admin-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --admin-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --admin-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1);
+    --admin-radius-sm: 6px;
+    --admin-radius-md: 10px;
+    --admin-radius-lg: 14px;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: var(--admin-bg);
+    color: var(--admin-text);
+    font-family:
+      "Inter",
+      -apple-system,
+      BlinkMacSystemFont,
+      system-ui,
+      "Segoe UI",
+      sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+  }
+
+  /* Modo bare: para login y otras pantallas sin shell */
+  body.is-bare {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  /* ── Topbar ─────────────────────────────────────────────── */
+  .admin-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    padding: 0 24px;
+    background: var(--admin-bg-panel);
+    border-bottom: 1px solid var(--admin-border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .admin-topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+  }
+
+  .admin-topbar-mark {
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--admin-text);
+  }
+
+  .admin-topbar-divider {
+    color: var(--admin-text-faint);
+  }
+
+  .admin-topbar-section {
+    color: var(--admin-text-muted);
+    font-weight: 500;
+  }
+
+  .admin-topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .admin-topbar-email {
+    color: var(--admin-text-muted);
+    font-size: 13px;
+  }
+
+  /* ── Main ──────────────────────────────────────────────── */
+  .admin-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  .admin-main-bare {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  /* ── Tipografía base ───────────────────────────────────── */
+  h1,
+  h2,
+  h3 {
+    margin: 0;
+    color: var(--admin-text);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  h1 {
+    font-size: 24px;
+  }
+  h2 {
+    font-size: 18px;
+  }
+  h3 {
+    font-size: 15px;
+  }
+  p {
+    margin: 0;
+  }
+  a {
+    color: var(--admin-accent);
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* ── Botones reutilizables ──────────────────────────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: var(--admin-radius-sm);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--admin-text);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background: var(--admin-primary);
+    color: #fff;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--admin-primary-hover);
+  }
+
+  .btn-accent {
+    background: var(--admin-accent);
+    color: #fff;
+  }
+  .btn-accent:hover:not(:disabled) {
+    background: var(--admin-accent-hover);
+  }
+
+  .btn-ghost {
+    color: var(--admin-text-muted);
+    border-color: var(--admin-border);
+    background: var(--admin-bg-panel);
+  }
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--admin-bg);
+    color: var(--admin-text);
+  }
+
+  .btn-danger {
+    background: var(--admin-danger);
+    color: #fff;
+  }
+  .btn-danger:hover:not(:disabled) {
+    background: var(--admin-danger-hover);
+  }
+
+  .btn-block {
+    width: 100%;
+  }
+
+  /* ── Inputs ──────────────────────────────────────────────── */
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--admin-text-muted);
+  }
+
+  .field-input {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--admin-bg-input);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+    color: var(--admin-text);
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.4;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .field-input:focus {
+    outline: none;
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+  .field-input::placeholder {
+    color: var(--admin-text-faint);
+  }
+
+  /* ── Card / panel ────────────────────────────────────────── */
+  .panel {
+    background: var(--admin-bg-panel);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg);
+    box-shadow: var(--admin-shadow-sm);
+  }
+
+  /* ── Alerts ──────────────────────────────────────────────── */
+  .alert {
+    padding: 10px 14px;
+    border-radius: var(--admin-radius-sm);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .alert-error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+</style>
