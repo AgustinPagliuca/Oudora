@@ -1,37 +1,61 @@
 ---
-import { CONTACT, SITE_METADATA } from "@/constants/ui";
+import { CONTACT, DEVELOPER_CREDIT, SITE_METADATA } from "@/constants/ui";
 
 const whatsappHref = `https://wa.me/${CONTACT.whatsappE164}`;
+const currentYear = new Date().getFullYear();
 ---
 
 <footer class="footer" id="contacto">
-  <div class="footer-tagline">
-    <em>{SITE_METADATA.tagline}</em>
+  <div class="footer-main">
+    <div class="footer-tagline">
+      <em>{SITE_METADATA.tagline}</em>
+    </div>
+    <div class="footer-meta">
+      {SITE_METADATA.name} · {SITE_METADATA.location}
+    </div>
+    <div class="footer-contact">
+      <a href={CONTACT.instagramUrl} target="_blank" rel="noopener noreferrer">
+        Instagram
+      </a>
+      <span aria-hidden="true">·</span>
+      <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
+        WhatsApp
+      </a>
+    </div>
   </div>
-  <div class="footer-meta">
-    {SITE_METADATA.name} · {SITE_METADATA.location}
-  </div>
-  <div class="footer-contact">
-    <a href={CONTACT.instagramUrl} target="_blank" rel="noopener noreferrer">
-      Instagram
-    </a>
-    <span aria-hidden="true">·</span>
-    <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
-      WhatsApp
-    </a>
+
+  <div class="footer-divider" aria-hidden="true"></div>
+
+  <div class="footer-credit">
+    <span>© {currentYear} {SITE_METADATA.name}</span>
+    <span class="footer-credit-sep" aria-hidden="true">·</span>
+    <span>
+      Sitio por <a
+        href={DEVELOPER_CREDIT.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="footer-credit-link"
+      >{DEVELOPER_CREDIT.label}</a>
+    </span>
   </div>
 </footer>
 
 <style>
   .footer {
-    text-align: center;
-    padding: 32px 20px 28px;
     background: var(--color-bg-deep);
     border-top: 0.5px solid rgba(201, 168, 76, 0.15);
     color: var(--color-text-muted);
+    padding: 32px 20px 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
     font-size: 12px;
     letter-spacing: 3px;
     text-transform: uppercase;
+  }
+
+  .footer-main {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -58,5 +82,41 @@ const whatsappHref = `https://wa.me/${CONTACT.whatsappE164}`;
   }
   .footer-contact a:hover {
     color: var(--color-gold-light);
+  }
+
+  .footer-divider {
+    width: min(280px, 70%);
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(201, 168, 76, 0.18),
+      transparent
+    );
+  }
+
+  .footer-credit {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--color-text-faint);
+    text-transform: none;
+  }
+  .footer-credit-sep {
+    opacity: 0.5;
+  }
+  .footer-credit-link {
+    color: var(--color-gold-light);
+    transition: color var(--transition-fast);
+    border-bottom: 0.5px dashed rgba(201, 168, 76, 0.4);
+    padding-bottom: 1px;
+  }
+  .footer-credit-link:hover {
+    color: var(--color-gold);
+    border-bottom-color: var(--color-gold);
   }
 </style>

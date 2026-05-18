@@ -61,8 +61,17 @@ export const SITE_METADATA = {
 export const CONTACT = {
   whatsappE164: "5491100000000",
   whatsappDisplay: "+54 9 11 0000-0000",
-  instagram: "@oudora.perfumes",
-  instagramUrl: "https://www.instagram.com/oudora.perfumes/",
+  instagram: "@oudora",
+  instagramUrl: "https://instagram.com/oudora",
+} as const;
+
+/**
+ * Crédito del estudio que desarrolló el sitio. Se muestra discretamente
+ * al pie. Si el cliente quiere quitarlo, se centraliza acá.
+ */
+export const DEVELOPER_CREDIT = {
+  label: "pagliuca.dev",
+  url: "https://www.instagram.com/pagliuca.dev/",
 } as const;
 
 export const NAV_LINKS = [
