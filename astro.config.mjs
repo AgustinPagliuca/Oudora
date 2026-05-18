@@ -1,5 +1,5 @@
 import { defineConfig } from "astro/config";
-import vercel from "@astrojs/vercel/serverless";
+import vercel from "@astrojs/vercel";
 import { fileURLToPath } from "node:url";
 
 const resolvePath = (relativePath) =>
@@ -7,10 +7,10 @@ const resolvePath = (relativePath) =>
 
 export default defineConfig({
   site: "https://oudora.com.ar",
-  // Hybrid: páginas estáticas por defecto, dinámicas con `export const prerender = false`.
-  // Solo /admin/* y /api/* se renderizan en el servidor; el resto sigue siendo
-  // HTML estático servido desde el CDN de Vercel sin overhead.
-  output: "hybrid",
+  // En Astro 5 el modo "hybrid" se fusionó con "static": las páginas son
+  // estáticas por defecto y se vuelven dinámicas con `export const prerender = false`.
+  // Solo /admin/* y /api/* tienen ese flag; el resto sigue siendo estático.
+  output: "static",
   adapter: vercel(),
   compressHTML: true,
   build: {
