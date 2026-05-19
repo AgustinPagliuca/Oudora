@@ -1,0 +1,65 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import ProductForm from "@/components/admin/ProductForm.astro";
+
+const supabase = Astro.locals.supabase;
+const { id } = Astro.params;
+
+if (id === undefined) {
+  return Astro.redirect("/admin/productos");
+}
+
+const [{ data: productRaw }, { data: brandsData }] = await Promise.all([
+  supabase
+    .from("products")
+    .select(
+      "id, slug, brand_id, catalog, name, gender, concentration, volume_ml, price_ars, stock, notes, featured, created_at",
+    )
+    .eq("id", id)
+    .maybeSingle(),
+  supabase.from("brands").select("id, name").order("name"),
+]);
+
+if (productRaw === null) {
+  return Astro.redirect("/admin/productos");
+}
+
+const product = {
+  id: productRaw.id,
+  slug: productRaw.slug,
+  brandId: productRaw.brand_id,
+  catalog: productRaw.catalog,
+  name: productRaw.name,
+  gender: productRaw.gender,
+  concentration: productRaw.concentration,
+  volumeMl: productRaw.volume_ml,
+  priceArs: productRaw.price_ars,
+  stock: productRaw.stock,
+  notes: Array.isArray(productRaw.notes) ? productRaw.notes : [],
+  featured: productRaw.featured === true,
+  createdAt: productRaw.created_at,
+};
+
+const brands = brandsData ?? [];
+
+const errorParam = Astro.url.searchParams.get("error");
+const errorMessage =
+  errorParam === "slug_taken"
+    ? "Ese slug ya está en uso por otro producto."
+    : errorParam === "validation"
+      ? "Revisá los campos del formulario."
+      : errorParam === "server"
+        ? "Hubo un error al guardar. Reintentá en un momento."
+        : null;
+---
+
+<AdminLayout title={product.name}>
+  <ProductForm brands={brands} product={product} errorMessage={errorMessage} />
+
+  <script>
+    import { initProductFormController } from "@/scripts/admin/product-form-controller";
+    initProductFormController();
+  </script>
+</AdminLayout>

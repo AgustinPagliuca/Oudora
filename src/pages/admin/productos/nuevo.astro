@@ -1,0 +1,34 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import ProductForm from "@/components/admin/ProductForm.astro";
+
+const supabase = Astro.locals.supabase;
+
+const { data: brandsData } = await supabase
+  .from("brands")
+  .select("id, name")
+  .order("name");
+
+const brands = brandsData ?? [];
+
+const errorParam = Astro.url.searchParams.get("error");
+const errorMessage =
+  errorParam === "slug_taken"
+    ? "Ese slug ya está en uso por otro producto."
+    : errorParam === "validation"
+      ? "Revisá los campos del formulario."
+      : errorParam === "server"
+        ? "Hubo un error al guardar. Reintentá en un momento."
+        : null;
+---
+
+<AdminLayout title="Nuevo producto">
+  <ProductForm brands={brands} errorMessage={errorMessage} />
+
+  <script>
+    import { initProductFormController } from "@/scripts/admin/product-form-controller";
+    initProductFormController();
+  </script>
+</AdminLayout>

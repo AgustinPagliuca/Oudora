@@ -3,24 +3,69 @@ export const prerender = false;
 
 import AdminLayout from "@/layouts/AdminLayout.astro";
 
+const supabase = Astro.locals.supabase;
 const user = Astro.locals.user;
+
+const [{ count: productsCount }, { count: brandsCount }, { count: featuredCount }, { count: outOfStockCount }] =
+  await Promise.all([
+    supabase.from("products").select("*", { count: "exact", head: true }),
+    supabase.from("brands").select("*", { count: "exact", head: true }),
+    supabase
+      .from("products")
+      .select("*", { count: "exact", head: true })
+      .eq("featured", true),
+    supabase
+      .from("products")
+      .select("*", { count: "exact", head: true })
+      .eq("stock", 0),
+  ]);
 ---
 
 <AdminLayout title="Panel">
   <div class="dashboard">
     <header class="dashboard-header">
-      <h1>Bienvenido</h1>
+      <h1>Panel</h1>
       <p class="dashboard-greeting">
         Conectado como <strong>{user?.email}</strong>
       </p>
     </header>
 
-    <section class="panel placeholder">
+    <section class="stats">
+      <div class="panel stat-card">
+        <p class="stat-label">Productos</p>
+        <p class="stat-value">{productsCount ?? 0}</p>
+      </div>
+      <div class="panel stat-card">
+        <p class="stat-label">Marcas</p>
+        <p class="stat-value">{brandsCount ?? 0}</p>
+      </div>
+      <div class="panel stat-card">
+        <p class="stat-label">Destacados</p>
+        <p class="stat-value">{featuredCount ?? 0}</p>
+      </div>
+      <div class="panel stat-card stat-card-alert">
+        <p class="stat-label">Sin stock</p>
+        <p class="stat-value">{outOfStockCount ?? 0}</p>
+      </div>
+    </section>
+
+    <section class="quick-links">
+      <a href="/admin/productos" class="panel quick-link">
+        <div>
+          <p class="quick-link-title">Gestionar productos</p>
+          <p class="quick-link-description">
+            Crear, editar y borrar fragancias del catálogo
+          </p>
+        </div>
+        <span class="quick-link-arrow" aria-hidden="true">→</span>
+      </a>
+    </section>
+
+    <section class="panel coming-soon">
       <h2>Próximamente</h2>
-      <ul class="placeholder-list">
-        <li>Listado y edición de productos</li>
+      <ul>
+        <li>Subida de imágenes de productos</li>
         <li>Gestión de marcas</li>
-        <li>Subida de imágenes</li>
         <li>Publicar cambios a producción</li>
       </ul>
     </section>
@@ -31,34 +76,87 @@ const user = Astro.locals.user;
   .dashboard {
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 24px;
   }
 
-  .dashboard-header {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  .dashboard-header h1 {
+    margin-bottom: 4px;
   }
-
   .dashboard-greeting {
     color: var(--admin-text-muted);
     font-size: 14px;
   }
 
-  .placeholder {
-    padding: 24px 28px;
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 720px) {
+    .stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
-  .placeholder h2 {
-    margin-bottom: 12px;
+  .stat-card {
+    padding: 18px 20px;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--admin-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--admin-text);
+  }
+  .stat-card-alert .stat-value {
+    color: var(--admin-danger);
   }
 
-  .placeholder-list {
+  .quick-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 22px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.15s;
+  }
+  .quick-link:hover {
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    text-decoration: none;
+  }
+  .quick-link-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 2px;
+  }
+  .quick-link-description {
+    font-size: 14px;
+    color: var(--admin-text-muted);
+  }
+  .quick-link-arrow {
+    font-size: 20px;
+    color: var(--admin-text-muted);
+  }
+
+  .coming-soon {
+    padding: 20px 24px;
+  }
+  .coming-soon h2 {
+    margin-bottom: 10px;
+  }
+  .coming-soon ul {
     margin: 0;
     padding-left: 18px;
     color: var(--admin-text-muted);
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
   }
 </style>
