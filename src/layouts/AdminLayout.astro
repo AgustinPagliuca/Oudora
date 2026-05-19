@@ -30,11 +30,11 @@ const userEmail = Astro.locals.user?.email;
     {
       !bare && (
         <header class="admin-topbar">
-          <div class="admin-topbar-brand">
+          <a href="/admin" class="admin-topbar-brand" aria-label="Volver al panel">
             <span class="admin-topbar-mark">OUDORA</span>
             <span class="admin-topbar-divider" aria-hidden="true">/</span>
             <span class="admin-topbar-section">Admin</span>
-          </div>
+          </a>
 
           <div class="admin-topbar-user">
             <span class="admin-topbar-email">{userEmail}</span>
@@ -135,7 +135,16 @@ const userEmail = Astro.locals.user?.email;
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 13px;
+    font-size: 14px;
+    text-decoration: none;
+    padding: 4px 8px;
+    margin-left: -8px;
+    border-radius: var(--admin-radius-sm);
+    transition: background 0.15s ease;
+  }
+  .admin-topbar-brand:hover {
+    background: var(--admin-bg);
+    text-decoration: none;
   }
 
   .admin-topbar-mark {

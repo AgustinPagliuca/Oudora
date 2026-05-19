@@ -4,16 +4,14 @@ import { createSupabaseServerClient } from "@/lib/supabase";
 /**
  * Middleware global.
  *
- * En modo `static`, Astro corre el middleware también para páginas estáticas
- * durante el build (para generarlas) y al servirlas (Vercel las sirve directo
- * del CDN, no pasan por middleware en runtime). Para no leer headers ni cookies
- * cuando no hay request real, evitamos crear el cliente Supabase salvo en
- * rutas que sí lo necesitan.
- *
- * Rutas que pasan por acá:
+ * Solo procesa rutas que necesiten cliente de Supabase y/o gating de auth:
  *  - /admin/*       → páginas del panel (auth requerida, salvo /admin/login)
  *  - /api/admin/*   → endpoints del panel (auth requerida, devuelven 401)
  *  - /api/auth/*    → login y logout (no requieren sesión previa)
+ *
+ * Para esas rutas también seteamos `Cache-Control: no-store` en la response,
+ * para evitar que el navegador (o Vercel) sirva HTML viejo cuando el usuario
+ * recién modificó datos en Supabase.
  */
 export const onRequest = defineMiddleware(async (context, next) => {
   const pathname = context.url.pathname;
@@ -36,20 +34,27 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   const isLoginPage = pathname === "/admin/login";
 
-  // Usuario ya logueado entrando al login: redirigir al dashboard
   if (isLoginPage && user !== null) {
     return context.redirect("/admin");
   }
 
-  // Página /admin sin sesión: redirigir al login (no aplica a /admin/login)
   if (isAdminPage && !isLoginPage && user === null) {
     return context.redirect("/admin/login");
   }
 
-  // Endpoint API admin sin sesión: 401 (no redirect, los endpoints no muestran páginas)
   if (isAdminApi && user === null) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  return next();
+  const response = await next();
+
+  // Forzar contenido fresco en todas las rutas del admin para que el cliente
+  // siempre vea el estado real de Supabase (sin que el navegador cachee el
+  // HTML SSR de un request anterior).
+  if (isAdminPage || isAdminApi) {
+    response.headers.set("Cache-Control", "no-store, must-revalidate");
+    response.headers.set("Pragma", "no-cache");
+  }
+
+  return response;
 });
