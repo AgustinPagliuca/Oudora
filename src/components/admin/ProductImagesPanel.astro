@@ -68,35 +68,31 @@ const sortedImages = [...images].sort((a, b) => a.position - b.position);
     }
   </div>
 
-  {
-    !isFull && (
-      <div class="upload-zone" data-upload-zone>
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          multiple
-          data-upload-input
-          hidden
-        />
-        <div class="upload-zone-content">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="17 8 12 3 7 8" />
-            <line x1="12" y1="3" x2="12" y2="15" />
-          </svg>
-          <p>
-            <strong>Arrastrá imágenes acá</strong> o
-            <button type="button" class="upload-zone-btn" data-upload-trigger>
-              elegí archivos
-            </button>
-          </p>
-          <p class="upload-zone-hint">
-            JPG, PNG o WebP · máx. 5MB cada una · {remainingSlots} restantes
-          </p>
-        </div>
-      </div>
-    )
-  }
+  <div class="upload-zone" data-upload-zone data-hidden={isFull ? "true" : "false"}>
+    <input
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+      multiple
+      data-upload-input
+      hidden
+    />
+    <div class="upload-zone-content">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="17 8 12 3 7 8" />
+        <line x1="12" y1="3" x2="12" y2="15" />
+      </svg>
+      <p>
+        <strong>Arrastrá imágenes acá</strong> o
+        <button type="button" class="upload-zone-btn" data-upload-trigger>
+          elegí archivos
+        </button>
+      </p>
+      <p class="upload-zone-hint" data-upload-hint>
+        JPG, PNG o WebP · máx. 5MB cada una · <span data-remaining-slots>{remainingSlots}</span> restantes
+      </p>
+    </div>
+  </div>
 
   <div class="images-feedback" data-images-feedback hidden></div>
 </section>
@@ -178,10 +174,27 @@ const sortedImages = [...images].sort((a, b) => a.position - b.position);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s;
+    transition: all 0.15s;
   }
   [data-images-panel] .image-delete:hover {
     background: var(--admin-danger);
+  }
+  [data-images-panel] .image-delete[data-confirming="true"] {
+    background: var(--admin-danger);
+    width: auto;
+    height: 28px;
+    padding: 0 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-radius: 14px;
+    animation: shake 0.4s ease;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
   }
 
   /* Upload zone */
@@ -192,6 +205,9 @@ const sortedImages = [...images].sort((a, b) => a.position - b.position);
     text-align: center;
     cursor: pointer;
     transition: all 0.15s ease;
+  }
+  [data-images-panel] .upload-zone[data-hidden="true"] {
+    display: none;
   }
   [data-images-panel] .upload-zone:hover,
   [data-images-panel] .upload-zone.is-drop-target {

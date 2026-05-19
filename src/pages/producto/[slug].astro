@@ -61,16 +61,47 @@ const breadcrumbsTrail = [
   <Breadcrumbs trail={breadcrumbsTrail} />
 
   <article class="product-detail">
-    <div class="product-detail-visual">
-      <Ribbon gender={product.gender} />
-      <PerfumeBottle
-        label={product.name.length <= 10 ? product.name : undefined}
-        caption={`${product.volumeMl} ML · ${product.concentration}`}
-        variant={variant}
-        size="lg"
-        ariaLabel={`${brand.name} ${product.name}`}
-      />
-      {stockLabel && <span class="product-detail-stock">{stockLabel}</span>}
+    <div class="product-detail-gallery">
+      <div class="product-detail-visual">
+        <Ribbon gender={product.gender} />
+        {
+          product.images !== undefined && product.images.length > 0 ? (
+            <img
+              src={product.images[0].url}
+              alt={`${brand.name} ${product.name}`}
+              class="product-detail-image-real"
+              data-main-image
+              loading="eager"
+            />
+          ) : (
+            <PerfumeBottle
+              label={product.name.length <= 10 ? product.name : undefined}
+              caption={`${product.volumeMl} ML · ${product.concentration}`}
+              variant={variant}
+              size="lg"
+              ariaLabel={`${brand.name} ${product.name}`}
+            />
+          )
+        }
+        {stockLabel && <span class="product-detail-stock">{stockLabel}</span>}
+      </div>
+
+      {
+        product.images !== undefined && product.images.length > 1 && (
+          <div class="product-detail-thumbs">
+            {product.images.map((img, i) => (
+              <button
+                type="button"
+                class={`product-detail-thumb${i === 0 ? " is-active" : ""}`}
+                data-thumb
+                data-url={img.url}
+                aria-label={`Ver imagen ${i + 1}`}>
+                <img src={img.url} alt="" loading="lazy" />
+              </button>
+            ))}
+          </div>
+        )
+      }
     </div>
 
     <div class="product-detail-info">
@@ -167,6 +198,12 @@ const breadcrumbsTrail = [
     align-items: center;
     justify-content: center;
     overflow: hidden;
+  }
+
+  .product-detail-image-real {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .product-detail-stock {
@@ -343,4 +380,62 @@ const breadcrumbsTrail = [
       grid-template-columns: 1fr 1fr;
     }
   }
+
+  /* Galería con thumbnails */
+  .product-detail-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .product-detail-thumbs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .product-detail-thumb {
+    aspect-ratio: 1 / 1;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    transition: border-color var(--transition-fast), opacity var(--transition-fast);
+    opacity: 0.6;
+  }
+  .product-detail-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .product-detail-thumb:hover {
+    opacity: 1;
+    border-color: rgba(201, 168, 76, 0.5);
+  }
+  .product-detail-thumb.is-active {
+    opacity: 1;
+    border-color: var(--color-gold);
+  }
 </style>
+
+<script>
+  // Click en thumbnail cambia la imagen principal
+  document.addEventListener("DOMContentLoaded", () => {
+    const mainImage = document.querySelector<HTMLImageElement>("[data-main-image]");
+    const thumbs = document.querySelectorAll<HTMLButtonElement>("[data-thumb]");
+    if (mainImage === null || thumbs.length === 0) return;
+
+    thumbs.forEach((thumb) => {
+      thumb.addEventListener("click", () => {
+        const url = thumb.dataset.url;
+        if (url === undefined) return;
+        mainImage.src = url;
+        thumbs.forEach((t) => t.classList.remove("is-active"));
+        thumb.classList.add("is-active");
+      });
+    });
+  });
+</script>

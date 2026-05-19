@@ -3,8 +3,8 @@
 // ════════════════════════════════════════════════════════════
 //
 //  Generado por: scripts/sync-catalog.mjs
-//  Fuente:       Supabase (tabla public.brands y public.products)
-//  Última sync:  2026-05-18T15:28:37.062Z
+//  Fuente:       Supabase (brands, products, product_images)
+//  Última sync:  2026-05-19T16:42:08.540Z
 //
 //  Para regenerar: pnpm run sync
 //
@@ -455,7 +455,7 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "masculino",
     "concentration": "EDP",
     "volumeMl": 100,
-    "priceArs": 34000,
+    "priceArs": 99999,
     "stock": 12,
     "notes": [
       "bergamota",
@@ -509,8 +509,8 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "unisex",
     "concentration": "EDP",
     "volumeMl": 100,
-    "priceArs": 38000,
-    "stock": 3,
+    "priceArs": 39000,
+    "stock": 2,
     "notes": [
       "canela",
       "vainilla",

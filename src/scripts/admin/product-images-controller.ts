@@ -168,7 +168,17 @@ export function initProductImagesController(): void {
 
     function maybeHideUploadZone(): void {
       if (uploadZone === null) return;
-      uploadZone.style.display = currentImageCount() >= maxImages ? "none" : "";
+      const count = currentImageCount();
+      const isFull = count >= maxImages;
+      uploadZone.dataset.hidden = isFull ? "true" : "false";
+
+      // Actualizar el contador de slots restantes
+      const remainingEl = uploadZone.querySelector<HTMLElement>(
+        "[data-remaining-slots]",
+      );
+      if (remainingEl !== null) {
+        remainingEl.textContent = String(Math.max(0, maxImages - count));
+      }
     }
 
     async function uploadFile(file: File): Promise<void> {
@@ -282,12 +292,29 @@ export function initProductImagesController(): void {
       const deleteBtn = card.querySelector<HTMLButtonElement>(
         "[data-image-delete]",
       );
+
+      let confirmTimer: number | undefined;
+
       deleteBtn?.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
-        if (window.confirm("¿Borrar esta imagen?")) {
+
+        if (deleteBtn.dataset.confirming === "true") {
+          // Segundo click: confirma
+          window.clearTimeout(confirmTimer);
           deleteImage(card);
+          return;
         }
+
+        // Primer click: pone el botón en modo "confirma"
+        deleteBtn.dataset.confirming = "true";
+        deleteBtn.textContent = "Borrar";
+        deleteBtn.setAttribute("title", "Volvé a clickear para confirmar");
+        confirmTimer = window.setTimeout(() => {
+          deleteBtn.dataset.confirming = "false";
+          deleteBtn.textContent = "×";
+          deleteBtn.setAttribute("title", "");
+        }, 3000);
       });
 
       card.addEventListener("dragstart", (event) => {
