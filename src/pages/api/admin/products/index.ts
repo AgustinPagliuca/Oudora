@@ -17,12 +17,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return redirectTo(`/admin/productos/nuevo?error=${parsed.reason}`);
   }
 
-  // La columna `id` de la tabla products es NOT NULL y no tiene default
-  // en la DB, así que la generamos acá. UUID v4 es compatible con
-  // columnas de tipo `uuid` y de tipo `text`.
-  // crypto.randomUUID() es global en Node 19+ y en cualquier runtime moderno.
+  const newId = crypto.randomUUID();
   const { error } = await locals.supabase.from("products").insert({
-    id: crypto.randomUUID(),
+    id: newId,
     ...parsed.data,
   });
 
@@ -34,5 +31,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return redirectTo("/admin/productos/nuevo?error=server");
   }
 
-  return redirectTo("/admin/productos?created=1");
+  // En lugar de mandar al listado, vamos al form de edición para que el
+  // cliente pueda subir las imágenes. Esto sigue el patrón de Shopify/Etsy:
+  // primero los datos textuales, después el contenido visual.
+  return redirectTo(`/admin/productos/${newId}?created=1`);
 };

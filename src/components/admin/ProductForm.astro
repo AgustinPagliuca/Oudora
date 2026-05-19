@@ -10,9 +10,17 @@
  * al escribir y apretar Enter o coma agrega un tag; click en la X borra.
  */
 
+import ProductImagesPanel from "@/components/admin/ProductImagesPanel.astro";
+
 interface BrandOption {
   id: string;
   name: string;
+}
+
+interface ImageRecord {
+  id: string;
+  url: string;
+  position: number;
 }
 
 interface ProductValues {
@@ -29,15 +37,22 @@ interface ProductValues {
   notes: string[];
   featured: boolean;
   createdAt?: string;
+  images?: ImageRecord[];
 }
 
 interface Props {
   brands: BrandOption[];
   product?: ProductValues;
   errorMessage?: string | null;
+  successMessage?: string | null;
 }
 
-const { brands, product, errorMessage = null } = Astro.props as Props;
+const {
+  brands,
+  product,
+  errorMessage = null,
+  successMessage = null,
+} = Astro.props as Props;
 
 const isEdit = product !== undefined;
 const formAction = isEdit
@@ -98,6 +113,13 @@ const currentBrand = brands.find((b) => b.id === values.brandId);
   </div>
 
   {errorMessage !== null && <div class="alert alert-error">{errorMessage}</div>}
+  {successMessage !== null && <div class="alert alert-success">{successMessage}</div>}
+
+  {
+    isEdit && (
+      <ProductImagesPanel productId={product.id} images={product.images ?? []} />
+    )
+  }
 
   <form
     id="product-form"
@@ -416,6 +438,11 @@ const currentBrand = brands.find((b) => b.id === values.brandId);
     background: #fef2f2;
     color: #991b1b;
     border: 1px solid #fecaca;
+  }
+  .alert-success {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
   }
 
   .product-form {

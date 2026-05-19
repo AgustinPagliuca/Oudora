@@ -19,6 +19,11 @@ export interface Brand {
   readonly catalog: Catalog;
 }
 
+export interface ProductImage {
+  readonly url: string;
+  readonly position: number;
+}
+
 export interface Product {
   readonly id: string;
   readonly slug: string;
@@ -33,6 +38,7 @@ export interface Product {
   readonly notes?: readonly string[];
   readonly description?: string;
   readonly imageUrl?: string;
+  readonly images?: readonly ProductImage[];
   readonly featured?: boolean;
 }
 

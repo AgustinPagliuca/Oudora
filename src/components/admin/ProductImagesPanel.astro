@@ -1,0 +1,251 @@
+---
+/**
+ * Panel de imágenes del producto. Se monta dentro del formulario de edición
+ * (no en el de creación, porque las imágenes necesitan un product_id previo).
+ *
+ * Las imágenes se renderizan en una grilla; solo se muestran los slots que
+ * tienen contenido, más una zona de upload si quedan slots libres.
+ *
+ * El JS controller (product-images-controller.ts) se encarga de:
+ *   - procesar las imágenes en el cliente (resize + WebP)
+ *   - subirlas inmediatamente al endpoint
+ *   - drag-and-drop para reordenar
+ *   - click en X para borrar
+ */
+
+import type { ProductImage } from "@/types/catalog";
+
+interface ImageRecord {
+  id: string;
+  url: string;
+  position: number;
+}
+
+interface Props {
+  productId: string;
+  images: ImageRecord[];
+  maxImages?: number;
+}
+
+const { productId, images, maxImages = 4 } = Astro.props;
+
+const remainingSlots = Math.max(0, maxImages - images.length);
+const isFull = images.length >= maxImages;
+const sortedImages = [...images].sort((a, b) => a.position - b.position);
+---
+
+<section
+  class="panel form-panel images-panel"
+  data-images-panel
+  data-product-id={productId}
+  data-max-images={maxImages}>
+  <div class="images-header">
+    <h2 class="panel-title">Imágenes</h2>
+    <p class="panel-description">
+      Hasta {maxImages} imágenes por producto. La primera es la portada.
+      Arrastrá para reordenar.
+    </p>
+  </div>
+
+  <div class="images-grid" data-images-list>
+    {
+      sortedImages.map((img, index) => (
+        <div
+          class="image-card"
+          data-image-id={img.id}
+          draggable="true">
+          <img src={img.url} alt="" loading="lazy" />
+          {index === 0 && <span class="image-badge">Portada</span>}
+          <button
+            type="button"
+            class="image-delete"
+            data-image-delete
+            aria-label="Borrar imagen">
+            ×
+          </button>
+        </div>
+      ))
+    }
+  </div>
+
+  {
+    !isFull && (
+      <div class="upload-zone" data-upload-zone>
+        <input
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          multiple
+          data-upload-input
+          hidden
+        />
+        <div class="upload-zone-content">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          <p>
+            <strong>Arrastrá imágenes acá</strong> o
+            <button type="button" class="upload-zone-btn" data-upload-trigger>
+              elegí archivos
+            </button>
+          </p>
+          <p class="upload-zone-hint">
+            JPG, PNG o WebP · máx. 5MB cada una · {remainingSlots} restantes
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  <div class="images-feedback" data-images-feedback hidden></div>
+</section>
+
+<style is:global>
+  [data-images-panel] {
+    padding: 20px 24px;
+  }
+
+  [data-images-panel] .images-header {
+    margin-bottom: 14px;
+  }
+
+  [data-images-panel] .images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  [data-images-panel] .images-grid:empty {
+    display: none;
+  }
+
+  [data-images-panel] .image-card {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: var(--admin-radius-md);
+    overflow: hidden;
+    background: var(--admin-bg);
+    border: 1px solid var(--admin-border);
+    cursor: grab;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  [data-images-panel] .image-card:active {
+    cursor: grabbing;
+  }
+  [data-images-panel] .image-card.is-dragging {
+    opacity: 0.4;
+    transform: scale(0.98);
+  }
+  [data-images-panel] .image-card.is-drop-target {
+    box-shadow: 0 0 0 3px var(--admin-accent);
+  }
+  [data-images-panel] .image-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    display: block;
+  }
+
+  [data-images-panel] .image-badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    pointer-events: none;
+  }
+
+  [data-images-panel] .image-delete {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  [data-images-panel] .image-delete:hover {
+    background: var(--admin-danger);
+  }
+
+  /* Upload zone */
+  [data-images-panel] .upload-zone {
+    border: 2px dashed var(--admin-border-strong);
+    border-radius: var(--admin-radius-md);
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  [data-images-panel] .upload-zone:hover,
+  [data-images-panel] .upload-zone.is-drop-target {
+    border-color: var(--admin-accent);
+    background: rgba(37, 99, 235, 0.04);
+  }
+  [data-images-panel] .upload-zone.is-uploading {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  [data-images-panel] .upload-zone-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--admin-text-muted);
+  }
+  [data-images-panel] .upload-zone-content svg {
+    color: var(--admin-text-faint);
+  }
+  [data-images-panel] .upload-zone-content p {
+    margin: 0;
+    font-size: 14px;
+  }
+  [data-images-panel] .upload-zone-btn {
+    background: none;
+    border: none;
+    color: var(--admin-accent);
+    text-decoration: underline;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0;
+  }
+  [data-images-panel] .upload-zone-hint {
+    font-size: 12px;
+    color: var(--admin-text-faint);
+  }
+
+  /* Feedback */
+  [data-images-panel] .images-feedback {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: var(--admin-radius-sm);
+    font-size: 13px;
+  }
+  [data-images-panel] .images-feedback[data-kind="error"] {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+  [data-images-panel] .images-feedback[data-kind="info"] {
+    background: #eff6ff;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+  }
+</style>

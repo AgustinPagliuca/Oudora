@@ -11,16 +11,22 @@ if (id === undefined) {
   return Astro.redirect("/admin/productos");
 }
 
-const [{ data: productRaw }, { data: brandsData }] = await Promise.all([
-  supabase
-    .from("products")
-    .select(
-      "id, slug, brand_id, catalog, name, gender, concentration, volume_ml, price_ars, stock, notes, featured, created_at",
-    )
-    .eq("id", id)
-    .maybeSingle(),
-  supabase.from("brands").select("id, name").order("name"),
-]);
+const [{ data: productRaw }, { data: brandsData }, { data: imagesData }] =
+  await Promise.all([
+    supabase
+      .from("products")
+      .select(
+        "id, slug, brand_id, catalog, name, gender, concentration, volume_ml, price_ars, stock, notes, featured, created_at",
+      )
+      .eq("id", id)
+      .maybeSingle(),
+    supabase.from("brands").select("id, name").order("name"),
+    supabase
+      .from("product_images")
+      .select("id, url, position")
+      .eq("product_id", id)
+      .order("position"),
+  ]);
 
 if (productRaw === null) {
   return Astro.redirect("/admin/productos");
@@ -40,6 +46,7 @@ const product = {
   notes: Array.isArray(productRaw.notes) ? productRaw.notes : [],
   featured: productRaw.featured === true,
   createdAt: productRaw.created_at,
+  images: imagesData ?? [],
 };
 
 const brands = brandsData ?? [];
@@ -53,13 +60,25 @@ const errorMessage =
       : errorParam === "server"
         ? "Hubo un error al guardar. Reintentá en un momento."
         : null;
+
+const justCreated = Astro.url.searchParams.get("created") === "1";
+const successMessage = justCreated
+  ? "Producto creado. Ahora podés agregar imágenes y ajustar lo que necesites."
+  : null;
 ---
 
 <AdminLayout title={product.name}>
-  <ProductForm brands={brands} product={product} errorMessage={errorMessage} />
+  <ProductForm
+    brands={brands}
+    product={product}
+    errorMessage={errorMessage}
+    successMessage={successMessage}
+  />
 
   <script>
     import { initProductFormController } from "@/scripts/admin/product-form-controller";
+    import { initProductImagesController } from "@/scripts/admin/product-images-controller";
     initProductFormController();
+    initProductImagesController();
   </script>
 </AdminLayout>
