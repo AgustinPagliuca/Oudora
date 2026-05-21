@@ -1,0 +1,25 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import BrandForm from "@/components/admin/BrandForm.astro";
+
+const errorParam = Astro.url.searchParams.get("error");
+const errorMessage =
+  errorParam === "slug_taken"
+    ? "Ese slug ya está en uso por otra marca."
+    : errorParam === "validation"
+      ? "Revisá los campos del formulario."
+      : errorParam === "server"
+        ? "Hubo un error al guardar. Reintentá en un momento."
+        : null;
+---
+
+<AdminLayout title="Nueva marca">
+  <BrandForm errorMessage={errorMessage} />
+
+  <script>
+    import { initBrandFormController } from "@/scripts/admin/brand-form-controller";
+    initBrandFormController();
+  </script>
+</AdminLayout>

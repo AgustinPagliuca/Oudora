@@ -59,15 +59,26 @@ const [{ count: productsCount }, { count: brandsCount }, { count: featuredCount 
         </div>
         <span class="quick-link-arrow" aria-hidden="true">→</span>
       </a>
+
+      <a href="/admin/marcas" class="panel quick-link">
+        <div>
+          <p class="quick-link-title">Gestionar marcas</p>
+          <p class="quick-link-description">
+            Crear, editar y ordenar las casas de perfume
+          </p>
+        </div>
+        <span class="quick-link-arrow" aria-hidden="true">→</span>
+      </a>
     </section>
 
-    <section class="panel coming-soon">
-      <h2>Próximamente</h2>
-      <ul>
-        <li>Subida de imágenes de productos</li>
-        <li>Gestión de marcas</li>
-        <li>Publicar cambios a producción</li>
-      </ul>
+    <section class="panel publish-help">
+      <h2>Publicar al sitio</h2>
+      <p>
+        Los cambios que hacés en el admin (productos, marcas, imágenes) quedan
+        guardados pero <strong>no aparecen en el sitio público</strong> hasta
+        que apretás <strong>Publicar cambios</strong> en la barra superior. La
+        publicación tarda 1-2 minutos.
+      </p>
     </section>
   </div>
 </AdminLayout>
@@ -117,6 +128,17 @@ const [{ count: productsCount }, { count: brandsCount }, { count: featuredCount 
     color: var(--admin-danger);
   }
 
+  .quick-links {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 720px) {
+    .quick-links {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .quick-link {
     display: flex;
     justify-content: space-between;
@@ -145,18 +167,14 @@ const [{ count: productsCount }, { count: brandsCount }, { count: featuredCount 
     color: var(--admin-text-muted);
   }
 
-  .coming-soon {
+  .publish-help {
     padding: 20px 24px;
   }
-  .coming-soon h2 {
+  .publish-help h2 {
     margin-bottom: 10px;
   }
-  .coming-soon ul {
-    margin: 0;
-    padding-left: 18px;
+  .publish-help p {
     color: var(--admin-text-muted);
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    line-height: 1.6;
   }
 </style>

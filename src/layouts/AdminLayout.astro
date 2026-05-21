@@ -37,6 +37,17 @@ const userEmail = Astro.locals.user?.email;
           </a>
 
           <div class="admin-topbar-user">
+            <button
+              type="button"
+              class="btn btn-accent admin-publish-btn"
+              data-publish-btn
+              title="Publicar cambios al sitio público">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5" />
+                <polyline points="5 12 12 5 19 12" />
+              </svg>
+              Publicar cambios
+            </button>
             <span class="admin-topbar-email">{userEmail}</span>
             <form method="POST" action="/api/auth/logout">
               <button type="submit" class="btn btn-ghost">
@@ -48,9 +59,41 @@ const userEmail = Astro.locals.user?.email;
       )
     }
 
+    {
+      !bare && (
+        <div class="modal-backdrop" data-publish-modal aria-hidden="true">
+          <div class="modal" role="dialog" aria-modal="true" aria-labelledby="publish-modal-title">
+            <h2 id="publish-modal-title">Publicar cambios</h2>
+            <p>
+              Esto va a regenerar el sitio público con los datos actuales de
+              Supabase. El proceso tarda <strong>1-2 minutos</strong>. Durante ese
+              tiempo, los visitantes siguen viendo la versión anterior.
+            </p>
+            <div class="modal-actions">
+              <button type="button" class="btn btn-ghost" data-publish-cancel>
+                Cancelar
+              </button>
+              <button type="button" class="btn btn-accent" data-publish-confirm>
+                Publicar
+              </button>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
     <main class={bare ? "admin-main-bare" : "admin-main"}>
       <slot />
     </main>
+
+    {
+      !bare && (
+        <script>
+          import { initPublishController } from "@/scripts/admin/publish-controller";
+          initPublishController();
+        </script>
+      )
+    }
   </body>
 </html>
 
@@ -329,5 +372,80 @@ const userEmail = Astro.locals.user?.email;
     background: #fef2f2;
     color: #991b1b;
     border: 1px solid #fecaca;
+  }
+
+  /* ── Botón Publicar (topbar) ─────────────────────────────── */
+  .admin-publish-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .admin-publish-btn[data-cooldown="true"] {
+    opacity: 0.5;
+  }
+
+  /* ── Modal genérico ──────────────────────────────────────── */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  .modal-backdrop[aria-hidden="false"] {
+    display: flex;
+  }
+  .modal {
+    background: var(--admin-bg-panel);
+    border-radius: var(--admin-radius-lg);
+    padding: 24px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: var(--admin-shadow-lg);
+  }
+  .modal h2 {
+    margin-bottom: 8px;
+  }
+  .modal p {
+    color: var(--admin-text-muted);
+    margin-bottom: 20px;
+    line-height: 1.55;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  /* ── Toast de publicación ────────────────────────────────── */
+  [data-publish-toast] {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 2000;
+    padding: 14px 20px;
+    border-radius: var(--admin-radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: var(--admin-shadow-lg);
+    max-width: 400px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  [data-publish-toast][data-visible="true"] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  [data-publish-toast][data-kind="success"] {
+    background: var(--admin-success);
+    color: #fff;
+  }
+  [data-publish-toast][data-kind="error"] {
+    background: var(--admin-danger);
+    color: #fff;
   }
 </style>

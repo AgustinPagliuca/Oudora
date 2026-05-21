@@ -1,0 +1,68 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import BrandForm from "@/components/admin/BrandForm.astro";
+
+const supabase = Astro.locals.supabase;
+const { id } = Astro.params;
+
+if (id === undefined) {
+  return Astro.redirect("/admin/marcas");
+}
+
+const [{ data: brandRaw }, { count: productsCount }] = await Promise.all([
+  supabase
+    .from("brands")
+    .select("id, slug, name, catalog, sort_order")
+    .eq("id", id)
+    .maybeSingle(),
+  supabase
+    .from("products")
+    .select("*", { count: "exact", head: true })
+    .eq("brand_id", id),
+]);
+
+if (brandRaw === null) {
+  return Astro.redirect("/admin/marcas");
+}
+
+const brand = {
+  id: brandRaw.id,
+  slug: brandRaw.slug,
+  name: brandRaw.name,
+  catalog: brandRaw.catalog,
+  sort_order: brandRaw.sort_order,
+  productsCount: productsCount ?? 0,
+};
+
+const errorParam = Astro.url.searchParams.get("error");
+const errorMessage =
+  errorParam === "slug_taken"
+    ? "Ese slug ya está en uso por otra marca."
+    : errorParam === "validation"
+      ? "Revisá los campos del formulario."
+      : errorParam === "has_products"
+        ? "No se puede borrar una marca con productos asociados."
+        : errorParam === "server"
+          ? "Hubo un error al guardar. Reintentá en un momento."
+          : null;
+
+const justCreated = Astro.url.searchParams.get("created") === "1";
+const successMessage = justCreated
+  ? "Marca creada. Ya podés asignarle productos."
+  : null;
+---
+
+<AdminLayout title={brand.name}>
+  <BrandForm
+    brand={brand}
+    errorMessage={errorMessage}
+    successMessage={successMessage}
+  />
+
+  <script>
+    import { initBrandFormController } from "@/scripts/admin/brand-form-controller";
+    initBrandFormController();
+  </script>
+</AdminLayout>

@@ -1,0 +1,390 @@
+---
+/**
+ * Formulario de marca compartido entre /admin/marcas/nueva y /[id].
+ * Más simple que ProductForm: solo 4 campos en una sola sección.
+ */
+
+interface BrandValues {
+  id: string;
+  slug: string;
+  name: string;
+  catalog: string;
+  sort_order: number;
+  productsCount?: number;
+}
+
+interface Props {
+  brand?: BrandValues;
+  errorMessage?: string | null;
+  successMessage?: string | null;
+}
+
+const { brand, errorMessage = null, successMessage = null } = Astro.props;
+
+const isEdit = brand !== undefined;
+const formAction = isEdit ? `/api/admin/brands/${brand.id}` : "/api/admin/brands";
+
+const values = {
+  slug: brand?.slug ?? "",
+  name: brand?.name ?? "",
+  catalog: brand?.catalog ?? "arabe",
+  sort_order: brand?.sort_order ?? 100,
+};
+
+const hasProducts = (brand?.productsCount ?? 0) > 0;
+---
+
+<div class="form-shell">
+  <div class="page-header">
+    <div>
+      <p class="breadcrumb">
+        <a href="/admin">Panel</a>
+        <span aria-hidden="true">›</span>
+        <a href="/admin/marcas">Marcas</a>
+        <span aria-hidden="true">›</span>
+        <span>{isEdit ? "Editar" : "Nueva"}</span>
+      </p>
+      <h1>{isEdit ? values.name : "Nueva marca"}</h1>
+      {
+        isEdit && brand?.productsCount !== undefined && (
+          <p class="page-subtitle">
+            {brand.productsCount === 0
+              ? "Sin productos asociados"
+              : brand.productsCount === 1
+                ? "1 producto asociado"
+                : `${brand.productsCount} productos asociados`}
+          </p>
+        )
+      }
+    </div>
+    <div class="form-actions">
+      <a href="/admin/marcas" class="btn btn-ghost">Cancelar</a>
+      <button type="submit" form="brand-form" class="btn btn-primary">
+        {isEdit ? "Guardar cambios" : "Crear marca"}
+      </button>
+    </div>
+  </div>
+
+  {errorMessage !== null && <div class="alert alert-error">{errorMessage}</div>}
+  {successMessage !== null && <div class="alert alert-success">{successMessage}</div>}
+
+  <form
+    id="brand-form"
+    method="POST"
+    action={formAction}
+    data-brand-form
+    class="brand-form">
+    {isEdit && <input type="hidden" name="_method" value="PUT" />}
+
+    <section class="panel form-panel">
+      <h2 class="panel-title">Datos de la marca</h2>
+
+      <div class="form-grid two-col">
+        <div class="field">
+          <label class="field-label" for="name">Nombre</label>
+          <input
+            id="name"
+            class="field-input"
+            type="text"
+            name="name"
+            required
+            value={values.name}
+            data-brand-name
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="catalog">Catálogo</label>
+          <select id="catalog" name="catalog" class="field-input" required>
+            <option value="arabe" selected={values.catalog === "arabe"}>Árabes</option>
+            <option value="disenador" selected={values.catalog === "disenador"}>Diseñador</option>
+          </select>
+        </div>
+
+        <div class="field full">
+          <label class="field-label" for="slug">URL de la marca</label>
+          <div class="slug-input">
+            <span class="slug-prefix">oudora.com.ar/marcas/</span>
+            <input
+              id="slug"
+              type="text"
+              name="slug"
+              required
+              value={values.slug}
+              data-brand-slug
+              autocomplete="off"
+              pattern="[a-z0-9\-]+"
+            />
+          </div>
+          <p class="field-hint">
+            Se autogenera desde el nombre. Solo minúsculas, números y guiones.
+          </p>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="sort_order">Orden de aparición</label>
+          <input
+            id="sort_order"
+            class="field-input"
+            type="number"
+            name="sort_order"
+            min="0"
+            max="9999"
+            step="1"
+            value={values.sort_order}
+          />
+          <p class="field-hint">
+            Menor = aparece antes. Default 100.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    {
+      isEdit && (
+        <section class="danger-zone">
+          <div>
+            <p class="danger-title">Zona peligrosa</p>
+            <p class="danger-description">
+              {hasProducts
+                ? `Esta marca tiene ${brand.productsCount} producto${brand.productsCount === 1 ? "" : "s"} asociado${brand.productsCount === 1 ? "" : "s"}. Cambialos de marca o borralos antes.`
+                : "Borrar esta marca es irreversible."}
+            </p>
+          </div>
+          <button
+            type="button"
+            class="btn btn-danger-outline"
+            data-delete-trigger
+            data-brand-id={brand.id}
+            data-brand-name={brand.name}
+            disabled={hasProducts}>
+            Borrar marca
+          </button>
+        </section>
+      )
+    }
+  </form>
+
+  {
+    isEdit && (
+      <div class="modal-backdrop" data-delete-modal aria-hidden="true">
+        <div
+          class="modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-modal-title">
+          <h2 id="delete-modal-title">Borrar marca</h2>
+          <p>
+            Estás por borrar <strong data-delete-brand-name>—</strong>. Esta acción no se puede deshacer.
+          </p>
+          <form method="POST" data-delete-form>
+            <input type="hidden" name="_method" value="DELETE" />
+            <div class="modal-actions">
+              <button type="button" class="btn btn-ghost" data-delete-cancel>
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-danger">Borrar marca</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .form-shell {
+    max-width: 880px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .breadcrumb {
+    font-size: 14px;
+    color: var(--admin-text-muted);
+    margin-bottom: 4px;
+  }
+  .breadcrumb a {
+    color: var(--admin-accent);
+    text-decoration: none;
+  }
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+  .breadcrumb span[aria-hidden] {
+    margin: 0 6px;
+    color: var(--admin-text-faint);
+  }
+  .page-subtitle {
+    color: var(--admin-text-muted);
+    font-size: 14px;
+    margin-top: 4px;
+  }
+  .form-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .alert {
+    padding: 12px 16px;
+    border-radius: var(--admin-radius-sm);
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  .alert-error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+  .alert-success {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+
+  .brand-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .form-panel {
+    padding: 20px 24px;
+  }
+  .panel-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .form-grid {
+    display: grid;
+    gap: 14px;
+    margin-top: 12px;
+  }
+  .form-grid.two-col {
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 720px) {
+    .form-grid.two-col {
+      grid-template-columns: 1fr;
+    }
+  }
+  .field.full {
+    grid-column: 1 / -1;
+  }
+
+  .field-hint {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--admin-text-faint);
+  }
+
+  .slug-input {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+    background: var(--admin-bg);
+    overflow: hidden;
+  }
+  .slug-input:focus-within {
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+  .slug-prefix {
+    padding: 10px 0 10px 12px;
+    color: var(--admin-text-muted);
+    font-size: 14px;
+    user-select: none;
+  }
+  .slug-input input {
+    flex: 1;
+    border: none;
+    background: var(--admin-bg-input);
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--admin-text);
+    outline: none;
+  }
+
+  .danger-zone {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 24px;
+    border-top: 1px solid var(--admin-border);
+    gap: 16px;
+  }
+  .danger-title {
+    color: var(--admin-danger);
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .danger-description {
+    color: var(--admin-text-muted);
+    font-size: 13px;
+    margin-top: 2px;
+  }
+  .btn-danger-outline {
+    background: #fef2f2;
+    color: var(--admin-danger);
+    border: 1px solid #fecaca;
+    flex-shrink: 0;
+  }
+  .btn-danger-outline:hover:not(:disabled) {
+    background: var(--admin-danger);
+    color: #fff;
+    border-color: var(--admin-danger);
+  }
+  .btn-danger-outline:disabled {
+    background: var(--admin-bg);
+    color: var(--admin-text-faint);
+    border-color: var(--admin-border);
+    cursor: not-allowed;
+  }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  .modal-backdrop[aria-hidden="false"] {
+    display: flex;
+  }
+  .modal {
+    background: var(--admin-bg-panel);
+    border-radius: var(--admin-radius-lg);
+    padding: 24px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: var(--admin-shadow-lg);
+  }
+  .modal h2 {
+    margin-bottom: 8px;
+  }
+  .modal p {
+    color: var(--admin-text-muted);
+    margin-bottom: 20px;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+</style>

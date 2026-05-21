@@ -4,7 +4,7 @@
 //
 //  Generado por: scripts/sync-catalog.mjs
 //  Fuente:       Supabase (brands, products, product_images)
-//  Última sync:  2026-05-19T16:42:08.540Z
+//  Última sync:  2026-05-21T05:29:57.512Z
 //
 //  Para regenerar: pnpm run sync
 //
