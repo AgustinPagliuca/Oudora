@@ -39,13 +39,13 @@ const brand = {
 const errorParam = Astro.url.searchParams.get("error");
 const errorMessage =
   errorParam === "slug_taken"
-    ? "Ese slug ya está en uso por otra marca."
+    ? "Ya existe una marca con esa URL. Cambiá el slug y volvé a intentar."
     : errorParam === "validation"
-      ? "Revisá los campos del formulario."
+      ? "Hay campos sin completar o con datos inválidos. Revisalos y volvé a guardar."
       : errorParam === "has_products"
-        ? "No se puede borrar una marca con productos asociados."
+        ? "No se puede borrar una marca con productos asociados. Cambialos de marca o borralos primero."
         : errorParam === "server"
-          ? "Hubo un error al guardar. Reintentá en un momento."
+          ? "No se pudieron guardar los cambios. Reintentá en un momento."
           : null;
 
 const justCreated = Astro.url.searchParams.get("created") === "1";

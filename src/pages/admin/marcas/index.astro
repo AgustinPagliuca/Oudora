@@ -45,7 +45,7 @@ const flashMessage = flashCreated
 const errorParam = Astro.url.searchParams.get("error");
 const errorMessage =
   errorParam === "has_products"
-    ? "No se puede borrar una marca con productos asociados."
+    ? "No se puede borrar una marca con productos asociados. Cambialos de marca o borralos primero."
     : null;
 
 const CATALOG_LABEL: Record<string, string> = {

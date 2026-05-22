@@ -140,10 +140,12 @@ function buildOutput(brandsRaw, productsRaw, imagesRaw) {
   /** @type {Map<string, {url: string, position: number}[]>} */
   const imagesByProduct = new Map();
   for (const img of imagesRaw) {
-    if (!imagesByProduct.has(img.product_id)) {
-      imagesByProduct.set(img.product_id, []);
+    const existing = imagesByProduct.get(img.product_id);
+    const bucket = existing ?? [];
+    if (existing === undefined) {
+      imagesByProduct.set(img.product_id, bucket);
     }
-    imagesByProduct.get(img.product_id).push({
+    bucket.push({
       url: img.url,
       position: img.position,
     });

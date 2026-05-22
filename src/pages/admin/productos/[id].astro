@@ -54,11 +54,11 @@ const brands = brandsData ?? [];
 const errorParam = Astro.url.searchParams.get("error");
 const errorMessage =
   errorParam === "slug_taken"
-    ? "Ese slug ya está en uso por otro producto."
+    ? "Ya existe un producto con esa URL. Cambiá el slug y volvé a intentar."
     : errorParam === "validation"
-      ? "Revisá los campos del formulario."
+      ? "Hay campos sin completar o con datos inválidos. Revisalos y volvé a guardar."
       : errorParam === "server"
-        ? "Hubo un error al guardar. Reintentá en un momento."
+        ? "No se pudieron guardar los cambios. Reintentá en un momento."
         : null;
 
 const justCreated = Astro.url.searchParams.get("created") === "1";
