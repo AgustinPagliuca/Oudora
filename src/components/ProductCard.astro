@@ -219,11 +219,30 @@ const coverImage = product.images?.[0]?.url ?? product.imageUrl;
     border-radius: var(--radius-pill);
     white-space: nowrap;
     transition: all var(--transition-fast);
+    cursor: pointer;
   }
   .product-add:hover {
     background: rgba(201, 168, 76, 0.25);
   }
   .product-add:active {
     transform: scale(0.96);
+  }
+
+  /* En mobile las cards son muy angostas para precio + botón en fila */
+  @media (max-width: 640px) {
+    .product-footer {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .product-price {
+      font-size: 20px;
+      text-align: center;
+    }
+    .product-add {
+      width: 100%;
+      text-align: center;
+      padding: 10px 12px;
+    }
   }
 </style>

@@ -65,6 +65,12 @@ const variant = gender === "femenino" ? "warm" : gender === "masculino" ? "defau
     flex-direction: column;
     align-items: center;
     gap: 6px;
+    padding: 28px 12px 12px;
+    width: 100%;
+    /* Gradiente oscuro detrás para legibilidad sobre el frasco */
+    background: linear-gradient(to top, rgba(7, 6, 5, 0.95) 30%, rgba(7, 6, 5, 0.7) 70%, transparent);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    margin: 0 -14px -18px;
   }
 
   .collection-overline {

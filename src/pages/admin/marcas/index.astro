@@ -37,7 +37,7 @@ const flashDeleted = Astro.url.searchParams.get("deleted") === "1";
 const flashMessage = flashCreated
   ? "Marca creada correctamente."
   : flashUpdated
-    ? "Cambios guardados."
+    ? "Cambios guardados correctamente."
     : flashDeleted
       ? "Marca eliminada."
       : null;

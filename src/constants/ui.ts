@@ -50,7 +50,6 @@ export const SITE_METADATA = {
   name: "OUDORA",
   tagline: "L'essence d'arabie",
   description: "Perfumería en Buenos Aires: árabes y de diseñador",
-  arabicAccent: "عُود · فاخر",
   location: "Buenos Aires, Argentina",
 } as const;
 
@@ -59,10 +58,12 @@ export const SITE_METADATA = {
  * desde el carrito. Reemplazar por el real antes de ir a producción.
  */
 export const CONTACT = {
-  whatsappE164: "5491100000000",
-  whatsappDisplay: "+54 9 11 0000-0000",
+  whatsappE164: "5491166391969",
+  whatsappDisplay: "+54 9 11 6639-1969",
   instagram: "@oudora.perfumes",
   instagramUrl: "https://www.instagram.com/oudora.perfumes/",
+  tiktok: "@oudora.perfumes",
+  tiktokUrl: "https://www.tiktok.com/@oudora.perfumes",
 } as const;
 
 /**

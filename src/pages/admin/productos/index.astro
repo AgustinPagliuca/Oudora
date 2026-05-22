@@ -17,7 +17,7 @@ const [{ data: brandsData }, { data: productsData, error: productsError }] =
     supabase
       .from("products")
       .select(
-        "id, slug, brand_id, catalog, name, gender, concentration, volume_ml, price_ars, stock, featured",
+        "id, slug, brand_id, catalog, name, gender, concentration, volume_ml, price_ars, stock, featured, notes",
       )
       .order("created_at", { ascending: false }),
   ]);
@@ -39,7 +39,7 @@ const flashDeleted = Astro.url.searchParams.get("deleted") === "1";
 const flashMessage = flashCreated
   ? "Producto creado correctamente."
   : flashUpdated
-    ? "Cambios guardados."
+    ? "Cambios guardados correctamente."
     : flashDeleted
       ? "Producto eliminado."
       : null;
@@ -138,7 +138,8 @@ function stockBadgeClass(stock: number): string {
           <tbody>
             {products.map((p) => {
               const brand = brandsById.get(p.brand_id);
-              const searchText = `${brand?.name ?? ""} ${p.name}`.toLowerCase();
+              const notesText = Array.isArray(p.notes) ? p.notes.join(" ") : "";
+              const searchText = `${brand?.name ?? ""} ${p.name} ${p.concentration ?? ""} ${notesText}`.toLowerCase();
               return (
                 <tr
                   data-product-row
