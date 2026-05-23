@@ -337,6 +337,13 @@ const currentBrand = brands.find((b) => b.id === values.brandId);
       </div>
     </section>
 
+    <div class="form-footer-actions">
+      <a href="/admin/productos" class="btn btn-ghost">Cancelar</a>
+      <button type="submit" class="btn btn-primary">
+        {isEdit ? "Guardar cambios" : "Crear producto"}
+      </button>
+    </div>
+
     {
       isEdit && (
         <section class="danger-zone">
@@ -614,6 +621,18 @@ const currentBrand = brands.find((b) => b.id === values.brandId);
     padding-top: 24px;
     border-top: 1px solid var(--admin-border);
   }
+
+  .form-footer-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 16px 20px;
+    background: var(--admin-bg-panel);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-md);
+  }
+
   .danger-title {
     color: var(--admin-danger);
     font-weight: 600;
