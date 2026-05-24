@@ -13,7 +13,7 @@ const description = GENDER_DESCRIPTIONS[gender];
 const variant = gender === "femenino" ? "warm" : gender === "masculino" ? "default" : "deep";
 ---
 
-<a class="collection-card" href={`#catalogo`} data-collection={gender}>
+<a class="collection-card" href={`/catalogo?gender=${gender}`} data-collection={gender}>
   <div class="collection-bg" aria-hidden="true">
     <PerfumeBottle variant={variant} size="md" />
   </div>

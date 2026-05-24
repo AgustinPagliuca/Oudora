@@ -542,6 +542,17 @@ export function initCatalogController(): void {
   const state = getInitialState();
   const refresh = (): void => applyFilters(state);
 
+  // Lee filtros iniciales desde el query string (ej: /catalogo?gender=femenino)
+  const params = new URLSearchParams(window.location.search);
+  const initialGender = params.get("gender");
+  if (
+    initialGender === "femenino" ||
+    initialGender === "masculino" ||
+    initialGender === "unisex"
+  ) {
+    state.genders.add(initialGender);
+  }
+
   setupCatalogTabs(state, refresh);
   setupBrandRows(state, refresh);
   setupGenderChips(state, refresh);
@@ -549,6 +560,25 @@ export function initCatalogController(): void {
   setupSearch(state, refresh);
   setupClearButton(state, refresh);
   setupSidebarMobile();
+
+  // Si vino con filtro de género preseteado, marca visualmente el chip activo
+  if (state.genders.size > 0) {
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-filter-gender]")
+      .forEach((chip) => {
+        const v = chip.dataset.filterGender ?? "";
+        const isActive =
+          (v === "femenino" && state.genders.has("femenino")) ||
+          (v === "masculino" && state.genders.has("masculino")) ||
+          (v === "unisex" && state.genders.has("unisex"));
+        chip.classList.toggle("active", isActive);
+        chip.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+    // Quitar la marca de "Todos"
+    document
+      .querySelector<HTMLButtonElement>('[data-filter-gender=""]')
+      ?.classList.remove("active");
+  }
 
   refresh();
 }

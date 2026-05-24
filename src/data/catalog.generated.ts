@@ -3,14 +3,14 @@
 // ════════════════════════════════════════════════════════════
 //
 //  Generado por: scripts/sync-catalog.mjs
-//  Fuente:       Supabase (brands, products, product_images)
-//  Última sync:  2026-05-21T05:29:57.512Z
+//  Fuente:       Supabase (brands, products, product_images, reviews, reels)
+//  Última sync:  2026-05-24T19:21:47.275Z
 //
 //  Para regenerar: pnpm run sync
 //
 // ════════════════════════════════════════════════════════════
 
-import type { Brand, Product } from "@/types/catalog";
+import type { Brand, Product, Review, Reel } from "@/types/catalog";
 
 export const BRANDS: readonly Brand[] = [
   {
@@ -109,13 +109,23 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "masculino",
     "concentration": "EDP",
     "volumeMl": 100,
-    "priceArs": 36000,
+    "priceArs": 60000,
     "stock": 11,
     "notes": [
       "manzana",
       "lavanda",
       "vainilla",
       "haba tonka"
+    ],
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/afnan-9pm/b1f46ded-7db0-49e8-9349-e1e926f7aeda.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/afnan-9pm/36bd4024-6191-4f47-b0ac-990900aabc41.webp",
+        "position": 1
+      }
     ]
   },
   {
@@ -217,15 +227,25 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "masculino",
     "concentration": "EDT",
     "volumeMl": 105,
-    "priceArs": 45000,
-    "stock": 10,
+    "priceArs": 60000,
+    "stock": 3,
     "notes": [
       "piña negra",
       "manzana",
       "abedul",
       "almizcle"
     ],
-    "featured": true
+    "featured": true,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/armaf-club-de-nuit-intense-man/640a6492-6488-477a-bcc5-ffba21fcf10f.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/armaf-club-de-nuit-intense-man/b59be177-b9aa-454e-897f-3009d263575b.webp",
+        "position": 1
+      }
+    ]
   },
   {
     "id": "armaf-club-de-nuit-sillage",
@@ -236,13 +256,23 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "unisex",
     "concentration": "EDP",
     "volumeMl": 105,
-    "priceArs": 48000,
-    "stock": 4,
+    "priceArs": 65000,
+    "stock": 1,
     "notes": [
       "bergamota",
       "rosa",
       "incienso",
       "oud"
+    ],
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/armaf-club-de-nuit-sillage/8114362d-877e-42b6-a63d-55865e9dcfc0.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/armaf-club-de-nuit-sillage/00d8b79f-d954-43ab-8445-94a4bf1376c3.webp",
+        "position": 1
+      }
     ]
   },
   {
@@ -254,13 +284,23 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "masculino",
     "concentration": "EDT",
     "volumeMl": 100,
-    "priceArs": 40000,
+    "priceArs": 56000,
     "stock": 7,
     "notes": [
       "limón",
       "menta",
       "ámbar gris",
       "cedro"
+    ],
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/armaf-odyssey-aqua/55f452ec-ca62-44f8-a11f-7380a533137a.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/armaf-odyssey-aqua/8bcc91e9-b648-45c6-93f7-40b05c76cb17.webp",
+        "position": 1
+      }
     ]
   },
   {
@@ -473,13 +513,23 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "unisex",
     "concentration": "EDP",
     "volumeMl": 100,
-    "priceArs": 42000,
+    "priceArs": 52000,
     "stock": 1,
     "notes": [
       "oud",
       "azafrán",
       "rosa",
       "ámbar"
+    ],
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-badee-al-oud-amethyst/7338dc00-9da6-4807-a7ad-fb6e418f189f.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-badee-al-oud-amethyst/18d767e0-a668-4420-8064-511480970aad.webp",
+        "position": 1
+      }
     ]
   },
   {
@@ -491,13 +541,23 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "masculino",
     "concentration": "EDP",
     "volumeMl": 100,
-    "priceArs": 36000,
-    "stock": 6,
+    "priceArs": 55000,
+    "stock": 1,
     "notes": [
       "lavanda",
       "cedro",
       "tabaco",
       "vetiver"
+    ],
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-fakhar/3e5558a8-39c8-4fe5-ab49-aa0f6ed0fdfd.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-fakhar/8b19a2cb-56d2-48ec-95ed-c26804cd604c.webp",
+        "position": 1
+      }
     ]
   },
   {
@@ -509,7 +569,7 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "unisex",
     "concentration": "EDP",
     "volumeMl": 100,
-    "priceArs": 39000,
+    "priceArs": 55000,
     "stock": 2,
     "notes": [
       "canela",
@@ -517,7 +577,17 @@ export const PRODUCTS: readonly Product[] = [
       "dátil",
       "praliné"
     ],
-    "featured": true
+    "featured": true,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-khamrah/1dfc8002-bff9-4747-84a5-a6c582134a4f.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-khamrah/ae5735b4-db19-43a2-85d1-9a63048ed7c9.webp",
+        "position": 1
+      }
+    ]
   },
   {
     "id": "lattafa-maahir-legacy",
@@ -528,13 +598,23 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "unisex",
     "concentration": "EDP",
     "volumeMl": 100,
-    "priceArs": 39500,
-    "stock": 4,
+    "priceArs": 54000,
+    "stock": 1,
     "notes": [
       "pera",
       "haba tonka",
       "ámbar",
       "musgo"
+    ],
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-maahir-legacy/b93cd4d8-6d08-49b7-bb81-582808902eb6.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-maahir-legacy/40b7054e-e700-469f-84be-7fb6dd6fecc6.webp",
+        "position": 1
+      }
     ]
   },
   {
@@ -546,7 +626,7 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "femenino",
     "concentration": "EDP",
     "volumeMl": 100,
-    "priceArs": 32000,
+    "priceArs": 50000,
     "stock": 8,
     "notes": [
       "orquídea",
@@ -554,7 +634,17 @@ export const PRODUCTS: readonly Product[] = [
       "sándalo",
       "almizcle"
     ],
-    "featured": true
+    "featured": true,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-yara/7bec310c-d719-4aa8-90fa-56d6926cebea.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-yara/00499982-46fe-4ac6-951d-7e4aa9f337ed.webp",
+        "position": 1
+      }
+    ]
   },
   {
     "id": "maison-alhambra-exclusif-tobaco",
@@ -575,24 +665,6 @@ export const PRODUCTS: readonly Product[] = [
     ]
   },
   {
-    "id": "maison-alhambra-infini-aoud",
-    "slug": "infini-aoud",
-    "brandId": "maison-alhambra",
-    "catalog": "arabe",
-    "name": "Infini Aoud",
-    "gender": "unisex",
-    "concentration": "EDP",
-    "volumeMl": 100,
-    "priceArs": 41000,
-    "stock": 2,
-    "notes": [
-      "oud",
-      "azafrán",
-      "ámbar",
-      "cuero"
-    ]
-  },
-  {
     "id": "maison-alhambra-layali",
     "slug": "layali",
     "brandId": "maison-alhambra",
@@ -601,31 +673,13 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "femenino",
     "concentration": "EDP",
     "volumeMl": 100,
-    "priceArs": 36000,
+    "priceArs": 39000,
     "stock": 7,
     "notes": [
       "mandarina",
       "jazmín",
       "vainilla",
       "ámbar"
-    ]
-  },
-  {
-    "id": "maison-alhambra-rouge-adore",
-    "slug": "rouge-adore",
-    "brandId": "maison-alhambra",
-    "catalog": "arabe",
-    "name": "Rouge Adore",
-    "gender": "femenino",
-    "concentration": "EDP",
-    "volumeMl": 100,
-    "priceArs": 38000,
-    "stock": 9,
-    "notes": [
-      "frutos rojos",
-      "rosa",
-      "haba tonka",
-      "musk"
     ]
   },
   {
@@ -709,13 +763,23 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "masculino",
     "concentration": "EDP",
     "volumeMl": 100,
-    "priceArs": 42000,
+    "priceArs": 5203,
     "stock": 4,
     "notes": [
       "jengibre",
       "manzana",
       "ámbar gris",
       "almizcle"
+    ],
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/rasasi-hawas/07ec3fd9-7322-4daa-8638-088bea3ba2bd.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/rasasi-hawas/46943334-e6e9-48ad-bbc7-21c46e831da0.webp",
+        "position": 1
+      }
     ]
   },
   {
@@ -826,5 +890,54 @@ export const PRODUCTS: readonly Product[] = [
       "ambroxan",
       "vetiver"
     ]
+  }
+];
+
+export const REVIEWS: readonly Review[] = [
+  {
+    "id": "d3719a5c-3859-4429-9104-5c28d5c14ef6",
+    "authorName": "Test",
+    "body": "Producto excelente, lo recomiendo. Llegó rápido y muy bien empaquetado.",
+    "rating": 5,
+    "featured": true,
+    "published": true,
+    "sortOrder": 1,
+    "createdAt": "2026-05-24T17:34:24.218221+00:00"
+  }
+];
+
+export const REELS: readonly Reel[] = [
+  {
+    "id": "73c2e5c5-3afb-48a0-a5e6-2384a132a959",
+    "title": "Querés oler bien este invierno? ❄️ Te traigo el top 3 de Oudora",
+    "thumbnailUrl": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/reel-thumbnails/thumbs/4790f384-51a5-4e72-91bb-979493593d96.png",
+    "thumbnailPath": "thumbs/4790f384-51a5-4e72-91bb-979493593d96.png",
+    "instagramUrl": "https://www.instagram.com/reel/DXAeviNhkzC/?utm_source=ig_web_copy_link&igsh=NTc4MTIwNjQ2YQ==",
+    "duration": null,
+    "sortOrder": 1,
+    "published": true,
+    "createdAt": "2026-05-24T18:48:10.674496+00:00"
+  },
+  {
+    "id": "7bed1a40-5029-4a12-9225-b4c92e01fbb7",
+    "title": "Lo que parecía ser una pesadilla terminó siendo una hermosa noticia",
+    "thumbnailUrl": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/reel-thumbnails/thumbs/ec08c1f8-4d8c-408f-802f-566d22082cf7.png",
+    "thumbnailPath": "thumbs/ec08c1f8-4d8c-408f-802f-566d22082cf7.png",
+    "instagramUrl": "https://www.instagram.com/reel/DWryeL9Dutr/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+    "duration": null,
+    "sortOrder": 2,
+    "published": true,
+    "createdAt": "2026-05-24T19:17:50.988171+00:00"
+  },
+  {
+    "id": "00cb947b-e13f-4c77-a279-05473d2e294d",
+    "title": "Chicos, así está davo?",
+    "thumbnailUrl": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/reel-thumbnails/thumbs/914be9b9-9d07-46b9-acfd-e5a5fd90d059.png",
+    "thumbnailPath": "thumbs/914be9b9-9d07-46b9-acfd-e5a5fd90d059.png",
+    "instagramUrl": "https://www.instagram.com/reel/DYF8g2vO4GA/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+    "duration": null,
+    "sortOrder": 3,
+    "published": true,
+    "createdAt": "2026-05-24T19:21:24.554845+00:00"
   }
 ];

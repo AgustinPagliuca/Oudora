@@ -81,3 +81,26 @@ export interface ProductsByBrand {
   readonly brand: Brand;
   readonly products: readonly Product[];
 }
+
+export interface Review {
+  readonly id: string;
+  readonly authorName: string;
+  readonly body: string;
+  readonly rating: number | null;
+  readonly featured: boolean;
+  readonly published: boolean;
+  readonly sortOrder: number;
+  readonly createdAt: string;
+}
+
+export interface Reel {
+  readonly id: string;
+  readonly title: string;
+  readonly thumbnailUrl: string;
+  readonly thumbnailPath: string;
+  readonly instagramUrl: string;
+  readonly duration: string | null;
+  readonly sortOrder: number;
+  readonly published: boolean;
+  readonly createdAt: string;
+}

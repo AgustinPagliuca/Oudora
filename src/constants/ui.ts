@@ -20,7 +20,7 @@ export const GENDER_SHORT_LABELS: Readonly<Record<Gender, string>> = {
 export const GENDER_DESCRIPTIONS: Readonly<Record<Gender, string>> = {
   femenino: "Para ella",
   masculino: "Para él",
-  unisex: "Para todes",
+  unisex: "Para todxs",
 } as const;
 
 export const ALL_GENDERS: readonly Gender[] = [
@@ -79,5 +79,6 @@ export const NAV_LINKS = [
   { label: "Inicio", href: "/" },
   { label: "Catálogo", href: "/catalogo" },
   { label: "Marcas", href: "/marcas" },
+  { label: "Nosotros", href: "/nosotros" },
   { label: "Contacto", href: "/contacto" },
 ] as const;

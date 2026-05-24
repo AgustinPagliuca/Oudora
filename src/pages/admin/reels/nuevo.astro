@@ -1,0 +1,18 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import ReelForm from "@/components/admin/ReelForm.astro";
+
+const errorParam = Astro.url.searchParams.get("error");
+const errorMessage =
+  errorParam === "validation"
+    ? "Hay campos sin completar o con datos inválidos. Revisalos y volvé a guardar. Recordá subir una imagen de portada y poner una URL válida de Instagram."
+    : errorParam === "server"
+      ? "No se pudieron guardar los cambios. Reintentá en un momento."
+      : null;
+---
+
+<AdminLayout title="Nuevo reel">
+  <ReelForm errorMessage={errorMessage} />
+</AdminLayout>

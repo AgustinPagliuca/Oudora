@@ -1,0 +1,122 @@
+---
+import type { Review } from "@/types/catalog";
+
+interface Props {
+  reviews: readonly Review[];
+}
+
+const { reviews } = Astro.props;
+---
+
+{reviews.length > 0 && (
+  <section class="reviews-section">
+    <div class="reviews-header">
+      <p class="reviews-overline">Experiencias</p>
+      <h2 class="reviews-title">
+        Lo que dicen <em>nuestros clientes</em>
+      </h2>
+    </div>
+
+    <div class="reviews-grid">
+      {reviews.map((r) => (
+        <article class="review-card">
+          {r.rating !== null && (
+            <div class="review-stars" aria-label={`${r.rating} de 5 estrellas`}>
+              {"★".repeat(r.rating)}<span class="review-stars-off">{"★".repeat(5 - r.rating)}</span>
+            </div>
+          )}
+          <p class="review-body">"{r.body}"</p>
+          <p class="review-author">— {r.authorName}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .reviews-section {
+    padding: 60px clamp(16px, 4vw, 32px);
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+  }
+
+  .reviews-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .reviews-overline {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .reviews-title {
+    font-family: var(--font-serif);
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 400;
+    color: var(--color-cream);
+    letter-spacing: 1px;
+  }
+  .reviews-title em {
+    color: var(--color-gold);
+    font-style: italic;
+  }
+
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .review-card {
+    background: var(--color-bg-card);
+    border: 0.5px solid rgba(201, 168, 76, 0.2);
+    border-radius: var(--radius-md);
+    padding: 26px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: border-color var(--transition-default);
+  }
+  .review-card:hover {
+    border-color: rgba(201, 168, 76, 0.45);
+  }
+
+  .review-stars {
+    color: var(--color-gold);
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+  .review-stars-off {
+    color: rgba(201, 168, 76, 0.25);
+  }
+
+  .review-body {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--color-cream);
+    flex: 1;
+  }
+
+  .review-author {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--color-gold);
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 720px) {
+    .reviews-section {
+      padding: 40px 16px;
+    }
+    .review-card {
+      padding: 22px 18px;
+    }
+    .review-body {
+      font-size: 15px;
+    }
+  }
+</style>

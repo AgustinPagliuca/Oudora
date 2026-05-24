@@ -1,0 +1,18 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import ReviewForm from "@/components/admin/ReviewForm.astro";
+
+const errorParam = Astro.url.searchParams.get("error");
+const errorMessage =
+  errorParam === "validation"
+    ? "Hay campos sin completar o con datos inválidos. Revisalos y volvé a guardar."
+    : errorParam === "server"
+      ? "No se pudieron guardar los cambios. Reintentá en un momento."
+      : null;
+---
+
+<AdminLayout title="Nueva reseña">
+  <ReviewForm errorMessage={errorMessage} />
+</AdminLayout>

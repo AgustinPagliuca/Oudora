@@ -1,0 +1,343 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/Nav.astro";
+import Footer from "@/components/Footer.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import { REELS } from "@/data/catalog.generated";
+import { CONTACT, SITE_METADATA } from "@/constants/ui";
+
+const breadcrumbsTrail = [
+  { label: "Inicio", href: "/" },
+  { label: "Nosotros", href: "/nosotros" },
+];
+---
+
+<Layout title={`Nosotros · ${SITE_METADATA.name}`}>
+  <Nav />
+  <Breadcrumbs trail={breadcrumbsTrail} />
+
+  <section class="about-hero">
+    <p class="about-overline">Nuestra historia en video</p>
+    <h1 class="about-title">
+      Conocé a <em>OUDORA</em>
+    </h1>
+  </section>
+
+  {REELS.length > 0 && (
+    <section class="about-reels-section">
+      <div class="about-reels-grid">
+        {REELS.map((reel) => (
+          <a
+            href={reel.instagramUrl}
+            class="about-reel"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Ver reel "${reel.title}" en Instagram`}
+          >
+            <img src={reel.thumbnailUrl} alt={reel.title} class="about-reel-thumb" loading="lazy" />
+            <div class="about-reel-overlay" aria-hidden="true">
+              <div class="about-reel-play">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                  <polygon points="5,3 19,12 5,21" />
+                </svg>
+              </div>
+            </div>
+            <div class="about-reel-info">
+              <p class="about-reel-title">{reel.title}</p>
+              {reel.duration && <p class="about-reel-duration">@OUDORA · {reel.duration}</p>}
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div class="about-social-row">
+        <a href={CONTACT.instagramUrl} class="about-social-btn" target="_blank" rel="noopener noreferrer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+          </svg>
+          <span>Ver más en Instagram</span>
+        </a>
+        <a href={CONTACT.tiktokUrl} class="about-social-btn" target="_blank" rel="noopener noreferrer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z"/>
+          </svg>
+          <span>Ver más en TikTok</span>
+        </a>
+      </div>
+    </section>
+  )}
+
+  <section class="about-story">
+    <div class="about-story-inner">
+      <p class="about-story-overline">Sobre nosotros</p>
+      <h2 class="about-story-title">L'essence <em>d'arabie</em></h2>
+      <p>
+        OUDORA nace de la pasión por las fragancias árabes de tradición milenaria.
+        Seleccionamos cada perfume directamente de las casas más prestigiosas del
+        mundo árabe, garantizando autenticidad en cada gota.
+      </p>
+      <p>
+        Más que vender perfumes, ofrecemos una experiencia: la oportunidad de
+        descubrir aromas que cuentan historias, evocan paisajes y se convierten
+        en memoria.
+      </p>
+    </div>
+  </section>
+
+  <section class="about-values">
+    <div class="about-values-grid">
+      <div class="about-value">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 2h6v6h-2l2 4h-3v6l-1 4-1-4v-6H7l2-4H7V2z" />
+        </svg>
+        <h3>Autenticidad</h3>
+        <p>Cada fragancia es importada directo de su casa de origen.</p>
+      </div>
+      <div class="about-value">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        <h3>Asesoría personalizada</h3>
+        <p>Te ayudamos a elegir el perfume ideal para vos.</p>
+      </div>
+      <div class="about-value">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="1" y="3" width="15" height="13" />
+          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+          <circle cx="5.5" cy="18.5" r="2.5" />
+          <circle cx="18.5" cy="18.5" r="2.5" />
+        </svg>
+        <h3>Envíos a todo el país</h3>
+        <p>Llegamos a cualquier punto de Argentina.</p>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  .about-hero {
+    text-align: center;
+    padding: 56px clamp(16px, 4vw, 32px) 32px;
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+  }
+  .about-overline {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .about-title {
+    font-family: var(--font-serif);
+    font-size: clamp(36px, 6vw, 56px);
+    color: var(--color-cream);
+    font-weight: 400;
+    letter-spacing: 1px;
+    margin: 0;
+  }
+  .about-title em {
+    color: var(--color-gold);
+    font-style: italic;
+  }
+
+  .about-reels-section {
+    padding: 0 clamp(16px, 4vw, 32px) 56px;
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+  }
+
+  .about-reels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 280px));
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+
+  .about-reel {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--color-bg-card);
+    border: 0.5px solid rgba(201, 168, 76, 0.25);
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    cursor: pointer;
+    transition: transform var(--transition-default), border-color var(--transition-default);
+  }
+  .about-reel:hover {
+    transform: translateY(-3px);
+    border-color: rgba(201, 168, 76, 0.6);
+  }
+
+  .about-reel-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .about-reel-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.15),
+      rgba(0, 0, 0, 0.55)
+    );
+    pointer-events: none;
+  }
+  .about-reel-play {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(212, 179, 92, 0.15);
+    border: 1px solid var(--color-gold);
+    color: var(--color-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 3px;
+    transition: transform var(--transition-default), background var(--transition-default);
+  }
+  .about-reel:hover .about-reel-play {
+    transform: scale(1.1);
+    background: rgba(212, 179, 92, 0.25);
+  }
+
+  .about-reel-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
+    pointer-events: none;
+  }
+  .about-reel-title {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--color-gold);
+    margin-bottom: 4px;
+  }
+  .about-reel-duration {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+  }
+
+  .about-social-row {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .about-social-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 22px;
+    border: 0.5px solid rgba(201, 168, 76, 0.35);
+    border-radius: var(--radius-pill);
+    color: var(--color-cream);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: all var(--transition-default);
+  }
+  .about-social-btn:hover {
+    border-color: var(--color-gold);
+    background: rgba(201, 168, 76, 0.08);
+  }
+  .about-social-btn svg {
+    color: var(--color-gold);
+  }
+
+  .about-story {
+    background: var(--color-bg-deep);
+    border-top: 0.5px solid rgba(201, 168, 76, 0.15);
+    padding: 64px clamp(16px, 4vw, 32px);
+  }
+  .about-story-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .about-story-overline {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .about-story-title {
+    font-family: var(--font-serif);
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 400;
+    color: var(--color-cream);
+    letter-spacing: 1px;
+    margin: 0 0 28px;
+  }
+  .about-story-title em {
+    color: var(--color-gold);
+    font-style: italic;
+  }
+  .about-story p {
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--color-text);
+    margin: 0 0 18px;
+  }
+  .about-story p:last-child {
+    margin-bottom: 0;
+  }
+
+  .about-values {
+    padding: 64px clamp(16px, 4vw, 32px);
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+  }
+  .about-values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+  }
+  @media (max-width: 720px) {
+    .about-values-grid {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+  }
+  .about-value {
+    text-align: center;
+    color: var(--color-gold);
+  }
+  .about-value svg {
+    margin: 0 auto;
+  }
+  .about-value h3 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 20px;
+    color: var(--color-cream);
+    margin: 16px 0 8px;
+    letter-spacing: 1px;
+  }
+  .about-value p {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+</style>

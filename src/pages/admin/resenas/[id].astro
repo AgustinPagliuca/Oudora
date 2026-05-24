@@ -1,0 +1,93 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import ReviewForm from "@/components/admin/ReviewForm.astro";
+
+const supabase = Astro.locals.supabase;
+const { id } = Astro.params;
+
+if (id === undefined) {
+  return Astro.redirect("/admin/resenas");
+}
+
+const { data: reviewRaw } = await supabase
+  .from("reviews")
+  .select("id, author_name, body, rating, featured, published, sort_order, created_at")
+  .eq("id", id)
+  .maybeSingle();
+
+if (reviewRaw === null) {
+  return Astro.redirect("/admin/resenas");
+}
+
+const review = {
+  id: reviewRaw.id,
+  authorName: reviewRaw.author_name,
+  body: reviewRaw.body,
+  rating: reviewRaw.rating,
+  featured: reviewRaw.featured,
+  published: reviewRaw.published,
+  sortOrder: reviewRaw.sort_order,
+};
+
+const errorParam = Astro.url.searchParams.get("error");
+const errorMessage =
+  errorParam === "validation"
+    ? "Hay campos sin completar o con datos inválidos. Revisalos y volvé a guardar."
+    : errorParam === "server"
+      ? "No se pudieron guardar los cambios. Reintentá en un momento."
+      : null;
+
+const justCreated = Astro.url.searchParams.get("created") === "1";
+const successMessage = justCreated ? "Reseña creada correctamente." : null;
+---
+
+<AdminLayout title={review.authorName}>
+  <ReviewForm
+    review={review}
+    errorMessage={errorMessage}
+    successMessage={successMessage}
+  />
+
+  <script>
+    // Modal de borrar reseña
+    const modal = document.querySelector<HTMLDivElement>("[data-delete-modal]");
+    const form = document.querySelector<HTMLFormElement>("[data-delete-form]");
+    const nameTarget = document.querySelector<HTMLElement>("[data-delete-review-name]");
+    const cancelBtn = document.querySelector<HTMLButtonElement>("[data-delete-cancel]");
+
+    if (modal !== null && form !== null) {
+      function openModal(reviewId: string, name: string): void {
+        if (nameTarget !== null) nameTarget.textContent = name;
+        form!.action = `/api/admin/reviews/${reviewId}`;
+        modal!.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeModal(): void {
+        modal!.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+      }
+
+      document.querySelectorAll<HTMLButtonElement>("[data-delete-trigger]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const reviewId = btn.dataset.reviewId;
+          const name = btn.dataset.reviewName ?? "esta reseña";
+          if (reviewId === undefined) return;
+          openModal(reviewId, name);
+        });
+      });
+
+      cancelBtn?.addEventListener("click", closeModal);
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) closeModal();
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && modal.getAttribute("aria-hidden") === "false") {
+          closeModal();
+        }
+      });
+    }
+  </script>
+</AdminLayout>

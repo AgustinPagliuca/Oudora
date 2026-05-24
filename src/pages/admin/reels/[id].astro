@@ -1,0 +1,53 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import ReelForm from "@/components/admin/ReelForm.astro";
+
+const supabase = Astro.locals.supabase;
+const { id } = Astro.params;
+
+if (id === undefined) {
+  return Astro.redirect("/admin/reels");
+}
+
+const { data: reelRaw } = await supabase
+  .from("reels")
+  .select("id, title, thumbnail_url, thumbnail_path, instagram_url, duration, sort_order, published, created_at")
+  .eq("id", id)
+  .maybeSingle();
+
+if (reelRaw === null) {
+  return Astro.redirect("/admin/reels");
+}
+
+const reel = {
+  id: reelRaw.id,
+  title: reelRaw.title,
+  thumbnailUrl: reelRaw.thumbnail_url,
+  thumbnailPath: reelRaw.thumbnail_path,
+  instagramUrl: reelRaw.instagram_url,
+  duration: reelRaw.duration,
+  sortOrder: reelRaw.sort_order,
+  published: reelRaw.published,
+};
+
+const errorParam = Astro.url.searchParams.get("error");
+const errorMessage =
+  errorParam === "validation"
+    ? "Hay campos sin completar o con datos inválidos. Revisalos y volvé a guardar."
+    : errorParam === "server"
+      ? "No se pudieron guardar los cambios. Reintentá en un momento."
+      : null;
+
+const justCreated = Astro.url.searchParams.get("created") === "1";
+const successMessage = justCreated ? "Reel creado correctamente." : null;
+---
+
+<AdminLayout title={reel.title}>
+  <ReelForm
+    reel={reel}
+    errorMessage={errorMessage}
+    successMessage={successMessage}
+  />
+</AdminLayout>
