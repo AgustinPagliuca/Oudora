@@ -104,13 +104,144 @@ const breadcrumbsTrail = [
       }
     </div>
 
-    <div class="product-detail-info">
+    <div class="product-detail-info" data-quantity-target>
       <p class="product-detail-brand">
         <a href={`/marcas/${brand.slug}`}>{brand.name}</a>
       </p>
       <h1 class="product-detail-name">{product.name}</h1>
       <p class="product-detail-pres">{presentation}</p>
 
+      <div class="product-detail-price-row">
+        <span class="product-detail-price">{formattedPrice}</span>
+      </div>
+
+      <div class="product-detail-qty">
+        <p class="product-detail-qty-label">Cantidad</p>
+        <div class="product-detail-qty-row">
+          <div class="qty-stepper" role="group" aria-label="Seleccionar cantidad">
+            <button
+              type="button"
+              class="qty-btn"
+              data-quantity-decrement
+              aria-label="Restar uno"
+            >−</button>
+            <input
+              type="text"
+              inputmode="numeric"
+              class="qty-input"
+              value="1"
+              min="1"
+              max={product.stock > 0 ? product.stock : 1}
+              data-quantity-input
+              aria-label="Cantidad"
+              readonly
+            />
+            <button
+              type="button"
+              class="qty-btn"
+              data-quantity-increment
+              aria-label="Sumar uno"
+            >+</button>
+          </div>
+          {product.stock > 0 && (
+            <span class="product-detail-stock-text">
+              {product.stock === 1 ? "Última disponible" : `${product.stock} disponibles`}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="product-detail-add"
+        data-add-to-cart
+        data-product-id={product.id}
+        disabled={product.stock <= 0}
+      >
+        {product.stock > 0 ? "Agregar al carrito" : "Sin stock"}
+      </button>
+
+      <div class="product-detail-services">
+        <div class="product-detail-service">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="1" y="3" width="15" height="13" />
+            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+            <circle cx="5.5" cy="18.5" r="2.5" />
+            <circle cx="18.5" cy="18.5" r="2.5" />
+          </svg>
+          <p class="product-detail-service-title">Envío gratis</p>
+          <p class="product-detail-service-sub">desde $130.000</p>
+        </div>
+        <div class="product-detail-service">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            <polyline points="9 12 11 14 15 10" />
+          </svg>
+          <p class="product-detail-service-title">100% original</p>
+          <p class="product-detail-service-sub">garantizado</p>
+        </div>
+        <div class="product-detail-service">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <line x1="2" y1="10" x2="22" y2="10" />
+          </svg>
+          <p class="product-detail-service-title">Pago seguro</p>
+          <p class="product-detail-service-sub">transferencia · efectivo · cuotas</p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <section class="product-detail-tabs" data-tabs-container>
+    <div class="product-detail-tabs-nav" role="tablist">
+      <button
+        type="button"
+        class="product-detail-tab is-active"
+        role="tab"
+        aria-selected="true"
+        data-tab-trigger="description"
+      >
+        Descripción
+      </button>
+      {product.notes && product.notes.length > 0 && (
+        <button
+          type="button"
+          class="product-detail-tab"
+          role="tab"
+          aria-selected="false"
+          data-tab-trigger="notes"
+        >
+          Notas olfativas
+        </button>
+      )}
+      <button
+        type="button"
+        class="product-detail-tab"
+        role="tab"
+        aria-selected="false"
+        data-tab-trigger="details"
+      >
+        Detalles
+      </button>
+    </div>
+
+    <div class="product-detail-tab-panel is-active" data-tab-panel="description" role="tabpanel">
+      {product.description ? (
+        <p>{product.description}</p>
+      ) : (
+        <p class="product-detail-tab-empty">El vendedor todavía no agregó una descripción para esta fragancia.</p>
+      )}
+    </div>
+
+    {product.notes && product.notes.length > 0 && (
+      <div class="product-detail-tab-panel" data-tab-panel="notes" role="tabpanel" hidden>
+        <ul class="product-detail-notes-list">
+          {product.notes.map((note) => <li>{note}</li>)}
+        </ul>
+      </div>
+    )}
+
+    <div class="product-detail-tab-panel" data-tab-panel="details" role="tabpanel" hidden>
       <dl class="product-detail-meta">
         <div>
           <dt>Género</dt>
@@ -129,33 +260,8 @@ const breadcrumbsTrail = [
           <dd>{CATALOG_LABELS[product.catalog]}</dd>
         </div>
       </dl>
-
-      {product.notes && product.notes.length > 0 && (
-        <section class="product-detail-notes">
-          <h2>Notas olfativas</h2>
-          <ul>
-            {product.notes.map((note) => <li>{note}</li>)}
-          </ul>
-        </section>
-      )}
-
-      {product.description && (
-        <p class="product-detail-description">{product.description}</p>
-      )}
-
-      <div class="product-detail-buy">
-        <p class="product-detail-price">{formattedPrice}</p>
-        <button
-          type="button"
-          class="product-detail-add"
-          data-add-to-cart
-          data-product-id={product.id}
-        >
-          Agregar al carrito
-        </button>
-      </div>
     </div>
-  </article>
+  </section>
 
   {relatedProducts.length > 0 && (
     <section class="product-related">
@@ -239,110 +345,263 @@ const breadcrumbsTrail = [
 
   .product-detail-name {
     font-family: var(--font-serif);
-    font-size: clamp(28px, 4vw, 42px);
+    font-size: clamp(28px, 4vw, 44px);
     color: var(--color-cream);
     letter-spacing: 1px;
-    line-height: 1.1;
+    line-height: 1.05;
     font-weight: 400;
+    margin: 4px 0;
   }
 
   .product-detail-pres {
-    font-size: 12px;
+    font-size: 11px;
     letter-spacing: 2.5px;
     color: var(--color-text-muted);
     text-transform: uppercase;
+    margin-bottom: 12px;
   }
 
-  .product-detail-meta {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px 24px;
-    padding: 18px 0;
+  /* Bloque precio */
+  .product-detail-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding: 14px 0;
     border-top: 0.5px solid var(--color-border);
     border-bottom: 0.5px solid var(--color-border);
-    margin-top: 6px;
   }
-  .product-detail-meta dt {
-    font-size: 10px;
+  .product-detail-price {
+    font-family: var(--font-sans);
+    font-size: 24px;
+    color: var(--color-gold);
+    letter-spacing: 0;
+    line-height: 1;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
+  .product-detail-price-label {
+    font-size: 11px;
+    color: var(--color-text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* Selector de cantidad */
+  .product-detail-qty {
+    margin-top: 4px;
+  }
+  .product-detail-qty-label {
+    font-size: 11px;
     letter-spacing: 2px;
     color: var(--color-text-muted);
     text-transform: uppercase;
-    margin-bottom: 3px;
-  }
-  .product-detail-meta dd {
-    font-size: 14px;
-    color: var(--color-cream);
-    letter-spacing: 0.5px;
-  }
-
-  .product-detail-notes h2 {
-    font-family: var(--font-serif);
-    font-size: 18px;
-    color: var(--color-gold-light);
-    letter-spacing: 2px;
-    font-weight: 400;
     margin-bottom: 10px;
   }
-  .product-detail-notes ul {
+  .product-detail-qty-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .qty-stepper {
+    display: inline-flex;
+    align-items: center;
+    border: 0.5px solid rgba(201, 168, 76, 0.4);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+  .qty-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-gold-light);
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qty-btn:hover:not(:disabled) {
+    background: rgba(201, 168, 76, 0.12);
+  }
+  .qty-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .qty-input {
+    width: 36px;
+    text-align: center;
+    background: transparent;
+    border: none;
+    color: var(--color-cream);
+    font-size: 15px;
+    font-family: inherit;
+    -moz-appearance: textfield;
+  }
+  .qty-input:focus {
+    outline: none;
+  }
+  .qty-input::-webkit-outer-spin-button,
+  .qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .product-detail-stock-text {
+    font-size: 12px;
+    color: var(--color-text-muted);
+  }
+
+  /* Botón principal */
+  .product-detail-add {
+    background: linear-gradient(
+      to right,
+      rgba(201, 168, 76, 0.12),
+      rgba(201, 168, 76, 0.22),
+      rgba(201, 168, 76, 0.12)
+    );
+    border: 0.5px solid var(--color-gold);
+    color: var(--color-gold-light);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 18px 24px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin-top: 6px;
+  }
+  .product-detail-add:hover:not(:disabled) {
+    background: rgba(201, 168, 76, 0.28);
+  }
+  .product-detail-add:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+  .product-detail-add:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Tira de servicios */
+  .product-detail-services {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 0.5px solid rgba(201, 168, 76, 0.15);
+  }
+  .product-detail-service {
+    text-align: center;
+    color: var(--color-gold);
+  }
+  .product-detail-service svg {
+    margin: 0 auto;
+  }
+  .product-detail-service-title {
+    font-size: 11px;
+    letter-spacing: 1.2px;
+    color: var(--color-cream);
+    margin-top: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  .product-detail-service-sub {
+    font-size: 11px;
+    color: var(--color-text-muted);
+    margin-top: 2px;
+  }
+
+  /* Tabs */
+  .product-detail-tabs {
+    padding: 40px clamp(16px, 4vw, 32px);
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+    width: 100%;
+  }
+  .product-detail-tabs-nav {
+    display: flex;
+    gap: 32px;
+    border-bottom: 0.5px solid var(--color-border);
+    margin-bottom: 24px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .product-detail-tabs-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .product-detail-tab {
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid transparent;
+    color: var(--color-text-muted);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 14px 0;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all var(--transition-fast);
+    margin-bottom: -1px;
+  }
+  .product-detail-tab:hover {
+    color: var(--color-gold-light);
+  }
+  .product-detail-tab.is-active {
+    color: var(--color-gold-light);
+    border-bottom-color: var(--color-gold);
+  }
+  .product-detail-tab-panel {
+    max-width: 720px;
+    color: var(--color-text);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .product-detail-tab-panel[hidden] {
+    display: none;
+  }
+  .product-detail-tab-empty {
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+  .product-detail-notes-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
     list-style: none;
+    padding: 0;
   }
-  .product-detail-notes li {
+  .product-detail-notes-list li {
     font-size: 12px;
     letter-spacing: 1px;
     text-transform: capitalize;
     color: var(--color-text);
     background: rgba(201, 168, 76, 0.08);
     border: 0.5px solid rgba(201, 168, 76, 0.2);
-    padding: 6px 12px;
+    padding: 7px 14px;
     border-radius: var(--radius-pill);
   }
-
-  .product-detail-description {
-    font-size: 14px;
-    line-height: 1.7;
-    color: var(--color-text);
+  .product-detail-meta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 32px;
   }
-
-  .product-detail-buy {
-    margin-top: auto;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding-top: 20px;
-    border-top: 0.5px solid var(--color-border);
-    flex-wrap: wrap;
-  }
-
-  .product-detail-price {
-    font-family: var(--font-serif);
-    font-size: 32px;
-    color: var(--color-gold);
-    letter-spacing: 1px;
-    line-height: 1;
-  }
-
-  .product-detail-add {
-    flex: 1;
-    min-width: 180px;
-    background: rgba(201, 168, 76, 0.14);
-    border: 0.5px solid var(--color-gold);
-    color: var(--color-gold-light);
-    font-size: 12px;
-    font-weight: 500;
+  .product-detail-meta dt {
+    font-size: 10px;
     letter-spacing: 2px;
+    color: var(--color-text-muted);
     text-transform: uppercase;
-    padding: 14px 24px;
-    border-radius: var(--radius-pill);
-    transition: all var(--transition-fast);
+    margin-bottom: 4px;
   }
-  .product-detail-add:hover {
-    background: rgba(201, 168, 76, 0.25);
-  }
-  .product-detail-add:active {
-    transform: scale(0.98);
+  .product-detail-meta dd {
+    font-size: 14px;
+    color: var(--color-cream);
+    letter-spacing: 0.5px;
   }
 
   .product-related {
@@ -376,8 +635,18 @@ const breadcrumbsTrail = [
       grid-template-columns: 1fr;
       gap: 24px;
     }
-    .product-detail-meta {
-      grid-template-columns: 1fr 1fr;
+    .product-detail-services {
+      gap: 8px;
+    }
+    .product-detail-service-title {
+      font-size: 10px;
+      letter-spacing: 0.5px;
+    }
+    .product-detail-service-sub {
+      font-size: 10px;
+    }
+    .product-detail-tabs-nav {
+      gap: 20px;
     }
   }
 
@@ -422,20 +691,77 @@ const breadcrumbsTrail = [
 </style>
 
 <script>
-  // Click en thumbnail cambia la imagen principal
   document.addEventListener("DOMContentLoaded", () => {
+    // 1) Click en thumbnail cambia la imagen principal
     const mainImage = document.querySelector<HTMLImageElement>("[data-main-image]");
     const thumbs = document.querySelectorAll<HTMLButtonElement>("[data-thumb]");
-    if (mainImage === null || thumbs.length === 0) return;
-
-    thumbs.forEach((thumb) => {
-      thumb.addEventListener("click", () => {
-        const url = thumb.dataset.url;
-        if (url === undefined) return;
-        mainImage.src = url;
-        thumbs.forEach((t) => t.classList.remove("is-active"));
-        thumb.classList.add("is-active");
+    if (mainImage !== null && thumbs.length > 0) {
+      thumbs.forEach((thumb) => {
+        thumb.addEventListener("click", () => {
+          const url = thumb.dataset.url;
+          if (url === undefined) return;
+          mainImage.src = url;
+          thumbs.forEach((t) => t.classList.remove("is-active"));
+          thumb.classList.add("is-active");
+        });
       });
-    });
+    }
+
+    // 2) Selector de cantidad +/-
+    const qtyInput = document.querySelector<HTMLInputElement>("[data-quantity-input]");
+    const qtyDec = document.querySelector<HTMLButtonElement>("[data-quantity-decrement]");
+    const qtyInc = document.querySelector<HTMLButtonElement>("[data-quantity-increment]");
+
+    if (qtyInput !== null && qtyDec !== null && qtyInc !== null) {
+      const min = parseInt(qtyInput.getAttribute("min") ?? "1", 10);
+      const max = parseInt(qtyInput.getAttribute("max") ?? "99", 10);
+
+      function refreshButtons(): void {
+        const current = parseInt(qtyInput!.value, 10) || min;
+        qtyDec!.disabled = current <= min;
+        qtyInc!.disabled = current >= max;
+      }
+
+      qtyDec.addEventListener("click", () => {
+        const current = parseInt(qtyInput.value, 10) || min;
+        if (current > min) {
+          qtyInput.value = String(current - 1);
+          refreshButtons();
+        }
+      });
+      qtyInc.addEventListener("click", () => {
+        const current = parseInt(qtyInput.value, 10) || min;
+        if (current < max) {
+          qtyInput.value = String(current + 1);
+          refreshButtons();
+        }
+      });
+      refreshButtons();
+    }
+
+    // 3) Tabs: descripción / notas / detalles
+    const tabsContainer = document.querySelector<HTMLElement>("[data-tabs-container]");
+    if (tabsContainer !== null) {
+      const triggers = tabsContainer.querySelectorAll<HTMLButtonElement>("[data-tab-trigger]");
+      const panels = tabsContainer.querySelectorAll<HTMLElement>("[data-tab-panel]");
+
+      triggers.forEach((trigger) => {
+        trigger.addEventListener("click", () => {
+          const target = trigger.dataset.tabTrigger;
+          if (target === undefined) return;
+
+          triggers.forEach((t) => {
+            const isActive = t.dataset.tabTrigger === target;
+            t.classList.toggle("is-active", isActive);
+            t.setAttribute("aria-selected", isActive ? "true" : "false");
+          });
+          panels.forEach((p) => {
+            const isActive = p.dataset.tabPanel === target;
+            p.classList.toggle("is-active", isActive);
+            p.hidden = !isActive;
+          });
+        });
+      });
+    }
   });
 </script>

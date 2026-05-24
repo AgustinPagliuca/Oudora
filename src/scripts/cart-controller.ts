@@ -165,7 +165,21 @@ function setupAddToCartButtons(store: CartStore): void {
         const productId = button.dataset.productId;
         if (productId === undefined || productId.length === 0) return;
         if (!PRODUCTS_BY_ID.has(productId)) return;
-        store.addItem(productId, 1);
+
+        // Si el botón vive en un container con [data-quantity-target],
+        // respeta esa cantidad. Si no, agrega 1 (compatibilidad con ProductCard).
+        const container = button.closest<HTMLElement>(
+          "[data-quantity-target]",
+        );
+        const qtyInput = container?.querySelector<HTMLInputElement>(
+          "[data-quantity-input]",
+        );
+        const qty =
+          qtyInput !== null && qtyInput !== undefined
+            ? Math.max(1, parseInt(qtyInput.value, 10) || 1)
+            : 1;
+
+        store.addItem(productId, qty);
         setDrawerOpen(true);
       });
     });

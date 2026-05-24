@@ -200,11 +200,14 @@ const coverImage = product.images?.[0]?.url ?? product.imageUrl;
   }
 
   .product-price {
-    font-family: var(--font-serif);
-    font-size: 22px;
+    font-family: var(--font-sans);
+    font-size: 16px;
     color: var(--color-gold);
-    letter-spacing: 0.5px;
+    letter-spacing: 0;
     line-height: 1;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
   }
 
   .product-add {
