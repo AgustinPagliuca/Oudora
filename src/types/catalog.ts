@@ -104,3 +104,35 @@ export interface Reel {
   readonly published: boolean;
   readonly createdAt: string;
 }
+
+export type AnnouncementIcon =
+  | "truck"
+  | "gift"
+  | "percent"
+  | "credit-card"
+  | "star"
+  | "clock"
+  | "map-pin";
+
+export interface Announcement {
+  readonly id: string;
+  readonly text: string;
+  readonly icon: AnnouncementIcon | null;
+  readonly sortOrder: number;
+  readonly published: boolean;
+  readonly createdAt: string;
+}
+
+export interface HeroSlide {
+  readonly id: string;
+  readonly overline: string | null;
+  readonly title: string;
+  readonly subtitle: string | null;
+  readonly imageUrl: string;
+  readonly imagePath: string;
+  readonly ctaLabel: string | null;
+  readonly ctaHref: string | null;
+  readonly sortOrder: number;
+  readonly published: boolean;
+  readonly createdAt: string;
+}

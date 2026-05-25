@@ -3,6 +3,8 @@ import "@/styles/global.css";
 import { SITE_METADATA } from "@/constants/ui";
 import CartDrawer from "@/components/CartDrawer.astro";
 import SearchOverlay from "@/components/SearchOverlay.astro";
+import AnnouncementBar from "@/components/AnnouncementBar.astro";
+import WhatsAppButton from "@/components/WhatsAppButton.astro";
 
 interface Props {
   title?: string;
@@ -34,9 +36,11 @@ const pageDescription = description ?? SITE_METADATA.description;
     <title>{pageTitle}</title>
   </head>
   <body>
+    <AnnouncementBar />
     <slot />
     <CartDrawer />
     <SearchOverlay />
+    <WhatsAppButton />
 
     <script>
       import { initCartController } from "@/scripts/cart-controller";

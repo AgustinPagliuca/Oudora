@@ -86,6 +86,16 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
  * @property {string} created_at
  */
 
+/**
+ * @typedef {Object} AnnouncementRow
+ * @property {string} id
+ * @property {string} text
+ * @property {string | null} icon
+ * @property {number} sort_order
+ * @property {boolean} published
+ * @property {string} created_at
+ */
+
 async function fetchBrands() {
   const { data, error } = await supabase
     .from("brands")
@@ -150,6 +160,20 @@ async function fetchReels() {
   return data ?? [];
 }
 
+async function fetchAnnouncements() {
+  const { data, error } = await supabase
+    .from("announcements")
+    .select("id, text, icon, sort_order, published, created_at")
+    .eq("published", true)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: false });
+  if (error) {
+    console.warn(`[sync-catalog] announcements no disponible: ${error.message}`);
+    return [];
+  }
+  return data ?? [];
+}
+
 /**
  * Convierte snake_case de la DB a camelCase del modelo TS.
  * @param {ProductRow} row
@@ -183,8 +207,9 @@ function transformProduct(row, imagesByProduct) {
  * @param {ImageRow[]} imagesRaw
  * @param {ReviewRow[]} [reviewsRaw]
  * @param {ReelRow[]} [reelsRaw]
+ * @param {AnnouncementRow[]} [announcementsRaw]
  */
-function buildOutput(brandsRaw, productsRaw, imagesRaw, reviewsRaw = [], reelsRaw = []) {
+function buildOutput(brandsRaw, productsRaw, imagesRaw, reviewsRaw = [], reelsRaw = [], announcementsRaw = []) {
   const brands = brandsRaw.map((b) => ({
     id: b.id,
     slug: b.slug,
@@ -231,6 +256,15 @@ function buildOutput(brandsRaw, productsRaw, imagesRaw, reviewsRaw = [], reelsRa
     createdAt: r.created_at,
   }));
 
+  const announcements = announcementsRaw.map((a) => ({
+    id: a.id,
+    text: a.text,
+    icon: a.icon,
+    sortOrder: a.sort_order,
+    published: a.published,
+    createdAt: a.created_at,
+  }));
+
   const generatedAt = new Date().toISOString();
   return {
     text: `// ════════════════════════════════════════════════════════════
@@ -238,14 +272,14 @@ function buildOutput(brandsRaw, productsRaw, imagesRaw, reviewsRaw = [], reelsRa
 // ════════════════════════════════════════════════════════════
 //
 //  Generado por: scripts/sync-catalog.mjs
-//  Fuente:       Supabase (brands, products, product_images, reviews, reels)
+//  Fuente:       Supabase (brands, products, product_images, reviews, reels, announcements)
 //  Última sync:  ${generatedAt}
 //
 //  Para regenerar: pnpm run sync
 //
 // ════════════════════════════════════════════════════════════
 
-import type { Brand, Product, Review, Reel } from "@/types/catalog";
+import type { Brand, Product, Review, Reel, Announcement } from "@/types/catalog";
 
 export const BRANDS: readonly Brand[] = ${JSON.stringify(brands, null, 2)};
 
@@ -254,31 +288,36 @@ export const PRODUCTS: readonly Product[] = ${JSON.stringify(products, null, 2)}
 export const REVIEWS: readonly Review[] = ${JSON.stringify(reviews, null, 2)};
 
 export const REELS: readonly Reel[] = ${JSON.stringify(reels, null, 2)};
+
+export const ANNOUNCEMENTS: readonly Announcement[] = ${JSON.stringify(announcements, null, 2)};
 `,
     brands,
     products,
     imageCount: imagesRaw.length,
     reviewCount: reviews.length,
     reelCount: reels.length,
+    announcementCount: announcements.length,
   };
 }
 
 async function main() {
   console.log("[sync-catalog] Descargando catálogo desde Supabase…");
-  const [brandsRaw, productsRaw, imagesRaw, reviewsRaw, reelsRaw] = await Promise.all([
+  const [brandsRaw, productsRaw, imagesRaw, reviewsRaw, reelsRaw, announcementsRaw] = await Promise.all([
     fetchBrands(),
     fetchProducts(),
     fetchImages(),
     fetchReviews(),
     fetchReels(),
+    fetchAnnouncements(),
   ]);
 
-  const { text, brands, products, imageCount, reviewCount, reelCount } = buildOutput(
+  const { text, brands, products, imageCount, reviewCount, reelCount, announcementCount } = buildOutput(
     brandsRaw,
     productsRaw,
     imagesRaw,
     reviewsRaw,
     reelsRaw,
+    announcementsRaw,
   );
 
   const brandIds = new Set(brands.map((b) => b.id));
@@ -306,6 +345,7 @@ async function main() {
   console.log(`[sync-catalog] ✓ ${imageCount} imágenes (${withImages} productos con foto)`);
   console.log(`[sync-catalog] ✓ ${reviewCount} reseñas publicadas`);
   console.log(`[sync-catalog] ✓ ${reelCount} reels publicados`);
+  console.log(`[sync-catalog] ✓ ${announcementCount} avisos publicados`);
   console.log(`[sync-catalog] → ${outputPath}`);
 }
 

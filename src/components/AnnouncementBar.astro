@@ -1,0 +1,219 @@
+---
+/**
+ * Barra de avisos rotativos arriba del nav.
+ * Si hay varios avisos, rotan cada 5 segundos y muestran flechas manuales.
+ * Si hay solo uno, queda estático sin flechas.
+ * Si no hay ninguno, no se renderiza nada.
+ */
+
+import { ANNOUNCEMENTS } from "@/data/catalog.generated";
+import type { AnnouncementIcon } from "@/types/catalog";
+
+const items = ANNOUNCEMENTS;
+const hasMany = items.length > 1;
+
+const ICON_EMOJI: Record<AnnouncementIcon, string> = {
+  "truck": "🚚",
+  "gift": "🎁",
+  "percent": "🏷️",
+  "credit-card": "💳",
+  "star": "⭐",
+  "clock": "⏰",
+  "map-pin": "📍",
+};
+---
+
+{items.length > 0 && (
+  <div class="announcement-bar" data-announcement-bar data-count={items.length}>
+    <div class="announcement-inner">
+      {hasMany && (
+        <button type="button" class="announcement-arrow" data-announcement-prev aria-label="Aviso anterior">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+      )}
+
+      <div class="announcement-track" aria-live="polite">
+        {items.map((a, idx) => (
+          <div class="announcement-slide" data-slide={idx} data-active={idx === 0 ? "true" : "false"}>
+            {a.icon && (
+              <span class="announcement-icon" data-icon={a.icon} aria-hidden="true">{ICON_EMOJI[a.icon]}</span>
+            )}
+            <span>{a.text}</span>
+          </div>
+        ))}
+      </div>
+
+      {hasMany && (
+        <button type="button" class="announcement-arrow" data-announcement-next aria-label="Aviso siguiente">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      )}
+    </div>
+  </div>
+)}
+
+{hasMany && (
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const bar = document.querySelector<HTMLElement>("[data-announcement-bar]");
+      if (bar === null) return;
+
+      const slides = bar.querySelectorAll<HTMLElement>("[data-slide]");
+      if (slides.length <= 1) return;
+
+      const prevBtn = bar.querySelector<HTMLButtonElement>("[data-announcement-prev]");
+      const nextBtn = bar.querySelector<HTMLButtonElement>("[data-announcement-next]");
+
+      let currentIndex = 0;
+      let autoTimer: number | null = null;
+      const AUTO_INTERVAL = 5000;
+
+      function show(index: number): void {
+        slides.forEach((s, i) => {
+          s.dataset.active = i === index ? "true" : "false";
+        });
+        currentIndex = index;
+      }
+
+      function next(): void { show((currentIndex + 1) % slides.length); }
+      function prev(): void { show((currentIndex - 1 + slides.length) % slides.length); }
+
+      function startAuto(): void {
+        if (autoTimer !== null) return;
+        autoTimer = window.setInterval(next, AUTO_INTERVAL);
+      }
+      function pauseAuto(): void {
+        if (autoTimer !== null) {
+          clearInterval(autoTimer);
+          autoTimer = null;
+        }
+      }
+
+      prevBtn?.addEventListener("click", () => { pauseAuto(); prev(); startAuto(); });
+      nextBtn?.addEventListener("click", () => { pauseAuto(); next(); startAuto(); });
+
+      // Pausa cuando la pestaña no está activa (ahorra batería)
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) pauseAuto();
+        else startAuto();
+      });
+
+      startAuto();
+    });
+  </script>
+)}
+
+<style>
+  .announcement-bar {
+    background: #050403;
+    border-bottom: 0.5px solid rgba(201, 168, 76, 0.18);
+    padding: 8px 12px;
+    width: 100%;
+  }
+  .announcement-inner {
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+  }
+  .announcement-track {
+    flex: 1;
+    text-align: center;
+    min-height: 18px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .announcement-slide {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--color-gold);
+    font-weight: 600;
+    line-height: 1.4;
+    max-width: 100%;
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
+  .announcement-slide[data-active="true"] {
+    display: flex;
+    animation: announcement-fade 0.4s ease-out;
+  }
+  .announcement-slide > span:last-child {
+    text-align: center;
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+  @keyframes announcement-fade {
+    from { opacity: 0; transform: translateY(-2px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .announcement-icon {
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  /* Ajustes finos por emoji (cada uno tiene un baseline distinto según el SO) */
+  .announcement-icon[data-icon="credit-card"] {
+    transform: translateY(-1.5px);
+  }
+  .announcement-icon[data-icon="map-pin"] {
+    transform: translateY(-1px);
+  }
+
+  .announcement-arrow {
+    background: transparent;
+    border: none;
+    color: rgba(212, 179, 92, 0.5);
+    cursor: pointer;
+    padding: 4px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+    transition: color var(--transition-fast);
+    flex-shrink: 0;
+  }
+  .announcement-arrow:hover {
+    color: var(--color-gold);
+  }
+
+  @media (max-width: 720px) {
+    .announcement-bar {
+      padding: 7px 6px;
+    }
+    .announcement-slide {
+      font-size: 9.5px;
+      letter-spacing: 1px;
+      gap: 6px;
+      line-height: 1.35;
+    }
+    .announcement-icon {
+      font-size: 13px;
+    }
+    .announcement-inner {
+      gap: 4px;
+    }
+    .announcement-arrow {
+      padding: 4px 2px;
+    }
+    .announcement-arrow svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+</style>

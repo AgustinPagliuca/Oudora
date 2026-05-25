@@ -3,14 +3,14 @@
 // ════════════════════════════════════════════════════════════
 //
 //  Generado por: scripts/sync-catalog.mjs
-//  Fuente:       Supabase (brands, products, product_images, reviews, reels)
-//  Última sync:  2026-05-24T19:21:47.275Z
+//  Fuente:       Supabase (brands, products, product_images, reviews, reels, announcements)
+//  Última sync:  2026-05-25T16:12:34.764Z
 //
 //  Para regenerar: pnpm run sync
 //
 // ════════════════════════════════════════════════════════════
 
-import type { Brand, Product, Review, Reel } from "@/types/catalog";
+import type { Brand, Product, Review, Reel, Announcement } from "@/types/catalog";
 
 export const BRANDS: readonly Brand[] = [
   {
@@ -939,5 +939,32 @@ export const REELS: readonly Reel[] = [
     "sortOrder": 3,
     "published": true,
     "createdAt": "2026-05-24T19:21:24.554845+00:00"
+  }
+];
+
+export const ANNOUNCEMENTS: readonly Announcement[] = [
+  {
+    "id": "a2a1a9fb-8e6c-45f7-ab25-9701af79f33d",
+    "text": "Envío gratis a partir de $130.000",
+    "icon": "truck",
+    "sortOrder": 1,
+    "published": true,
+    "createdAt": "2026-05-25T16:06:52.302026+00:00"
+  },
+  {
+    "id": "8ac440c4-8134-4cee-81b1-07cf886d544b",
+    "text": "Cuotas con MercadoPago",
+    "icon": "credit-card",
+    "sortOrder": 2,
+    "published": true,
+    "createdAt": "2026-05-25T16:07:56.297754+00:00"
+  },
+  {
+    "id": "f750a359-9722-47a2-a6ca-0d5e0ebd20ed",
+    "text": "Retirá en puntos de encuentro específicos",
+    "icon": "map-pin",
+    "sortOrder": 3,
+    "published": true,
+    "createdAt": "2026-05-25T16:12:03.581015+00:00"
   }
 ];
