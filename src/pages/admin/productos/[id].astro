@@ -16,7 +16,7 @@ const [{ data: productRaw }, { data: brandsData }, { data: imagesData }] =
     supabase
       .from("products")
       .select(
-        "id, slug, brand_id, catalog, name, gender, concentration, volume_ml, price_ars, stock, notes, featured, created_at",
+        "id, slug, brand_id, catalog, name, gender, concentration, volume_ml, price_ars, stock, notes, featured, labels, created_at",
       )
       .eq("id", id)
       .maybeSingle(),
@@ -45,6 +45,17 @@ const product = {
   stock: productRaw.stock,
   notes: Array.isArray(productRaw.notes) ? productRaw.notes : [],
   featured: productRaw.featured === true,
+  labels: Array.isArray(productRaw.labels)
+    ? productRaw.labels
+        .filter(
+          (l: unknown): l is { text: string; color: string } =>
+            typeof l === "object" &&
+            l !== null &&
+            typeof (l as { text?: unknown }).text === "string" &&
+            typeof (l as { color?: unknown }).color === "string",
+        )
+        .slice(0, 3)
+    : [],
   createdAt: productRaw.created_at,
   images: imagesData ?? [],
 };

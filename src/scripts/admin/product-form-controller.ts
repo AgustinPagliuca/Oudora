@@ -179,16 +179,48 @@ function initDeleteModal(): void {
   });
 }
 
+/**
+ * Live preview de las etiquetas custom del producto.
+ * Sincroniza el badge de "Vista previa" con el texto y color de cada slot.
+ */
+function initLabelPreviews(): void {
+  const rows = document.querySelectorAll<HTMLElement>(".label-row");
+  rows.forEach((row) => {
+    const textInput = row.querySelector<HTMLInputElement>("[data-label-text-input]");
+    const colorSelect = row.querySelector<HTMLSelectElement>("[data-label-color-select]");
+    const preview = row.querySelector<HTMLElement>("[data-label-preview]");
+    if (textInput === null || colorSelect === null || preview === null) return;
+
+    const update = (): void => {
+      const text = textInput.value.trim();
+      preview.textContent = text === "" ? "Vista previa" : text;
+      preview.classList.remove(
+        "label-preview-dark",
+        "label-preview-red",
+        "label-preview-gold",
+      );
+      preview.classList.add(`label-preview-${colorSelect.value}`);
+      preview.style.opacity = text === "" ? "0.4" : "1";
+    };
+
+    textInput.addEventListener("input", update);
+    colorSelect.addEventListener("change", update);
+    update();
+  });
+}
+
 export function initProductFormController(): void {
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
       initSlugAutogen();
       initTagInput();
       initDeleteModal();
+      initLabelPreviews();
     });
   } else {
     initSlugAutogen();
     initTagInput();
     initDeleteModal();
+    initLabelPreviews();
   }
 }

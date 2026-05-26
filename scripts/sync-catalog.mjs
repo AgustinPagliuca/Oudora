@@ -52,6 +52,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
  * @property {string[] | null} notes
  * @property {boolean | null} featured
  * @property {string | null} image_url
+ * @property {Array<{text: string, color: string}> | null} labels
  */
 
 /**
@@ -125,7 +126,7 @@ async function fetchProducts() {
   const { data, error } = await supabase
     .from("products")
     .select(
-      "id, slug, brand_id, catalog, name, gender, concentration, volume_ml, price_ars, stock, notes, featured, image_url",
+      "id, slug, brand_id, catalog, name, gender, concentration, volume_ml, price_ars, stock, notes, featured, image_url, labels",
     )
     .order("brand_id", { ascending: true })
     .order("name", { ascending: true });
@@ -210,6 +211,15 @@ async function fetchHeroSlides() {
  */
 function transformProduct(row, imagesByProduct) {
   const productImages = imagesByProduct.get(row.id) ?? [];
+  const validLabels = Array.isArray(row.labels)
+    ? row.labels
+        .filter((l) => l && typeof l.text === "string" && l.text.trim().length > 0)
+        .map((l) => ({
+          text: l.text.trim(),
+          color: ["dark", "red", "gold"].includes(l.color) ? l.color : "dark",
+        }))
+        .slice(0, 3)
+    : [];
   return {
     id: row.id,
     slug: row.slug,
@@ -227,6 +237,7 @@ function transformProduct(row, imagesByProduct) {
     ...(row.featured ? { featured: true } : {}),
     ...(row.image_url ? { imageUrl: row.image_url } : {}),
     ...(productImages.length > 0 ? { images: productImages } : {}),
+    ...(validLabels.length > 0 ? { labels: validLabels } : {}),
   };
 }
 

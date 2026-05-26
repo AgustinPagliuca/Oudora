@@ -4,7 +4,7 @@
 //
 //  Generado por: scripts/sync-catalog.mjs
 //  Fuente:       Supabase (brands, products, product_images, reviews, reels, announcements, hero_slides)
-//  Última sync:  2026-05-25T23:15:21.907Z
+//  Última sync:  2026-05-26T16:46:06.738Z
 //
 //  Para regenerar: pnpm run sync
 //
@@ -586,6 +586,12 @@ export const PRODUCTS: readonly Product[] = [
       {
         "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-khamrah/ae5735b4-db19-43a2-85d1-9a63048ed7c9.webp",
         "position": 1
+      }
+    ],
+    "labels": [
+      {
+        "text": "TENDENCIA🔥​​",
+        "color": "dark"
       }
     ]
   },

@@ -506,6 +506,7 @@ const { groups, activeCatalog } = Astro.props;
   @media (max-width: 920px) {
     .sidebar-backdrop {
       display: block;
+      z-index: 109;
     }
     body[data-sidebar-open="true"] .sidebar-backdrop {
       opacity: 1;
@@ -518,7 +519,7 @@ const { groups, activeCatalog } = Astro.props;
       left: 0;
       bottom: 0;
       width: min(340px, 88vw);
-      z-index: 90;
+      z-index: 110;
       transform: translateX(-100%);
       transition: transform var(--transition-default);
       border-radius: 0;

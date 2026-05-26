@@ -1,0 +1,79 @@
+---
+/**
+ * Etiquetas custom apiladas sobre la foto del producto.
+ * Configurables desde admin. Hasta 3 etiquetas, 3 colores (dark/red/gold).
+ * Reemplaza al viejo Ribbon de género.
+ */
+import type { ProductLabel } from "@/types/catalog";
+
+interface Props {
+  labels: readonly ProductLabel[] | undefined;
+}
+
+const { labels } = Astro.props;
+const visibleLabels = (labels ?? []).slice(0, 3);
+---
+
+{visibleLabels.length > 0 && (
+  <div class="product-labels" aria-hidden="false">
+    {visibleLabels.map((label) => (
+      <span class={`product-label product-label-${label.color}`}>
+        {label.text}
+      </span>
+    ))}
+  </div>
+)}
+
+<style>
+  .product-labels {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 3;
+    align-items: flex-end;
+    pointer-events: none;
+  }
+
+  .product-label {
+    display: inline-block;
+    padding: 5px 10px;
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    border-radius: 3px;
+    line-height: 1;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  }
+
+  .product-label-dark {
+    background: #0a0908;
+    color: #f5edd8;
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .product-label-red {
+    background: #c2363a;
+    color: #ffffff;
+    border: 0.5px solid rgba(0, 0, 0, 0.12);
+  }
+
+  .product-label-gold {
+    background: var(--color-gold);
+    color: #0a0908;
+    border: 0.5px solid rgba(0, 0, 0, 0.18);
+  }
+
+  @media (max-width: 480px) {
+    .product-label {
+      font-size: 9px;
+      padding: 4px 8px;
+      letter-spacing: 1px;
+    }
+  }
+</style>

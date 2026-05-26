@@ -3,7 +3,7 @@ import type { Brand, Product } from "@/types/catalog";
 import { formatArs, formatPresentation } from "@/lib/format";
 import { getStockLabel } from "@/lib/grouping";
 import PerfumeBottle from "@/components/PerfumeBottle.astro";
-import Ribbon from "@/components/Ribbon.astro";
+import ProductLabels from "@/components/ProductLabels.astro";
 
 interface Props {
   product: Product;
@@ -39,7 +39,7 @@ const coverImage = product.images?.[0]?.url ?? product.imageUrl;
   data-search-text={searchText}
 >
   <a class="product-image" href={detailHref} aria-label={`Ver detalle de ${product.name}`}>
-    <Ribbon gender={product.gender} />
+    <ProductLabels labels={product.labels} />
     {
       coverImage !== undefined ? (
         <img
@@ -103,27 +103,46 @@ const coverImage = product.images?.[0]?.url ?? product.imageUrl;
   }
 
   .product-image {
-    display: block;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    background: radial-gradient(
-      ellipse at center,
-      #1c1910 0%,
-      var(--color-bg) 80%
-    );
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background:
+      radial-gradient(
+        ellipse at center,
+        #2a2418 0%,
+        #14110b 75%,
+        #0e0c07 100%
+      );
     position: relative;
-    color: inherit;
     overflow: hidden;
+    padding: 14px;
+    box-sizing: border-box;
+    color: inherit;
+  }
+  /* Vignette interna sutil: oscurece bordes para integrar fotos con fondo blanco */
+  .product-image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 55%,
+      rgba(10, 9, 8, 0.35) 100%
+    );
+    z-index: 1;
   }
 
   .product-image-real {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 4px;
     transition: transform var(--transition-default);
+    position: relative;
+    z-index: 0;
   }
   .product-card:hover .product-image-real {
     transform: scale(1.04);

@@ -166,11 +166,17 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
   .hero-carousel {
     position: relative;
     background: var(--color-bg-deep);
-    background-image: radial-gradient(
-      ellipse 80% 60% at 85% 50%,
-      rgba(201, 168, 76, 0.06) 0%,
-      transparent 65%
-    );
+    background-image:
+      radial-gradient(
+        ellipse 80% 70% at 88% 50%,
+        rgba(201, 168, 76, 0.14) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 60% 50% at 10% 80%,
+        rgba(201, 168, 76, 0.06) 0%,
+        transparent 70%
+      );
     padding: clamp(40px, 5vw, 64px) clamp(20px, 5vw, 72px);
     overflow: hidden;
   }

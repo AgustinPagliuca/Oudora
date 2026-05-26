@@ -7,7 +7,15 @@
 const VALID_CATALOGS = new Set(["arabe", "disenador"]);
 const VALID_GENDERS = new Set(["femenino", "masculino", "unisex"]);
 const VALID_CONCENTRATIONS = new Set(["EDP", "EDT", "Parfum", "Extrait"]);
+const VALID_LABEL_COLORS = new Set(["dark", "red", "gold"]);
 const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const MAX_LABELS = 3;
+const MAX_LABEL_TEXT_LENGTH = 20;
+
+export interface ProductLabelInput {
+  text: string;
+  color: string;
+}
 
 export interface ProductInput {
   slug: string;
@@ -21,6 +29,7 @@ export interface ProductInput {
   stock: number;
   notes: string[] | null;
   featured: boolean;
+  labels: ProductLabelInput[];
 }
 
 export type ParseResult =
@@ -34,6 +43,24 @@ function parseInt0(value: FormDataEntryValue | null): number | null {
   const n = Number(trimmed);
   if (!Number.isFinite(n) || !Number.isInteger(n)) return null;
   return n;
+}
+
+/**
+ * Lee labels del FormData. El form envía pares label_text_N y label_color_N
+ * para N = 0..MAX_LABELS-1. Slots con texto vacío se descartan.
+ * Si algún slot tiene texto pero color inválido → falla la validación.
+ */
+function parseLabels(formData: FormData): ProductLabelInput[] | null {
+  const labels: ProductLabelInput[] = [];
+  for (let i = 0; i < MAX_LABELS; i++) {
+    const text = formData.get(`label_text_${i}`)?.toString().trim() ?? "";
+    const color = formData.get(`label_color_${i}`)?.toString().trim() ?? "dark";
+    if (text === "") continue;
+    if (text.length > MAX_LABEL_TEXT_LENGTH) return null;
+    if (!VALID_LABEL_COLORS.has(color)) return null;
+    labels.push({ text, color });
+  }
+  return labels;
 }
 
 export function parseProductForm(formData: FormData): ParseResult {
@@ -52,6 +79,7 @@ export function parseProductForm(formData: FormData): ParseResult {
     .filter((n) => n.length > 0);
   const notes = notesRaw.length > 0 ? Array.from(new Set(notesRaw)) : null;
   const featured = formData.get("featured") === "on";
+  const labels = parseLabels(formData);
 
   // Validaciones
   if (slug === "" || !SLUG_REGEX.test(slug)) return { ok: false, reason: "validation" };
@@ -66,6 +94,7 @@ export function parseProductForm(formData: FormData): ParseResult {
   if (priceArs === null || priceArs < 0)
     return { ok: false, reason: "validation" };
   if (stock === null || stock < 0) return { ok: false, reason: "validation" };
+  if (labels === null) return { ok: false, reason: "validation" };
 
   return {
     ok: true,
@@ -81,6 +110,7 @@ export function parseProductForm(formData: FormData): ParseResult {
       stock,
       notes,
       featured,
+      labels,
     },
   };
 }

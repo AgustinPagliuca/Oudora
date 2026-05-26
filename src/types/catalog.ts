@@ -12,6 +12,17 @@ export type Concentration = "EDP" | "EDT" | "Extrait" | "Parfum";
 
 export type StockStatus = "in_stock" | "low_stock" | "last_unit" | "out_of_stock";
 
+/**
+ * Etiquetas custom que aparecen sobre la foto del producto en el card.
+ * Configurables desde el admin (máx 3 por producto). Reemplazan al ribbon de género.
+ */
+export type ProductLabelColor = "dark" | "red" | "gold";
+
+export interface ProductLabel {
+  readonly text: string;
+  readonly color: ProductLabelColor;
+}
+
 export interface Brand {
   readonly id: string;
   readonly slug: string;
@@ -40,6 +51,7 @@ export interface Product {
   readonly imageUrl?: string;
   readonly images?: readonly ProductImage[];
   readonly featured?: boolean;
+  readonly labels?: readonly ProductLabel[];
 }
 
 export interface CartItem {

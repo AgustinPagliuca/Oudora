@@ -23,6 +23,11 @@ interface ImageRecord {
   position: number;
 }
 
+interface LabelRecord {
+  text: string;
+  color: string;
+}
+
 interface ProductValues {
   id: string;
   slug: string;
@@ -36,6 +41,7 @@ interface ProductValues {
   stock: number;
   notes: string[];
   featured: boolean;
+  labels?: LabelRecord[];
   createdAt?: string;
   images?: ImageRecord[];
 }
@@ -71,7 +77,13 @@ const values = {
   stock: product?.stock ?? 0,
   notes: product?.notes ?? [],
   featured: product?.featured ?? false,
+  labels: product?.labels ?? [],
 };
+
+// Rellenamos hasta 3 slots para renderizar siempre 3 filas en el form
+const labelSlots: Array<LabelRecord | null> = [0, 1, 2].map(
+  (i) => values.labels[i] ?? null,
+);
 
 const createdAtFormatted =
   product?.createdAt !== undefined
@@ -301,6 +313,57 @@ const currentBrand = brands.find((b) => b.id === values.brandId);
           — aparece en el strip de la portada
         </span>
       </label>
+    </section>
+
+    <!-- Panel: Etiquetas custom (reemplazan al ribbon de género) -->
+    <section class="panel form-panel">
+      <h2 class="panel-title">Etiquetas</h2>
+      <p class="panel-description">
+        Hasta <strong>3 etiquetas</strong> opcionales sobre la foto del producto. Texto libre
+        (máx 20 caracteres, podés usar emoji). Dejá vacío el texto para no mostrar.
+      </p>
+      <div class="labels-grid">
+        {labelSlots.map((slot, i) => (
+          <div class="label-row">
+            <span class="label-row-number">{i + 1}</span>
+            <input
+              type="text"
+              name={`label_text_${i}`}
+              class="field-input label-text-input"
+              maxlength="20"
+              placeholder={i === 0 ? "Ej: TENDENCIA 🔥" : i === 1 ? "Ej: -60%" : "Ej: TAMAÑO XL"}
+              value={slot?.text ?? ""}
+              data-label-text-input
+            />
+            <select
+              name={`label_color_${i}`}
+              class="field-input label-color-select"
+              data-label-color-select
+            >
+              <option value="dark" selected={(slot?.color ?? "dark") === "dark"}>
+                Negro
+              </option>
+              <option value="red" selected={slot?.color === "red"}>
+                Rojo
+              </option>
+              <option value="gold" selected={slot?.color === "gold"}>
+                Dorado
+              </option>
+            </select>
+            <span
+              class={`label-preview label-preview-${slot?.color ?? "dark"}`}
+              data-label-preview
+            >
+              {slot?.text === undefined || slot.text === ""
+                ? "Vista previa"
+                : slot.text}
+            </span>
+          </div>
+        ))}
+      </div>
+      <p class="field-hint" style="margin-top:14px">
+        💡 Colores sugeridos: <strong>Negro</strong> para tendencia/tamaños · <strong>Rojo</strong> para descuentos · <strong>Dorado</strong> para edición limitada.
+      </p>
     </section>
 
     <!-- Panel: Notas olfativas -->
@@ -687,5 +750,87 @@ const currentBrand = brands.find((b) => b.id === values.brandId);
     display: flex;
     justify-content: flex-end;
     gap: 8px;
+  }
+
+  /* ── Sección Etiquetas ──────────────────────────────────── */
+  .labels-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .label-row {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) 120px 150px;
+    gap: 12px;
+    align-items: center;
+  }
+  .label-row-number {
+    font-size: 12px;
+    color: var(--color-text-muted, #9a8e78);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .label-text-input {
+    min-width: 0;
+  }
+  .label-color-select {
+    width: 100%;
+  }
+  .label-preview {
+    display: inline-block;
+    padding: 5px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    border-radius: 3px;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .label-preview-dark {
+    background: #0a0908;
+    color: #f5edd8;
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+  }
+  .label-preview-red {
+    background: #c2363a;
+    color: #ffffff;
+  }
+  .label-preview-gold {
+    background: #c9a84c;
+    color: #0a0908;
+  }
+  .label-preview:empty::before {
+    content: "Vista previa";
+    opacity: 0.4;
+  }
+
+  @media (max-width: 720px) {
+    .label-row {
+      grid-template-columns: 24px 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 8px;
+    }
+    .label-row-number {
+      grid-row: 1;
+    }
+    .label-text-input {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .label-color-select {
+      grid-column: 2;
+      grid-row: 2;
+    }
+    .label-preview {
+      grid-column: 2;
+      grid-row: 3;
+      justify-self: start;
+    }
   }
 </style>

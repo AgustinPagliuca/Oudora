@@ -26,14 +26,6 @@ const ICON_EMOJI: Record<AnnouncementIcon, string> = {
 {items.length > 0 && (
   <div class="announcement-bar" data-announcement-bar data-count={items.length}>
     <div class="announcement-inner">
-      {hasMany && (
-        <button type="button" class="announcement-arrow" data-announcement-prev aria-label="Aviso anterior">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-        </button>
-      )}
-
       <div class="announcement-track" aria-live="polite">
         {items.map((a, idx) => (
           <div class="announcement-slide" data-slide={idx} data-active={idx === 0 ? "true" : "false"}>
@@ -44,14 +36,6 @@ const ICON_EMOJI: Record<AnnouncementIcon, string> = {
           </div>
         ))}
       </div>
-
-      {hasMany && (
-        <button type="button" class="announcement-arrow" data-announcement-next aria-label="Aviso siguiente">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </button>
-      )}
     </div>
   </div>
 )}
@@ -175,23 +159,6 @@ const ICON_EMOJI: Record<AnnouncementIcon, string> = {
     transform: translateY(-1px);
   }
 
-  .announcement-arrow {
-    background: transparent;
-    border: none;
-    color: rgba(212, 179, 92, 0.5);
-    cursor: pointer;
-    padding: 4px 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 0;
-    transition: color var(--transition-fast);
-    flex-shrink: 0;
-  }
-  .announcement-arrow:hover {
-    color: var(--color-gold);
-  }
-
   @media (max-width: 720px) {
     .announcement-bar {
       padding: 7px 6px;
@@ -207,13 +174,6 @@ const ICON_EMOJI: Record<AnnouncementIcon, string> = {
     }
     .announcement-inner {
       gap: 4px;
-    }
-    .announcement-arrow {
-      padding: 4px 2px;
-    }
-    .announcement-arrow svg {
-      width: 12px;
-      height: 12px;
     }
   }
 </style>
