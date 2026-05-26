@@ -1,0 +1,921 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/Nav.astro";
+import Footer from "@/components/Footer.astro";
+import {
+  ARGENTINA_PROVINCES,
+  CHECKOUT_FIELD_RULES,
+  PICKUP_POINT,
+  SHIPPING_METHODS,
+} from "@/constants/checkout";
+
+/**
+ * Checkout v1.0 — 3 pasos en una sola página:
+ *   1. Tipo de envío (retiro / domicilio)
+ *   2. Datos del comprador (form adaptativo según paso 1)
+ *   3. Resumen + apertura de WhatsApp con el pedido completo
+ *
+ * El estado vive del lado cliente (cart en localStorage, navegación entre steps
+ * con JS). La página server-renderiza los tres pasos al mismo tiempo y el
+ * controller los muestra/oculta. Esto da mejor First Paint y deja todo cacheable.
+ *
+ * Validación:
+ *   - HTML5 nativo: required, pattern, minlength/maxlength, type=email
+ *   - Capa custom encima en checkout-controller.ts que recolecta TODOS los errores
+ *     antes de avanzar, en lugar de cortar al primer error.
+ */
+
+const fieldRules = CHECKOUT_FIELD_RULES;
+---
+
+<Layout title="Finalizar compra · OUDORA">
+  <Nav />
+
+  <main class="checkout" data-checkout>
+    <header class="checkout-header">
+      <h1 class="checkout-title">Finalizá tu compra</h1>
+      <p class="checkout-subtitle">
+        Completá los datos y te abrimos WhatsApp con el pedido para que el vendedor
+        te confirme stock, cotice el envío y te pase el link de Mercado Pago.
+      </p>
+    </header>
+
+    <!-- Stepper visual -->
+    <ol class="stepper" aria-label="Pasos del checkout" data-stepper>
+      <li class="stepper-item" data-stepper-item="1" aria-current="step">
+        <span class="stepper-circle">1</span>
+        <span class="stepper-label">Envío</span>
+      </li>
+      <li class="stepper-divider" aria-hidden="true"></li>
+      <li class="stepper-item" data-stepper-item="2">
+        <span class="stepper-circle">2</span>
+        <span class="stepper-label">Datos</span>
+      </li>
+      <li class="stepper-divider" aria-hidden="true"></li>
+      <li class="stepper-item" data-stepper-item="3">
+        <span class="stepper-circle">3</span>
+        <span class="stepper-label">Confirmar</span>
+      </li>
+    </ol>
+
+    <!-- Vacío: aparece solo si el cart está vacío al cargar -->
+    <section class="empty-cart panel" data-empty-cart hidden>
+      <h2>Tu carrito está vacío</h2>
+      <p>Agregá productos al carrito antes de iniciar la compra.</p>
+      <a class="btn btn-primary" href="/catalogo">Ver catálogo</a>
+    </section>
+
+    <!-- Form único que envuelve los 3 steps. Submit pasa por el controller. -->
+    <form class="checkout-form" data-checkout-form novalidate>
+      <!-- ── Paso 1: tipo de envío ───────────────────────────────────── -->
+      <section class="step panel" data-step="1">
+        <header class="step-header">
+          <span class="step-number">1</span>
+          <h2 class="step-title">¿Cómo querés recibirlo?</h2>
+        </header>
+
+        <div class="shipping-options" role="radiogroup" aria-labelledby="shipping-label">
+          <label class="shipping-option" data-shipping-card="retiro">
+            <input
+              type="radio"
+              name="shippingMethod"
+              value="retiro"
+              required
+              data-shipping-input
+            />
+            <div class="shipping-option-body">
+              <div class="shipping-option-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>
+                </svg>
+              </div>
+              <div class="shipping-option-text">
+                <p class="shipping-option-title">{SHIPPING_METHODS.retiro.label}</p>
+                <p class="shipping-option-description">{SHIPPING_METHODS.retiro.description}</p>
+                <p class="shipping-option-cost">{SHIPPING_METHODS.retiro.cost}</p>
+              </div>
+            </div>
+          </label>
+
+          <label class="shipping-option" data-shipping-card="domicilio">
+            <input
+              type="radio"
+              name="shippingMethod"
+              value="domicilio"
+              required
+              data-shipping-input
+            />
+            <div class="shipping-option-body">
+              <div class="shipping-option-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 17h13V5H3v12zM16 8h4l3 4v5h-7M7 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM19 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+                </svg>
+              </div>
+              <div class="shipping-option-text">
+                <p class="shipping-option-title">{SHIPPING_METHODS.domicilio.label}</p>
+                <p class="shipping-option-description">{SHIPPING_METHODS.domicilio.description}</p>
+                <p class="shipping-option-cost">{SHIPPING_METHODS.domicilio.cost}</p>
+              </div>
+            </div>
+          </label>
+        </div>
+
+        <p class="error-text" data-error-for="shippingMethod" hidden></p>
+
+        <div class="step-actions">
+          <button type="button" class="btn btn-primary" data-step-next="2">
+            Continuar
+          </button>
+        </div>
+      </section>
+
+      <!-- ── Paso 2: datos del comprador ─────────────────────────────── -->
+      <section class="step panel" data-step="2" hidden>
+        <header class="step-header">
+          <span class="step-number">2</span>
+          <h2 class="step-title">Tus datos</h2>
+        </header>
+
+        <p class="step-description" data-shipping-context-retiro hidden>
+          Para coordinar el retiro en {PICKUP_POINT.city} solo necesitamos lo esencial.
+        </p>
+        <p class="step-description" data-shipping-context-domicilio hidden>
+          Para enviar a tu domicilio necesitamos la dirección completa.
+        </p>
+
+        <div class="form-grid">
+          <!-- Campos comunes -->
+          <div class="form-field">
+            <label for="firstName">Nombre <span class="required-mark" aria-hidden="true">*</span></label>
+            <input
+              type="text"
+              id="firstName"
+              name="firstName"
+              autocomplete="given-name"
+              required
+              minlength={fieldRules.firstName.minLength}
+              maxlength={fieldRules.firstName.maxLength}
+              pattern={fieldRules.firstName.pattern}
+              data-required-always
+            />
+            <p class="error-text" data-error-for="firstName" hidden></p>
+          </div>
+
+          <div class="form-field" data-only-domicilio hidden>
+            <label for="lastName">Apellido <span class="required-mark" aria-hidden="true">*</span></label>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              autocomplete="family-name"
+              minlength={fieldRules.lastName.minLength}
+              maxlength={fieldRules.lastName.maxLength}
+              pattern={fieldRules.lastName.pattern}
+              data-required-domicilio
+            />
+            <p class="error-text" data-error-for="lastName" hidden></p>
+          </div>
+
+          <div class="form-field form-field-full">
+            <label for="email">Email <span class="required-mark" aria-hidden="true">*</span></label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              autocomplete="email"
+              required
+              maxlength={fieldRules.email.maxLength}
+              data-required-always
+              inputmode="email"
+            />
+            <p class="error-text" data-error-for="email" hidden></p>
+          </div>
+
+          <div class="form-field">
+            <label for="phone">Teléfono <span class="required-mark" aria-hidden="true">*</span></label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              autocomplete="tel"
+              required
+              pattern={fieldRules.phone.pattern}
+              inputmode="tel"
+              placeholder="11 4055 2138"
+              data-required-always
+            />
+            <p class="error-text" data-error-for="phone" hidden></p>
+          </div>
+
+          <div class="form-field">
+            <label for="dni">DNI <span class="required-mark" aria-hidden="true">*</span></label>
+            <input
+              type="text"
+              id="dni"
+              name="dni"
+              autocomplete="off"
+              required
+              pattern={fieldRules.dni.pattern}
+              inputmode="numeric"
+              placeholder="38554210"
+              maxlength={fieldRules.dni.maxLength}
+              data-required-always
+            />
+            <p class="error-text" data-error-for="dni" hidden></p>
+          </div>
+
+          <!-- Campos solo si es domicilio -->
+          <div class="form-field form-field-full" data-only-domicilio hidden>
+            <label for="street">Dirección <span class="required-mark" aria-hidden="true">*</span></label>
+            <input
+              type="text"
+              id="street"
+              name="street"
+              autocomplete="street-address"
+              minlength={fieldRules.street.minLength}
+              maxlength={fieldRules.street.maxLength}
+              placeholder="Calle, número, piso, depto"
+              data-required-domicilio
+            />
+            <p class="error-text" data-error-for="street" hidden></p>
+          </div>
+
+          <div class="form-field" data-only-domicilio hidden>
+            <label for="city">Ciudad <span class="required-mark" aria-hidden="true">*</span></label>
+            <input
+              type="text"
+              id="city"
+              name="city"
+              autocomplete="address-level2"
+              minlength={fieldRules.city.minLength}
+              maxlength={fieldRules.city.maxLength}
+              pattern={fieldRules.city.pattern}
+              data-required-domicilio
+            />
+            <p class="error-text" data-error-for="city" hidden></p>
+          </div>
+
+          <div class="form-field" data-only-domicilio hidden>
+            <label for="postalCode">Código postal <span class="required-mark" aria-hidden="true">*</span></label>
+            <input
+              type="text"
+              id="postalCode"
+              name="postalCode"
+              autocomplete="postal-code"
+              minlength={fieldRules.postalCode.minLength}
+              maxlength={fieldRules.postalCode.maxLength}
+              pattern={fieldRules.postalCode.pattern}
+              inputmode="text"
+              placeholder="1428"
+              data-required-domicilio
+            />
+            <p class="error-text" data-error-for="postalCode" hidden></p>
+          </div>
+
+          <div class="form-field form-field-full" data-only-domicilio hidden>
+            <label for="province">Provincia <span class="required-mark" aria-hidden="true">*</span></label>
+            <select
+              id="province"
+              name="province"
+              autocomplete="address-level1"
+              data-required-domicilio
+            >
+              <option value="">Elegí una provincia</option>
+              {ARGENTINA_PROVINCES.map((p) => (
+                <option value={p}>{p}</option>
+              ))}
+            </select>
+            <p class="error-text" data-error-for="province" hidden></p>
+          </div>
+
+          <div class="form-field form-field-full">
+            <label for="notes">Notas para el vendedor <span class="optional-mark">(opcional)</span></label>
+            <textarea
+              id="notes"
+              name="notes"
+              rows="3"
+              maxlength={fieldRules.notes.maxLength}
+              placeholder="Algún detalle del envío, horario preferido, etc."
+            ></textarea>
+            <p class="error-text" data-error-for="notes" hidden></p>
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button type="button" class="btn btn-ghost" data-step-back="1">
+            Atrás
+          </button>
+          <button type="button" class="btn btn-primary" data-step-next="3">
+            Continuar
+          </button>
+        </div>
+      </section>
+
+      <!-- ── Paso 3: resumen y confirmación ─────────────────────────── -->
+      <section class="step panel" data-step="3" hidden>
+        <header class="step-header">
+          <span class="step-number">3</span>
+          <h2 class="step-title">Confirmá tu pedido</h2>
+        </header>
+
+        <div class="summary" data-summary>
+          <h3 class="summary-section-title">Productos</h3>
+          <ul class="summary-lines" data-summary-lines>
+            <!-- Lo llena el controller con datos del cart -->
+          </ul>
+
+          <div class="summary-totals">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span data-summary-subtotal>—</span>
+            </div>
+            <div class="summary-row">
+              <span data-summary-shipping-label>Envío</span>
+              <span data-summary-shipping-cost>—</span>
+            </div>
+            <div class="summary-row summary-total">
+              <span>Total estimado</span>
+              <span>
+                <span data-summary-total>—</span>
+                <span class="summary-total-note" data-summary-total-note hidden>+ envío</span>
+              </span>
+            </div>
+          </div>
+
+          <h3 class="summary-section-title">Tus datos</h3>
+          <dl class="summary-buyer" data-summary-buyer>
+            <!-- Lo llena el controller -->
+          </dl>
+        </div>
+
+        <div class="step-actions step-actions-final">
+          <button type="button" class="btn btn-ghost" data-step-back="2">
+            Atrás
+          </button>
+          <button type="submit" class="btn btn-whatsapp" data-checkout-submit>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M17.6 6.3A7.85 7.85 0 0 0 12 4a7.94 7.94 0 0 0-6.8 12L4 21l5.2-1.4a7.93 7.93 0 0 0 8.4-13.3zm-5.6 12.1a6.6 6.6 0 0 1-3.4-.9l-.2-.1-2.7.7.7-2.6-.2-.3a6.6 6.6 0 1 1 11.7-4 6.6 6.6 0 0 1-5.9 7.2zm3.7-5c-.2-.1-1.2-.6-1.4-.7s-.3-.1-.4.1c-.1.2-.5.7-.6.8-.1.1-.2.2-.4.1a5.3 5.3 0 0 1-2.6-2.3c-.2-.3.2-.3.5-1 .1-.1 0-.2 0-.3 0-.1-.4-1-.6-1.3-.2-.4-.3-.3-.4-.3h-.4c-.1 0-.3 0-.5.3a1.7 1.7 0 0 0-.5 1.2 3 3 0 0 0 .6 1.6c.1.1 1 1.5 2.5 2.1a8.3 8.3 0 0 0 .9.3 2 2 0 0 0 .9.1c.3 0 .9-.4 1-.7.1-.4.1-.7.1-.7s-.2-.1-.4-.2z"/>
+            </svg>
+            <span>Finalizar compra por WhatsApp</span>
+          </button>
+        </div>
+
+        <p class="footnote">
+          Te abrimos WhatsApp con todos los datos del pedido. El vendedor te confirma stock,
+          te cotiza el envío y te pasa el link de Mercado Pago.
+        </p>
+      </section>
+    </form>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  import { initCheckoutController } from "@/scripts/checkout-controller";
+  initCheckoutController();
+</script>
+
+<style>
+  .checkout {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: clamp(28px, 4vw, 56px) clamp(20px, 5vw, 48px) 80px;
+    color: var(--color-text);
+    position: relative;
+  }
+
+  /* Gradiente cálido de fondo: glow dorado arriba que se desvanece,
+     contraglow sutil abajo a la derecha. Da profundidad sin abandonar
+     la identidad oscura. */
+  .checkout::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        ellipse 100% 50% at 50% 0%,
+        rgba(201, 168, 76, 0.09) 0%,
+        transparent 55%
+      ),
+      radial-gradient(
+        ellipse 60% 40% at 90% 100%,
+        rgba(201, 168, 76, 0.04) 0%,
+        transparent 60%
+      );
+  }
+
+  .checkout-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .checkout-title {
+    font-family: var(--font-serif);
+    font-size: clamp(30px, 4vw, 44px);
+    font-weight: 400;
+    color: var(--color-cream);
+    margin: 0 0 12px;
+    letter-spacing: 0.5px;
+  }
+  .checkout-subtitle {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--color-text-muted);
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* ── Stepper ─────────────────────────────────────────────────── */
+  .stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    list-style: none;
+    margin: 0 0 32px;
+    padding: 0;
+  }
+  .stepper-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .stepper-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(201, 168, 76, 0.12);
+    color: var(--color-text-muted);
+    border: 0.5px solid rgba(212, 179, 92, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    transition: all var(--transition-default);
+  }
+  .stepper-label {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    transition: color var(--transition-default);
+  }
+  .stepper-item[data-state="active"] .stepper-circle {
+    background: var(--color-gold);
+    color: var(--color-bg-deep);
+    border-color: var(--color-gold);
+  }
+  .stepper-item[data-state="active"] .stepper-label {
+    color: var(--color-gold-light);
+  }
+  .stepper-item[data-state="done"] .stepper-circle {
+    background: rgba(201, 168, 76, 0.25);
+    color: var(--color-gold-light);
+    border-color: var(--color-gold);
+  }
+  .stepper-item[data-state="done"] .stepper-label {
+    color: var(--color-text);
+  }
+  .stepper-divider {
+    width: 40px;
+    height: 1px;
+    background: rgba(212, 179, 92, 0.25);
+  }
+
+  /* ── Panels (steps) ───────────────────────────────────────────── */
+  .panel {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(26, 22, 14, 0.85) 0%,
+        rgba(14, 12, 7, 0.85) 100%
+      );
+    border: 0.5px solid rgba(201, 168, 76, 0.22);
+    border-radius: var(--radius-md);
+    padding: clamp(20px, 3vw, 32px);
+    margin-bottom: 16px;
+    position: relative;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  }
+  /* Hairline gold sutil arriba del panel activo */
+  .panel::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 24px;
+    right: 24px;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(201, 168, 76, 0.5) 50%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .step-number {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--color-gold);
+    color: var(--color-bg-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-sans);
+  }
+  .step-title {
+    font-family: var(--font-serif);
+    font-size: clamp(20px, 2.4vw, 26px);
+    font-weight: 400;
+    color: var(--color-cream);
+    margin: 0;
+    letter-spacing: 0.3px;
+  }
+  .step-description {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    margin: -12px 0 24px;
+    line-height: 1.6;
+  }
+
+  /* ── Shipping options ─────────────────────────────────────────── */
+  .shipping-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .shipping-option {
+    position: relative;
+    cursor: pointer;
+    border: 0.5px solid rgba(201, 168, 76, 0.2);
+    border-radius: var(--radius-md);
+    background: linear-gradient(
+      180deg,
+      rgba(40, 32, 18, 0.4) 0%,
+      rgba(14, 12, 7, 0.4) 100%
+    );
+    padding: 20px;
+    transition: all var(--transition-default);
+  }
+  .shipping-option:hover {
+    border-color: rgba(212, 179, 92, 0.55);
+    background: linear-gradient(
+      180deg,
+      rgba(50, 40, 22, 0.5) 0%,
+      rgba(20, 16, 10, 0.5) 100%
+    );
+    transform: translateY(-1px);
+  }
+  .shipping-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .shipping-option:has(input[type="radio"]:checked) {
+    border: 1px solid var(--color-gold);
+    background: linear-gradient(
+      180deg,
+      rgba(70, 56, 30, 0.55) 0%,
+      rgba(24, 20, 12, 0.55) 100%
+    );
+    box-shadow:
+      0 0 0 1px var(--color-gold),
+      0 8px 24px rgba(201, 168, 76, 0.12);
+  }
+  .shipping-option-body {
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    height: 100%;
+  }
+  .shipping-option-icon {
+    color: var(--color-gold);
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .shipping-option-text {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+  .shipping-option-title {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    color: var(--color-cream);
+    margin: 0 0 6px;
+    font-weight: 400;
+  }
+  .shipping-option-description {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    margin: 0 0 14px;
+    flex: 1;
+  }
+  .shipping-option-cost {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-gold-light);
+    margin: 0;
+    font-weight: 600;
+    margin-top: auto;
+  }
+
+  /* ── Form ──────────────────────────────────────────────────────── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 16px;
+  }
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+  .form-field-full {
+    grid-column: 1 / -1;
+  }
+  .form-field label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    font-family: var(--font-sans);
+  }
+  .required-mark {
+    color: var(--color-gold);
+    margin-left: 2px;
+  }
+  .optional-mark {
+    color: var(--color-text-muted);
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+    margin-left: 4px;
+    font-size: 11px;
+  }
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    background: rgba(0, 0, 0, 0.35);
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    color: var(--color-cream);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .form-field input:focus,
+  .form-field select:focus,
+  .form-field textarea:focus {
+    outline: none;
+    border-color: var(--color-gold);
+    background: rgba(0, 0, 0, 0.5);
+  }
+  .form-field textarea {
+    resize: vertical;
+    min-height: 70px;
+    font-family: var(--font-sans);
+  }
+  .form-field input[data-invalid="true"],
+  .form-field select[data-invalid="true"],
+  .form-field textarea[data-invalid="true"] {
+    border-color: #c2363a;
+    background: rgba(194, 54, 58, 0.08);
+  }
+  .error-text {
+    color: #e88a8d;
+    font-size: 12px;
+    margin: 4px 0 0;
+    line-height: 1.4;
+  }
+
+  /* ── Actions ───────────────────────────────────────────────────── */
+  .step-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 28px;
+  }
+  .step-actions-final {
+    flex-direction: column-reverse;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 28px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: all var(--transition-default);
+  }
+  .btn-primary {
+    background: var(--color-gold);
+    color: var(--color-bg-deep);
+  }
+  .btn-primary:hover {
+    background: var(--color-gold-light);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-text);
+    border: 0.5px solid var(--color-border);
+  }
+  .btn-ghost:hover {
+    border-color: var(--color-gold);
+    color: var(--color-cream);
+  }
+  .btn-whatsapp {
+    background: #25d366;
+    color: white;
+    padding: 18px 32px;
+    font-size: 13px;
+    width: 100%;
+  }
+  .btn-whatsapp:hover {
+    background: #1eb155;
+    transform: translateY(-1px);
+  }
+  .btn-whatsapp svg {
+    flex-shrink: 0;
+  }
+
+  /* ── Summary (step 3) ─────────────────────────────────────────── */
+  .summary {
+    margin-bottom: 8px;
+  }
+  .summary-section-title {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    font-weight: 600;
+    margin: 0 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 0.5px solid var(--color-border);
+  }
+  .summary-section-title:not(:first-child) {
+    margin-top: 28px;
+  }
+  .summary-lines {
+    list-style: none;
+    margin: 0 0 18px;
+    padding: 0;
+  }
+  .summary-lines li {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 0.5px dashed rgba(212, 179, 92, 0.15);
+    font-size: 14px;
+    color: var(--color-cream);
+  }
+  .summary-line-qty {
+    color: var(--color-text-muted);
+    font-size: 12px;
+    margin-left: 4px;
+  }
+  .summary-totals {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 14px;
+    color: var(--color-text);
+  }
+  .summary-row > span:last-child {
+    font-variant-numeric: tabular-nums;
+  }
+  .summary-total {
+    border-top: 0.5px solid var(--color-border);
+    padding-top: 12px;
+    margin-top: 6px;
+    font-size: 17px;
+    color: var(--color-cream);
+    font-weight: 500;
+  }
+  .summary-total-note {
+    font-size: 11px;
+    color: var(--color-text-muted);
+    font-weight: 400;
+    margin-left: 4px;
+    font-style: italic;
+  }
+  .summary-buyer {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 10px 18px;
+    font-size: 13px;
+  }
+  .summary-buyer dt {
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .summary-buyer dd {
+    margin: 0;
+    color: var(--color-cream);
+    word-break: break-word;
+  }
+  .footnote {
+    margin: 16px 0 0;
+    font-size: 12px;
+    color: var(--color-text-muted);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  /* ── Empty state ──────────────────────────────────────────────── */
+  .empty-cart {
+    text-align: center;
+    padding: 60px 24px;
+  }
+  .empty-cart h2 {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    color: var(--color-cream);
+    margin: 0 0 12px;
+    font-weight: 400;
+  }
+  .empty-cart p {
+    color: var(--color-text-muted);
+    margin: 0 0 24px;
+    font-size: 14px;
+  }
+  .empty-cart .btn {
+    margin: 0 auto;
+  }
+
+  /* ── Mobile ──────────────────────────────────────────────────── */
+  @media (max-width: 720px) {
+    .stepper {
+      gap: 8px;
+    }
+    .stepper-divider {
+      width: 20px;
+    }
+    .stepper-label {
+      display: none;
+    }
+    .shipping-options {
+      grid-template-columns: 1fr;
+    }
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+    .form-field-full {
+      grid-column: 1;
+    }
+    .summary-buyer {
+      grid-template-columns: 1fr;
+      gap: 4px 0;
+    }
+    .summary-buyer dt {
+      margin-top: 8px;
+    }
+    .step-actions {
+      flex-direction: column-reverse;
+    }
+    .step-actions .btn {
+      width: 100%;
+    }
+  }
+</style>

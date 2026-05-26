@@ -3,7 +3,6 @@ import { BRANDS_BY_ID } from "@/data/brands";
 import { PRODUCTS } from "@/data/products";
 import { CartStore } from "@/lib/cart-store";
 import { formatArs, formatPresentation } from "@/lib/format";
-import { buildWhatsAppCheckoutUrl } from "@/lib/whatsapp";
 
 /**
  * Controlador del carrito.
@@ -139,13 +138,14 @@ function renderCheckoutLink(snapshot: CartSnapshot): void {
     "[data-cart-checkout]",
   );
   if (link === null) return;
-  const url = buildWhatsAppCheckoutUrl(snapshot);
-  if (url === null) {
-    link.removeAttribute("href");
+  // El href es estático a /checkout. Solo lo deshabilitamos visualmente
+  // cuando el cart está vacío.
+  if (snapshot.lines.length === 0) {
     link.setAttribute("aria-disabled", "true");
+    link.setAttribute("tabindex", "-1");
   } else {
-    link.setAttribute("href", url);
     link.removeAttribute("aria-disabled");
+    link.removeAttribute("tabindex");
   }
 }
 

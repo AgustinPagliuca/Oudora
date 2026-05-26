@@ -2,13 +2,13 @@
 /**
  * Carrusel del hero. Reemplaza el Hero estático cuando hay slides cargados.
  *
- * Layout v3: full-bleed — la imagen ocupa todo el espacio, el texto va arriba
- * sobre un degradado oscuro (izquierda densa, derecha transparente) que garantiza
- * legibilidad sin tapar la imagen. Patrón estándar de hero en luxury ecommerce.
- *
- * - 1 slide: estático, sin controles ni auto-rotate
- * - 2+ slides: auto-rotate cada 7s, flechas, indicadores
- * - Mobile: el degradado es vertical (arriba transparente, abajo denso), texto al pie
+ * Layout v4: full-bleed con drag-to-swipe.
+ * - Slides en un track horizontal (display: flex) movido con transform: translateX
+ * - Pointer events unificados: funciona con dedo en mobile y mouse en desktop
+ * - Durante el drag, el track sigue al dedo en tiempo real (sin transition)
+ * - Al soltar, snap a slide vecino si el drag > 18% del ancho o velocidad > 0.4 px/ms
+ * - Resistencia elástica en bordes (primer/último slide cuesta más arrastrarlo)
+ * - touch-action: pan-y para no pisar el scroll vertical del resto de la página
  */
 
 import type { HeroSlide } from "@/types/catalog";
@@ -22,7 +22,6 @@ const hasMany = slides.length > 1;
 
 /**
  * Parsea {texto} dentro del título como itálica dorada (énfasis).
- * Ej: "Perfumes {árabes} de colección" → "Perfumes <em>árabes</em> de colección"
  */
 function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: boolean }> {
   const parts: Array<{ text: string; emphasis: boolean }> = [];
@@ -44,37 +43,40 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
 ---
 
 <section class="hero-carousel" data-hero-carousel data-count={slides.length}>
-  {slides.map((slide, idx) => (
-    <div class="hero-slide" data-slide={idx} data-active={idx === 0 ? "true" : "false"}>
-      <img
-        src={slide.imageUrl}
-        alt=""
-        class="hero-slide-bg"
-        loading={idx === 0 ? "eager" : "lazy"}
-      />
-      <div class="hero-slide-overlay" aria-hidden="true"></div>
-      <div class="hero-slide-content">
-        <div class="hero-slide-text">
-          {slide.overline && <p class="hero-slide-overline">{slide.overline}</p>}
-          <h1 class="hero-slide-title">
-            {parseTitleEmphasis(slide.title).map((p) =>
-              p.emphasis ? <em>{p.text}</em> : <>{p.text}</>
+  <div class="hero-track" data-hero-track>
+    {slides.map((slide, idx) => (
+      <div class="hero-slide" data-slide={idx}>
+        <img
+          src={slide.imageUrl}
+          alt=""
+          class="hero-slide-bg"
+          draggable="false"
+          loading={idx === 0 ? "eager" : "lazy"}
+        />
+        <div class="hero-slide-overlay" aria-hidden="true"></div>
+        <div class="hero-slide-content">
+          <div class="hero-slide-text">
+            {slide.overline && <p class="hero-slide-overline">{slide.overline}</p>}
+            <h1 class="hero-slide-title">
+              {parseTitleEmphasis(slide.title).map((p) =>
+                p.emphasis ? <em>{p.text}</em> : <>{p.text}</>
+              )}
+            </h1>
+            {slide.subtitle && <p class="hero-slide-subtitle">{slide.subtitle}</p>}
+            {slide.ctaLabel && slide.ctaHref && (
+              <a href={slide.ctaHref} class="hero-slide-cta">
+                <span>{slide.ctaLabel}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </a>
             )}
-          </h1>
-          {slide.subtitle && <p class="hero-slide-subtitle">{slide.subtitle}</p>}
-          {slide.ctaLabel && slide.ctaHref && (
-            <a href={slide.ctaHref} class="hero-slide-cta">
-              <span>{slide.ctaLabel}</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
-            </a>
-          )}
+          </div>
         </div>
       </div>
-    </div>
-  ))}
+    ))}
+  </div>
 
   {hasMany && (
     <button type="button" class="hero-arrow hero-arrow-prev" data-hero-prev aria-label="Slide anterior">
@@ -109,27 +111,44 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const carousel = document.querySelector<HTMLElement>("[data-hero-carousel]");
-      if (carousel === null) return;
+      const track = document.querySelector<HTMLElement>("[data-hero-track]");
+      if (carousel === null || track === null) return;
 
-      const slides = carousel.querySelectorAll<HTMLElement>("[data-slide]");
+      const slides = track.querySelectorAll<HTMLElement>("[data-slide]");
       const indicators = carousel.querySelectorAll<HTMLButtonElement>("[data-indicator]");
       const prevBtn = carousel.querySelector<HTMLButtonElement>("[data-hero-prev]");
       const nextBtn = carousel.querySelector<HTMLButtonElement>("[data-hero-next]");
 
       if (slides.length <= 1) return;
 
+      const AUTO_INTERVAL = 3000;
+      // Umbral para considerar que el usuario quiso pasar de slide
+      const SWIPE_DISTANCE_PCT = 0.18; // 18% del ancho
+      const SWIPE_VELOCITY = 0.4;      // px/ms (gesto rápido aunque corto)
+      // Cuanto se "resiste" arrastrar más allá del primer o último slide
+      const EDGE_RESISTANCE = 0.4;
+
       let currentIndex = 0;
       let autoTimer: number | null = null;
-      const AUTO_INTERVAL = 7000;
+
+      // Estado del drag
+      let activePointerId: number | null = null;
+      let dragStartX = 0;
+      let dragStartTime = 0;
+      let dragStartTranslatePct = 0;
+      let didDrag = false;
+
+      function setTrackTranslate(pct: number, animated: boolean): void {
+        track!.dataset.dragging = animated ? "false" : "true";
+        track!.style.transform = `translate3d(${pct}%, 0, 0)`;
+      }
 
       function show(index: number): void {
-        slides.forEach((s, i) => {
-          s.dataset.active = i === index ? "true" : "false";
-        });
+        currentIndex = Math.max(0, Math.min(slides.length - 1, index));
+        setTrackTranslate(-currentIndex * 100, true);
         indicators.forEach((ind, i) => {
-          ind.dataset.active = i === index ? "true" : "false";
+          ind.dataset.active = i === currentIndex ? "true" : "false";
         });
-        currentIndex = index;
       }
 
       function next(): void { show((currentIndex + 1) % slides.length); }
@@ -146,9 +165,80 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
         }
       }
 
-      prevBtn?.addEventListener("click", () => { pauseAuto(); prev(); startAuto(); });
-      nextBtn?.addEventListener("click", () => { pauseAuto(); next(); startAuto(); });
+      // ─── Drag con pointer events (touch + mouse unificado) ───────────
+      carousel.addEventListener("pointerdown", (e) => {
+        // Solo botón principal del mouse, o cualquier toque
+        if (e.pointerType === "mouse" && e.button !== 0) return;
+        if (activePointerId !== null) return;
+        // No iniciar drag si tocan un botón/link clickeable: dejarlos funcionar
+        const target = e.target as HTMLElement;
+        if (target.closest("a, button")) return;
 
+        activePointerId = e.pointerId;
+        dragStartX = e.clientX;
+        dragStartTime = performance.now();
+        dragStartTranslatePct = -currentIndex * 100;
+        didDrag = false;
+        carousel.setPointerCapture(e.pointerId);
+        pauseAuto();
+      });
+
+      carousel.addEventListener("pointermove", (e) => {
+        if (activePointerId !== e.pointerId) return;
+        const deltaX = e.clientX - dragStartX;
+        if (Math.abs(deltaX) > 4) didDrag = true;
+
+        const width = carousel.offsetWidth;
+        let deltaPct = (deltaX / width) * 100;
+
+        // Resistencia elástica en los bordes
+        if (currentIndex === 0 && deltaX > 0) deltaPct *= EDGE_RESISTANCE;
+        if (currentIndex === slides.length - 1 && deltaX < 0) deltaPct *= EDGE_RESISTANCE;
+
+        setTrackTranslate(dragStartTranslatePct + deltaPct, false);
+      });
+
+      function endDrag(e: PointerEvent, cancelled: boolean): void {
+        if (activePointerId !== e.pointerId) return;
+        activePointerId = null;
+
+        if (cancelled || !didDrag) {
+          // Click sin drag, o cancelado: volver al slide actual
+          show(currentIndex);
+          startAuto();
+          return;
+        }
+
+        const deltaX = e.clientX - dragStartX;
+        const deltaTime = Math.max(1, performance.now() - dragStartTime);
+        const velocity = Math.abs(deltaX) / deltaTime;
+        const distancePct = Math.abs(deltaX) / carousel!.offsetWidth;
+
+        let target = currentIndex;
+        if (distancePct > SWIPE_DISTANCE_PCT || velocity > SWIPE_VELOCITY) {
+          target = deltaX < 0 ? currentIndex + 1 : currentIndex - 1;
+          target = Math.max(0, Math.min(slides.length - 1, target));
+        }
+        show(target);
+        startAuto();
+      }
+
+      carousel.addEventListener("pointerup", (e) => endDrag(e, false));
+      carousel.addEventListener("pointercancel", (e) => endDrag(e, true));
+
+      // ─── Controles tradicionales ────────────────────────────────────
+      prevBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        pauseAuto();
+        prev();
+        startAuto();
+      });
+      nextBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        pauseAuto();
+        next();
+        startAuto();
+      });
       indicators.forEach((ind) => {
         ind.addEventListener("click", () => {
           const idx = parseInt(ind.dataset.indicator ?? "0", 10);
@@ -158,6 +248,7 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
         });
       });
 
+      // Pausar auto-rotate cuando la pestaña no está visible
       document.addEventListener("visibilitychange", () => {
         if (document.hidden) pauseAuto();
         else startAuto();
@@ -174,20 +265,37 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     background: var(--color-bg-deep);
     overflow: hidden;
     min-height: clamp(440px, 60vh, 620px);
+    /* Crítico para el swipe: el browser maneja scroll vertical (pan-y),
+       nosotros manejamos el gesto horizontal. Sin esto, el navegador
+       compite por capturar el touch y se rompe el drag. */
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
   }
 
-  /* Slide ocupa todo el contenedor. Solo el activo se muestra. */
-  .hero-slide {
-    position: relative;
+  /* Track horizontal de slides; se mueve con transform */
+  .hero-track {
+    display: flex;
     width: 100%;
     min-height: clamp(440px, 60vh, 620px);
-    display: none;
+    transform: translate3d(0, 0, 0);
+    transition: transform 1s cubic-bezier(0.2, 0.9, 0.3, 1);
+    will-change: transform;
   }
-  .hero-slide[data-active="true"] {
-    display: block;
+  /* Durante drag activo, cero transición: el track sigue al dedo en vivo */
+  .hero-track[data-dragging="true"] {
+    transition: none;
   }
 
-  /* Imagen de fondo: cubre todo el slide */
+  .hero-slide {
+    position: relative;
+    flex: 0 0 100%;
+    min-width: 100%;
+    min-height: clamp(440px, 60vh, 620px);
+  }
+
+  /* Imagen de fondo: cubre todo el slide. draggable=false en el HTML
+     más esto, evita la imagen-arrastrable nativa que rompe el gesto. */
   .hero-slide-bg {
     position: absolute;
     inset: 0;
@@ -196,14 +304,16 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     object-fit: cover;
     object-position: center;
     z-index: 0;
+    pointer-events: none;
+    -webkit-user-drag: none;
   }
 
-  /* Overlay: degradado horizontal denso a la izquierda → transparente a la derecha.
-     Esto crea una "zona segura" para el texto sin matar la imagen. */
+  /* Overlay: degradado horizontal denso a la izquierda → transparente a la derecha */
   .hero-slide-overlay {
     position: absolute;
     inset: 0;
     z-index: 1;
+    pointer-events: none;
     background:
       linear-gradient(
         to right,
@@ -220,7 +330,6 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
       );
   }
 
-  /* Container del texto, centrado verticalmente, ancho contenido */
   .hero-slide-content {
     position: relative;
     z-index: 2;
@@ -285,6 +394,7 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
   }
 
+  /* CTA: pointer-events: auto para que el click no se confunda con drag */
   .hero-slide-cta {
     display: inline-flex;
     align-items: center;
@@ -309,7 +419,6 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     border-color: var(--color-gold-light);
   }
 
-  /* Flechas y indicadores: posicionados sobre toda la sección */
   .hero-arrow {
     position: absolute;
     top: 50%;
@@ -362,10 +471,10 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     background: var(--color-gold-light);
   }
 
-  /* Mobile: el degradado pasa a ser vertical (arriba transparente, abajo denso)
-     para que la imagen se vea de lleno arriba y el texto se lea limpio abajo. */
+  /* Mobile: degradado vertical para que texto al pie quede legible */
   @media (max-width: 720px) {
     .hero-carousel,
+    .hero-track,
     .hero-slide,
     .hero-slide-content {
       min-height: clamp(480px, 78vh, 620px);
@@ -390,13 +499,10 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     .hero-slide-title {
       font-size: clamp(30px, 8vw, 42px);
     }
+    /* En mobile escondemos las flechas: ya tenés swipe */
     .hero-arrow {
-      width: 38px;
-      height: 38px;
-      top: 38%;
+      display: none;
     }
-    .hero-arrow-prev { left: 10px; }
-    .hero-arrow-next { right: 10px; }
     .hero-indicators {
       bottom: 18px;
     }

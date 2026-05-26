@@ -44,8 +44,8 @@
         <span class="cart-total-amount" data-cart-total>$ 0</span>
       </div>
       <p class="cart-disclaimer">
-        El pedido se envía por WhatsApp. Te confirmamos disponibilidad y forma
-        de pago antes de cerrar la compra.
+        Te llevamos a un form para completar tus datos. Al final, te abrimos WhatsApp
+        con el pedido para que el vendedor te confirme stock y forma de pago.
       </p>
       <div class="cart-cta-row">
         <button
@@ -57,12 +57,10 @@
         </button>
         <a
           class="cart-checkout"
-          href="#"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="/checkout"
           data-cart-checkout
         >
-          Finalizar por WhatsApp
+          Iniciar compra
         </a>
       </div>
       <button
@@ -349,17 +347,22 @@
     justify-content: center;
     text-align: center;
     padding: 14px 16px;
-    background: #25d366;
-    color: #fff;
+    background: var(--color-gold);
+    color: var(--color-bg-deep);
     font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 1.5px;
+    font-weight: 600;
+    letter-spacing: 2px;
     text-transform: uppercase;
     border-radius: var(--radius-pill);
-    transition: opacity var(--transition-fast);
+    text-decoration: none;
+    transition: background var(--transition-fast);
   }
   .cart-checkout:hover {
-    opacity: 0.9;
+    background: var(--color-gold-light);
+  }
+  .cart-checkout[aria-disabled="true"] {
+    opacity: 0.45;
+    pointer-events: none;
   }
 
   @media (max-width: 360px) {

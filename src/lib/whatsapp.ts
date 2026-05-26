@@ -1,5 +1,7 @@
 import type { CartSnapshot } from "@/types/catalog";
 import { CONTACT, SITE_METADATA } from "@/constants/ui";
+import { PICKUP_POINT, SHIPPING_METHODS } from "@/constants/checkout";
+import type { BuyerData } from "@/lib/checkout-validation";
 import { formatArs, formatPresentation } from "./format";
 
 /**
@@ -38,6 +40,74 @@ export function buildWhatsAppMessage(snapshot: CartSnapshot): string {
 export function buildWhatsAppCheckoutUrl(snapshot: CartSnapshot): string | null {
   const message = buildWhatsAppMessage(snapshot);
   if (message.length === 0) return null;
+  const encoded = encodeURIComponent(message);
+  return `https://wa.me/${CONTACT.whatsappE164}?text=${encoded}`;
+}
+
+/**
+ * Mensaje completo del checkout v1.0: items + datos del comprador formateados
+ * para que el vendedor confirme stock, cotice envío (si aplica) y mande link de MP.
+ */
+export function buildWhatsAppFullCheckoutMessage(
+  snapshot: CartSnapshot,
+  buyer: BuyerData,
+): string {
+  const itemsBlock = snapshot.lines.map(buildLineText).join("\n");
+  const shippingMethodLabel = SHIPPING_METHODS[buyer.shippingMethod].label;
+
+  const fullName = buyer.lastName === null
+    ? buyer.firstName
+    : `${buyer.firstName} ${buyer.lastName}`;
+
+  const shippingBlock = buyer.shippingMethod === "retiro"
+    ? [
+        "*Envío:* Retiro en " + PICKUP_POINT.city,
+        `(${PICKUP_POINT.description})`,
+      ]
+    : [
+        `*Envío:* ${shippingMethodLabel}`,
+        buyer.street ?? "",
+        [buyer.city, buyer.postalCode, buyer.province].filter((v) => v !== null && v.length > 0).join(" · "),
+      ].filter((line) => line.length > 0);
+
+  const contactBlock = [
+    `*${fullName}* · DNI ${buyer.dni}`,
+    `Tel: ${buyer.phone}`,
+    `Email: ${buyer.email}`,
+  ];
+
+  const notesBlock = buyer.notes === null
+    ? []
+    : ["", `_Notas:_ ${buyer.notes}`];
+
+  const closingLine = buyer.shippingMethod === "retiro"
+    ? "¿Me confirmás stock, horario de retiro y forma de pago?"
+    : "¿Me confirmás stock, cotización de envío y forma de pago?";
+
+  return [
+    ORDER_HEADER,
+    "",
+    itemsBlock,
+    "",
+    `*Subtotal: ${formatArs(snapshot.total)}*`,
+    "",
+    ...shippingBlock,
+    "",
+    ...contactBlock,
+    ...notesBlock,
+    "",
+    closingLine,
+  ].join("\n");
+}
+
+export function buildWhatsAppFullCheckoutUrl(
+  snapshot: CartSnapshot,
+  buyer: BuyerData,
+): string | null {
+  if (snapshot.lines.length === 0) {
+    return null;
+  }
+  const message = buildWhatsAppFullCheckoutMessage(snapshot, buyer);
   const encoded = encodeURIComponent(message);
   return `https://wa.me/${CONTACT.whatsappE164}?text=${encoded}`;
 }
