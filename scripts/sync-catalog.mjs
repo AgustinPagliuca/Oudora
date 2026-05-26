@@ -96,6 +96,21 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
  * @property {string} created_at
  */
 
+/**
+ * @typedef {Object} HeroSlideRow
+ * @property {string} id
+ * @property {string | null} overline
+ * @property {string} title
+ * @property {string | null} subtitle
+ * @property {string} image_url
+ * @property {string} image_path
+ * @property {string | null} cta_label
+ * @property {string | null} cta_href
+ * @property {number} sort_order
+ * @property {boolean} published
+ * @property {string} created_at
+ */
+
 async function fetchBrands() {
   const { data, error } = await supabase
     .from("brands")
@@ -174,6 +189,20 @@ async function fetchAnnouncements() {
   return data ?? [];
 }
 
+async function fetchHeroSlides() {
+  const { data, error } = await supabase
+    .from("hero_slides")
+    .select("id, overline, title, subtitle, image_url, image_path, cta_label, cta_href, sort_order, published, created_at")
+    .eq("published", true)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: false });
+  if (error) {
+    console.warn(`[sync-catalog] hero_slides no disponible: ${error.message}`);
+    return [];
+  }
+  return data ?? [];
+}
+
 /**
  * Convierte snake_case de la DB a camelCase del modelo TS.
  * @param {ProductRow} row
@@ -208,8 +237,9 @@ function transformProduct(row, imagesByProduct) {
  * @param {ReviewRow[]} [reviewsRaw]
  * @param {ReelRow[]} [reelsRaw]
  * @param {AnnouncementRow[]} [announcementsRaw]
+ * @param {HeroSlideRow[]} [heroSlidesRaw]
  */
-function buildOutput(brandsRaw, productsRaw, imagesRaw, reviewsRaw = [], reelsRaw = [], announcementsRaw = []) {
+function buildOutput(brandsRaw, productsRaw, imagesRaw, reviewsRaw = [], reelsRaw = [], announcementsRaw = [], heroSlidesRaw = []) {
   const brands = brandsRaw.map((b) => ({
     id: b.id,
     slug: b.slug,
@@ -265,6 +295,20 @@ function buildOutput(brandsRaw, productsRaw, imagesRaw, reviewsRaw = [], reelsRa
     createdAt: a.created_at,
   }));
 
+  const heroSlides = heroSlidesRaw.map((h) => ({
+    id: h.id,
+    overline: h.overline,
+    title: h.title,
+    subtitle: h.subtitle,
+    imageUrl: h.image_url,
+    imagePath: h.image_path,
+    ctaLabel: h.cta_label,
+    ctaHref: h.cta_href,
+    sortOrder: h.sort_order,
+    published: h.published,
+    createdAt: h.created_at,
+  }));
+
   const generatedAt = new Date().toISOString();
   return {
     text: `// ════════════════════════════════════════════════════════════
@@ -272,14 +316,14 @@ function buildOutput(brandsRaw, productsRaw, imagesRaw, reviewsRaw = [], reelsRa
 // ════════════════════════════════════════════════════════════
 //
 //  Generado por: scripts/sync-catalog.mjs
-//  Fuente:       Supabase (brands, products, product_images, reviews, reels, announcements)
+//  Fuente:       Supabase (brands, products, product_images, reviews, reels, announcements, hero_slides)
 //  Última sync:  ${generatedAt}
 //
 //  Para regenerar: pnpm run sync
 //
 // ════════════════════════════════════════════════════════════
 
-import type { Brand, Product, Review, Reel, Announcement } from "@/types/catalog";
+import type { Brand, Product, Review, Reel, Announcement, HeroSlide } from "@/types/catalog";
 
 export const BRANDS: readonly Brand[] = ${JSON.stringify(brands, null, 2)};
 
@@ -290,6 +334,8 @@ export const REVIEWS: readonly Review[] = ${JSON.stringify(reviews, null, 2)};
 export const REELS: readonly Reel[] = ${JSON.stringify(reels, null, 2)};
 
 export const ANNOUNCEMENTS: readonly Announcement[] = ${JSON.stringify(announcements, null, 2)};
+
+export const HERO_SLIDES: readonly HeroSlide[] = ${JSON.stringify(heroSlides, null, 2)};
 `,
     brands,
     products,
@@ -297,27 +343,30 @@ export const ANNOUNCEMENTS: readonly Announcement[] = ${JSON.stringify(announcem
     reviewCount: reviews.length,
     reelCount: reels.length,
     announcementCount: announcements.length,
+    heroSlideCount: heroSlides.length,
   };
 }
 
 async function main() {
   console.log("[sync-catalog] Descargando catálogo desde Supabase…");
-  const [brandsRaw, productsRaw, imagesRaw, reviewsRaw, reelsRaw, announcementsRaw] = await Promise.all([
+  const [brandsRaw, productsRaw, imagesRaw, reviewsRaw, reelsRaw, announcementsRaw, heroSlidesRaw] = await Promise.all([
     fetchBrands(),
     fetchProducts(),
     fetchImages(),
     fetchReviews(),
     fetchReels(),
     fetchAnnouncements(),
+    fetchHeroSlides(),
   ]);
 
-  const { text, brands, products, imageCount, reviewCount, reelCount, announcementCount } = buildOutput(
+  const { text, brands, products, imageCount, reviewCount, reelCount, announcementCount, heroSlideCount } = buildOutput(
     brandsRaw,
     productsRaw,
     imagesRaw,
     reviewsRaw,
     reelsRaw,
     announcementsRaw,
+    heroSlidesRaw,
   );
 
   const brandIds = new Set(brands.map((b) => b.id));
@@ -346,6 +395,7 @@ async function main() {
   console.log(`[sync-catalog] ✓ ${reviewCount} reseñas publicadas`);
   console.log(`[sync-catalog] ✓ ${reelCount} reels publicados`);
   console.log(`[sync-catalog] ✓ ${announcementCount} avisos publicados`);
+  console.log(`[sync-catalog] ✓ ${heroSlideCount} slides hero publicados`);
   console.log(`[sync-catalog] → ${outputPath}`);
 }
 

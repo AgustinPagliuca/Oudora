@@ -3,14 +3,14 @@
 // ════════════════════════════════════════════════════════════
 //
 //  Generado por: scripts/sync-catalog.mjs
-//  Fuente:       Supabase (brands, products, product_images, reviews, reels, announcements)
-//  Última sync:  2026-05-25T16:12:34.764Z
+//  Fuente:       Supabase (brands, products, product_images, reviews, reels, announcements, hero_slides)
+//  Última sync:  2026-05-25T23:15:21.907Z
 //
 //  Para regenerar: pnpm run sync
 //
 // ════════════════════════════════════════════════════════════
 
-import type { Brand, Product, Review, Reel, Announcement } from "@/types/catalog";
+import type { Brand, Product, Review, Reel, Announcement, HeroSlide } from "@/types/catalog";
 
 export const BRANDS: readonly Brand[] = [
   {
@@ -966,5 +966,47 @@ export const ANNOUNCEMENTS: readonly Announcement[] = [
     "sortOrder": 3,
     "published": true,
     "createdAt": "2026-05-25T16:12:03.581015+00:00"
+  }
+];
+
+export const HERO_SLIDES: readonly HeroSlide[] = [
+  {
+    "id": "24269492-a8f4-45a8-adb2-586aa8735055",
+    "overline": "NUEVA COLECCIÓN",
+    "title": "Perfumes árabes de colección",
+    "subtitle": "Fragancias originales importadas.",
+    "imageUrl": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/hero-slides/slides/a4a9e2f8-3215-4d67-b6af-0fe28adbd416.jpg",
+    "imagePath": "slides/a4a9e2f8-3215-4d67-b6af-0fe28adbd416.jpg",
+    "ctaLabel": "Ver colección",
+    "ctaHref": "/catalogo?catalogo=arabe",
+    "sortOrder": 10,
+    "published": true,
+    "createdAt": "2026-05-25T23:05:26.62728+00:00"
+  },
+  {
+    "id": "8217649d-75c3-4b71-80c5-0b63b2704525",
+    "overline": "NUEVA COLECCIÓN",
+    "title": "Perfumes de diseñador",
+    "subtitle": "Dior, Chanel, Tom Ford, Prada",
+    "imageUrl": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/hero-slides/slides/4b8d2391-9638-4b3f-9706-18f40fd8eaea.jpg",
+    "imagePath": "slides/4b8d2391-9638-4b3f-9706-18f40fd8eaea.jpg",
+    "ctaLabel": "Explorar",
+    "ctaHref": "/catalogo?catalogo=disenador",
+    "sortOrder": 20,
+    "published": true,
+    "createdAt": "2026-05-25T23:12:58.96258+00:00"
+  },
+  {
+    "id": "ef79860b-b4ba-43ce-b5c5-e5a788e95eb5",
+    "overline": "ENVÍO GRATIS",
+    "title": "Recibilo en todo el país",
+    "subtitle": "Sin cargo a partir de $130.000.",
+    "imageUrl": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/hero-slides/slides/e253897d-05bf-4442-8653-db71be1c51b9.jpg",
+    "imagePath": "slides/e253897d-05bf-4442-8653-db71be1c51b9.jpg",
+    "ctaLabel": "Ver catálogo",
+    "ctaHref": "/catalogo",
+    "sortOrder": 30,
+    "published": true,
+    "createdAt": "2026-05-25T23:14:32.048069+00:00"
   }
 ];

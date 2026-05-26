@@ -51,6 +51,7 @@ export const SITE_METADATA = {
   tagline: "L'essence d'arabie",
   description: "Perfumería en Buenos Aires: árabes y de diseñador",
   location: "Buenos Aires, Argentina",
+  arabicAccent: "عُطُور",
 } as const;
 
 /**

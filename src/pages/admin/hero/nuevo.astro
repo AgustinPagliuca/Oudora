@@ -1,0 +1,18 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import HeroSlideForm from "@/components/admin/HeroSlideForm.astro";
+
+const errorParam = Astro.url.searchParams.get("error");
+const errorMessage =
+  errorParam === "validation"
+    ? "Hay campos sin completar o con datos inválidos. Asegurate de tener imagen, título, y de cargar los dos campos del botón juntos (o ninguno)."
+    : errorParam === "server"
+      ? "No se pudieron guardar los cambios. Reintentá en un momento."
+      : null;
+---
+
+<AdminLayout title="Nuevo slide">
+  <HeroSlideForm errorMessage={errorMessage} />
+</AdminLayout>

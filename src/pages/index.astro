@@ -2,19 +2,20 @@
 import Layout from "@/layouts/Layout.astro";
 import Nav from "@/components/Nav.astro";
 import Hero from "@/components/Hero.astro";
+import HeroCarousel from "@/components/HeroCarousel.astro";
 import CollectionCards from "@/components/CollectionCards.astro";
 import FeaturedStrip from "@/components/FeaturedStrip.astro";
 import ReviewsSection from "@/components/ReviewsSection.astro";
 import Footer from "@/components/Footer.astro";
 
 import { PRODUCTS } from "@/data/products";
-import { REVIEWS } from "@/data/catalog.generated";
+import { REVIEWS, HERO_SLIDES } from "@/data/catalog.generated";
 import { getProductsByCatalog } from "@/lib/filters";
 
 /**
  * Home: vitrina de bienvenida y entrada al catálogo.
- * Muestra una selección de fragancias destacadas por cada catálogo
- * y las reseñas marcadas como destacadas desde el admin.
+ * Si hay slides cargados en admin, muestra el HeroCarousel. Si no,
+ * muestra el Hero estático como fallback.
  */
 
 const arabesFeatured = getProductsByCatalog(PRODUCTS, "arabe")
@@ -30,7 +31,7 @@ const featuredReviews = REVIEWS.filter((r) => r.featured).slice(0, 6);
 
 <Layout>
   <Nav />
-  <Hero />
+  {HERO_SLIDES.length > 0 ? <HeroCarousel slides={HERO_SLIDES} /> : <Hero />}
   <CollectionCards />
 
   <FeaturedStrip

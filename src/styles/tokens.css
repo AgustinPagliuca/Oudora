@@ -31,8 +31,10 @@
   --color-gender-uni: rgba(115, 80, 190, 0.9);
 
   /* ── Tipografía ──────────────────────────────────────────── */
-  --font-serif: "Cormorant Garamond", Georgia, serif;
-  --font-sans: "Raleway", -apple-system, system-ui, sans-serif;
+  /* Manrope: sans-serif moderna, profesional (estilo Rouge). Para UI, body, productos.
+     DM Serif Display: serif contemporánea con personalidad. Solo para títulos de hero/sección. */
+  --font-serif: "DM Serif Display", "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Manrope", -apple-system, system-ui, sans-serif;
 
   /* ── Layout ──────────────────────────────────────────────── */
   --max-content-width: 1240px;

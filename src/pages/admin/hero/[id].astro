@@ -1,0 +1,47 @@
+---
+export const prerender = false;
+
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import HeroSlideForm from "@/components/admin/HeroSlideForm.astro";
+
+const supabase = Astro.locals.supabase;
+const { id } = Astro.params;
+
+if (id === undefined) return Astro.redirect("/admin/hero");
+
+const { data: raw } = await supabase
+  .from("hero_slides")
+  .select("id, overline, title, subtitle, image_url, image_path, cta_label, cta_href, sort_order, published, created_at")
+  .eq("id", id)
+  .maybeSingle();
+
+if (raw === null) return Astro.redirect("/admin/hero");
+
+const slide = {
+  id: raw.id,
+  overline: raw.overline,
+  title: raw.title,
+  subtitle: raw.subtitle,
+  imageUrl: raw.image_url,
+  imagePath: raw.image_path,
+  ctaLabel: raw.cta_label,
+  ctaHref: raw.cta_href,
+  sortOrder: raw.sort_order,
+  published: raw.published,
+};
+
+const errorParam = Astro.url.searchParams.get("error");
+const errorMessage =
+  errorParam === "validation"
+    ? "Hay campos sin completar o con datos inválidos."
+    : errorParam === "server"
+      ? "No se pudieron guardar los cambios. Reintentá en un momento."
+      : null;
+
+const justCreated = Astro.url.searchParams.get("created") === "1";
+const successMessage = justCreated ? "Slide creado correctamente." : null;
+---
+
+<AdminLayout title={slide.title}>
+  <HeroSlideForm slide={slide} errorMessage={errorMessage} successMessage={successMessage} />
+</AdminLayout>

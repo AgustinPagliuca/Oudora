@@ -1,7 +1,6 @@
 ---
 import type { Gender } from "@/types/catalog";
 import { GENDER_DESCRIPTIONS, GENDER_LABELS } from "@/constants/ui";
-import PerfumeBottle from "./PerfumeBottle.astro";
 
 interface Props {
   gender: Gender;
@@ -10,15 +9,13 @@ interface Props {
 const { gender } = Astro.props;
 const label = GENDER_LABELS[gender];
 const description = GENDER_DESCRIPTIONS[gender];
-const variant = gender === "femenino" ? "warm" : gender === "masculino" ? "default" : "deep";
+const imageSrc = `/collections/${gender}.jpg`;
 ---
 
 <a class="collection-card" href={`/catalogo?gender=${gender}`} data-collection={gender}>
-  <div class="collection-bg" aria-hidden="true">
-    <PerfumeBottle variant={variant} size="md" />
-  </div>
+  <img src={imageSrc} alt={label} class="collection-bg" loading="lazy" />
+  <div class="collection-overlay" aria-hidden="true"></div>
   <div class="collection-content">
-    <p class="collection-overline">{description}</p>
     <h3 class="collection-title">{label}</h3>
     <span class="collection-btn">Ver más</span>
   </div>
@@ -38,6 +35,7 @@ const variant = gender === "femenino" ? "warm" : gender === "masculino" ? "defau
     justify-content: flex-end;
     padding: 22px 14px 18px;
     transition: all var(--transition-default);
+    text-decoration: none;
   }
   .collection-card:hover {
     transform: translateY(-4px);
@@ -47,14 +45,21 @@ const variant = gender === "femenino" ? "warm" : gender === "masculino" ? "defau
   .collection-bg {
     position: absolute;
     inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.45;
-    transition: opacity var(--transition-default);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-default), filter var(--transition-default);
+    filter: brightness(0.85) saturate(1.05);
   }
   .collection-card:hover .collection-bg {
-    opacity: 0.6;
+    transform: scale(1.04);
+    filter: brightness(1) saturate(1.15);
+  }
+
+  .collection-overlay {
+    position: absolute;
+    inset: 0;
+    transition: opacity var(--transition-default);
   }
 
   .collection-content {
@@ -67,18 +72,7 @@ const variant = gender === "femenino" ? "warm" : gender === "masculino" ? "defau
     gap: 6px;
     padding: 28px 12px 12px;
     width: 100%;
-    /* Gradiente oscuro detrás para legibilidad sobre el frasco */
-    background: linear-gradient(to top, rgba(7, 6, 5, 0.95) 30%, rgba(7, 6, 5, 0.7) 70%, transparent);
-    border-radius: 0 0 var(--radius-md) var(--radius-md);
     margin: 0 -14px -18px;
-  }
-
-  .collection-overline {
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    margin-bottom: 4px;
   }
 
   .collection-title {
