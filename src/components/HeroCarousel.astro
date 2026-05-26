@@ -1,11 +1,14 @@
 ---
 /**
  * Carrusel del hero. Reemplaza el Hero estático cuando hay slides cargados.
- * Layout: split — texto a la izquierda, tarjeta de imagen portrait a la derecha.
  *
- * Pattern simple y robusto: slides inactivos con display:none, sin position:absolute,
- * sin transición fade (corte limpio). Esto evita edge cases de scoping de Astro
- * y de cálculos de aspect-ratio dentro de grids con elementos absolute-positioned.
+ * Layout v3: full-bleed — la imagen ocupa todo el espacio, el texto va arriba
+ * sobre un degradado oscuro (izquierda densa, derecha transparente) que garantiza
+ * legibilidad sin tapar la imagen. Patrón estándar de hero en luxury ecommerce.
+ *
+ * - 1 slide: estático, sin controles ni auto-rotate
+ * - 2+ slides: auto-rotate cada 7s, flechas, indicadores
+ * - Mobile: el degradado es vertical (arriba transparente, abajo denso), texto al pie
  */
 
 import type { HeroSlide } from "@/types/catalog";
@@ -20,7 +23,6 @@ const hasMany = slides.length > 1;
 /**
  * Parsea {texto} dentro del título como itálica dorada (énfasis).
  * Ej: "Perfumes {árabes} de colección" → "Perfumes <em>árabes</em> de colección"
- * Si no hay {}, devuelve el título tal cual.
  */
 function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: boolean }> {
   const parts: Array<{ text: string; emphasis: boolean }> = [];
@@ -44,26 +46,32 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
 <section class="hero-carousel" data-hero-carousel data-count={slides.length}>
   {slides.map((slide, idx) => (
     <div class="hero-slide" data-slide={idx} data-active={idx === 0 ? "true" : "false"}>
-      <div class="hero-slide-text">
-        {slide.overline && <p class="hero-slide-overline">{slide.overline}</p>}
-        <h1 class="hero-slide-title">
-          {parseTitleEmphasis(slide.title).map((p) =>
-            p.emphasis ? <em>{p.text}</em> : <>{p.text}</>
+      <img
+        src={slide.imageUrl}
+        alt=""
+        class="hero-slide-bg"
+        loading={idx === 0 ? "eager" : "lazy"}
+      />
+      <div class="hero-slide-overlay" aria-hidden="true"></div>
+      <div class="hero-slide-content">
+        <div class="hero-slide-text">
+          {slide.overline && <p class="hero-slide-overline">{slide.overline}</p>}
+          <h1 class="hero-slide-title">
+            {parseTitleEmphasis(slide.title).map((p) =>
+              p.emphasis ? <em>{p.text}</em> : <>{p.text}</>
+            )}
+          </h1>
+          {slide.subtitle && <p class="hero-slide-subtitle">{slide.subtitle}</p>}
+          {slide.ctaLabel && slide.ctaHref && (
+            <a href={slide.ctaHref} class="hero-slide-cta">
+              <span>{slide.ctaLabel}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </a>
           )}
-        </h1>
-        {slide.subtitle && <p class="hero-slide-subtitle">{slide.subtitle}</p>}
-        {slide.ctaLabel && slide.ctaHref && (
-          <a href={slide.ctaHref} class="hero-slide-cta">
-            <span>{slide.ctaLabel}</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </a>
-        )}
-      </div>
-      <div class="hero-slide-image-frame">
-        <img src={slide.imageUrl} alt="" class="hero-slide-image" loading={idx === 0 ? "eager" : "lazy"} />
+        </div>
       </div>
     </div>
   ))}
@@ -161,46 +169,71 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
 )}
 
 <style>
-  /* Sección: full-width, padding directo, fondo dark con gradiente sutil.
-     Imita el patrón del Hero.astro estático. */
   .hero-carousel {
     position: relative;
     background: var(--color-bg-deep);
-    background-image:
-      radial-gradient(
-        ellipse 80% 70% at 88% 50%,
-        rgba(201, 168, 76, 0.14) 0%,
-        transparent 60%
-      ),
-      radial-gradient(
-        ellipse 60% 50% at 10% 80%,
-        rgba(201, 168, 76, 0.06) 0%,
-        transparent 70%
-      );
-    padding: clamp(40px, 5vw, 64px) clamp(20px, 5vw, 72px);
     overflow: hidden;
+    min-height: clamp(440px, 60vh, 620px);
   }
 
-  /* Slide: grid de 2 columnas con max-width interno.
-     Inactivos: display:none (sin transición fade, corte limpio). */
+  /* Slide ocupa todo el contenedor. Solo el activo se muestra. */
   .hero-slide {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) clamp(260px, 32vw, 380px);
-    gap: clamp(40px, 6vw, 80px);
+    position: relative;
+    width: 100%;
+    min-height: clamp(440px, 60vh, 620px);
+    display: none;
+  }
+  .hero-slide[data-active="true"] {
+    display: block;
+  }
+
+  /* Imagen de fondo: cubre todo el slide */
+  .hero-slide-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+  }
+
+  /* Overlay: degradado horizontal denso a la izquierda → transparente a la derecha.
+     Esto crea una "zona segura" para el texto sin matar la imagen. */
+  .hero-slide-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(
+        to right,
+        rgba(7, 6, 5, 0.92) 0%,
+        rgba(7, 6, 5, 0.78) 28%,
+        rgba(7, 6, 5, 0.4) 55%,
+        rgba(7, 6, 5, 0.05) 85%,
+        transparent 100%
+      ),
+      linear-gradient(
+        to bottom,
+        transparent 60%,
+        rgba(7, 6, 5, 0.4) 100%
+      );
+  }
+
+  /* Container del texto, centrado verticalmente, ancho contenido */
+  .hero-slide-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
     align-items: center;
+    min-height: clamp(440px, 60vh, 620px);
     max-width: 1240px;
     margin: 0 auto;
-    min-height: 420px;
-  }
-  .hero-slide[data-active="false"] {
-    display: none;
+    padding: 60px clamp(24px, 5vw, 72px);
   }
 
   .hero-slide-text {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-width: 0;
+    max-width: 560px;
   }
 
   .hero-slide-overline {
@@ -222,20 +255,21 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     width: 40px;
     height: 1px;
     background: var(--color-gold);
-    opacity: 0.6;
+    opacity: 0.7;
   }
 
   .hero-slide-title {
     font-family: var(--font-serif);
-    font-size: clamp(36px, 5vw, 64px);
+    font-size: clamp(36px, 5.2vw, 68px);
     font-weight: 400;
     line-height: 1.05;
     color: var(--color-cream);
     margin: 0 0 22px;
     letter-spacing: 0;
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.5);
   }
   .hero-slide-title em {
-    color: var(--color-gold);
+    color: var(--color-gold-light);
     font-style: italic;
     font-weight: 400;
   }
@@ -244,10 +278,11 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     font-family: var(--font-sans);
     font-size: clamp(14px, 1.15vw, 16px);
     line-height: 1.7;
-    color: var(--color-text);
+    color: var(--color-cream);
     margin: 0 0 36px;
     max-width: 460px;
     font-weight: 400;
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
   }
 
   .hero-slide-cta {
@@ -257,7 +292,7 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     padding: 14px 32px;
     border: 0.5px solid var(--color-gold);
     color: var(--color-gold-light);
-    background: rgba(201, 168, 76, 0.08);
+    background: rgba(7, 6, 5, 0.55);
     font-family: var(--font-sans);
     font-size: 12px;
     letter-spacing: 3px;
@@ -265,38 +300,21 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     border-radius: var(--radius-pill);
     text-decoration: none;
     font-weight: 600;
-    align-self: flex-start;
+    backdrop-filter: blur(4px);
     transition: all var(--transition-default);
   }
   .hero-slide-cta:hover {
     background: rgba(201, 168, 76, 0.22);
     transform: translateX(3px);
+    border-color: var(--color-gold-light);
   }
 
-  /* Marco de imagen: portrait 2:3, recorte automático con object-fit:cover.
-     Cualquier imagen subida (landscape, portrait, cuadrada) se ajusta. */
-  .hero-slide-image-frame {
-    width: 100%;
-    aspect-ratio: 2 / 3;
-    border-radius: 4px;
-    overflow: hidden;
-    border: 0.5px solid rgba(212, 179, 92, 0.2);
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
-  }
-
-  .hero-slide-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  /* Controles: posicionados respecto a la sección entera */
+  /* Flechas y indicadores: posicionados sobre toda la sección */
   .hero-arrow {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.55);
     border: 0.5px solid rgba(212, 179, 92, 0.3);
     color: var(--color-gold);
     width: 44px;
@@ -308,13 +326,14 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     align-items: center;
     justify-content: center;
     transition: all var(--transition-default);
+    backdrop-filter: blur(4px);
   }
   .hero-arrow:hover {
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.8);
     border-color: var(--color-gold);
   }
-  .hero-arrow-prev { left: 16px; }
-  .hero-arrow-next { right: 16px; }
+  .hero-arrow-prev { left: 18px; }
+  .hero-arrow-next { right: 18px; }
 
   .hero-indicators {
     position: absolute;
@@ -329,51 +348,57 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     width: 14px;
     height: 3px;
     border-radius: 2px;
-    background: rgba(212, 179, 92, 0.35);
+    background: rgba(245, 237, 216, 0.4);
     border: none;
     padding: 0;
     cursor: pointer;
     transition: all var(--transition-default);
   }
   .hero-indicator:hover {
-    background: rgba(212, 179, 92, 0.6);
+    background: rgba(245, 237, 216, 0.7);
   }
   .hero-indicator[data-active="true"] {
     width: 32px;
-    background: var(--color-gold);
+    background: var(--color-gold-light);
   }
 
-  /* Mobile: stack vertical, imagen primero (más pequeña), texto debajo */
-  @media (max-width: 860px) {
-    .hero-carousel {
-      padding: 36px 20px 64px;
+  /* Mobile: el degradado pasa a ser vertical (arriba transparente, abajo denso)
+     para que la imagen se vea de lleno arriba y el texto se lea limpio abajo. */
+  @media (max-width: 720px) {
+    .hero-carousel,
+    .hero-slide,
+    .hero-slide-content {
+      min-height: clamp(480px, 78vh, 620px);
     }
-    .hero-slide {
-      grid-template-columns: 1fr;
-      gap: 28px;
-      min-height: 0;
+    .hero-slide-overlay {
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(7, 6, 5, 0.35) 40%,
+          rgba(7, 6, 5, 0.85) 70%,
+          rgba(7, 6, 5, 0.96) 100%
+        );
     }
-    .hero-slide-image-frame {
-      width: 200px;
-      justify-self: center;
-      order: 1;
+    .hero-slide-content {
+      align-items: flex-end;
+      padding: 32px 24px 64px;
     }
     .hero-slide-text {
-      order: 2;
-      align-items: flex-start;
+      max-width: 100%;
     }
     .hero-slide-title {
-      font-size: clamp(26px, 7vw, 34px);
+      font-size: clamp(30px, 8vw, 42px);
     }
     .hero-arrow {
       width: 38px;
       height: 38px;
-      top: 30%;
+      top: 38%;
     }
-    .hero-arrow-prev { left: 8px; }
-    .hero-arrow-next { right: 8px; }
+    .hero-arrow-prev { left: 10px; }
+    .hero-arrow-next { right: 10px; }
     .hero-indicators {
-      bottom: 22px;
+      bottom: 18px;
     }
   }
 </style>

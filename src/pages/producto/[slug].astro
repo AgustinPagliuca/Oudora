@@ -5,7 +5,7 @@ import Nav from "@/components/Nav.astro";
 import Footer from "@/components/Footer.astro";
 import Breadcrumbs from "@/components/Breadcrumbs.astro";
 import PerfumeBottle from "@/components/PerfumeBottle.astro";
-import Ribbon from "@/components/Ribbon.astro";
+import ProductLabels from "@/components/ProductLabels.astro";
 import ProductCard from "@/components/ProductCard.astro";
 
 import { PRODUCTS } from "@/data/products";
@@ -63,7 +63,7 @@ const breadcrumbsTrail = [
   <article class="product-detail">
     <div class="product-detail-gallery">
       <div class="product-detail-visual">
-        <Ribbon gender={product.gender} />
+        <ProductLabels labels={product.labels} />
         {
           product.images !== undefined && product.images.length > 0 ? (
             <img

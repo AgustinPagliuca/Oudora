@@ -321,14 +321,15 @@ function isActive(href: string): boolean {
 
   .mobile-menu-panel {
     position: absolute;
-    top: 60px;
+    top: 72px;
     left: 0;
     right: 0;
     background: var(--color-bg-deep);
     border-bottom: 0.5px solid var(--color-border);
-    padding: 24px;
+    padding: 16px 20px 24px;
     transform: translateY(-12px);
     transition: transform 0.25s ease;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
   }
   .mobile-menu-overlay[aria-hidden="false"] .mobile-menu-panel {
     transform: translateY(0);
