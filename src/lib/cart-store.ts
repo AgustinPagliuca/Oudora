@@ -110,6 +110,24 @@ export class CartStore {
     return resolveSnapshot(this.items, this.context);
   }
 
+  /**
+   * Clampea una cantidad solicitada al stock disponible del producto.
+   * Si el producto no se conoce (raro: el catálogo cambió), devolvemos
+   * la cantidad tal cual y dejamos que el resolver del snapshot la marque
+   * como "fuera de stock" o ignore la línea. Si el stock es 0, devuelve 0
+   * (el caller debe decidir si remover la línea).
+   */
+  private clampToStock(productId: string, quantity: number): number {
+    const product = this.context.products.get(productId);
+    if (product === undefined) {
+      return quantity;
+    }
+    if (product.stock <= 0) {
+      return 0;
+    }
+    return Math.min(quantity, product.stock);
+  }
+
   addItem(productId: string, quantity = 1): CartSnapshot {
     const safeQuantity = clampQuantity(quantity);
     const existingIndex = this.items.findIndex(
@@ -117,18 +135,27 @@ export class CartStore {
     );
     if (existingIndex >= 0) {
       const previous = this.items[existingIndex];
-      if (previous === undefined) {
-        return this.getSnapshot();
+      if (previous !== undefined) {
+        const desired = clampQuantity(previous.quantity + safeQuantity);
+        const clamped = this.clampToStock(productId, desired);
+        if (clamped <= 0) {
+          // Producto sin stock: removemos la línea para mantener el carrito consistente
+          this.items = this.items.filter((_, idx) => idx !== existingIndex);
+        } else {
+          const merged: CartItem = {
+            productId: previous.productId,
+            quantity: clamped,
+          };
+          this.items = this.items.map((item, index) =>
+            index === existingIndex ? merged : item,
+          );
+        }
       }
-      const merged: CartItem = {
-        productId: previous.productId,
-        quantity: clampQuantity(previous.quantity + safeQuantity),
-      };
-      this.items = this.items.map((item, index) =>
-        index === existingIndex ? merged : item,
-      );
     } else {
-      this.items = [...this.items, { productId, quantity: safeQuantity }];
+      const clamped = this.clampToStock(productId, safeQuantity);
+      if (clamped > 0) {
+        this.items = [...this.items, { productId, quantity: clamped }];
+      }
     }
     return this.persistAndNotify();
   }
@@ -137,9 +164,13 @@ export class CartStore {
     if (quantity <= 0) {
       return this.removeItem(productId);
     }
+    const clamped = this.clampToStock(productId, clampQuantity(quantity));
+    if (clamped <= 0) {
+      return this.removeItem(productId);
+    }
     this.items = this.items.map((item) =>
       item.productId === productId
-        ? { productId, quantity: clampQuantity(quantity) }
+        ? { productId, quantity: clamped }
         : item,
     );
     return this.persistAndNotify();

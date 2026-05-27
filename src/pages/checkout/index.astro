@@ -366,6 +366,30 @@ const fieldRules = CHECKOUT_FIELD_RULES;
         </p>
       </section>
     </form>
+
+    <!-- Pantalla de éxito: aparece cuando se abre WhatsApp.
+         Reemplaza al form + stepper en el flujo visual. -->
+    <section class="success panel" data-success hidden>
+      <div class="success-icon" aria-hidden="true">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h2 class="success-title">Te abrimos WhatsApp</h2>
+      <p class="success-text">
+        Revisá tu chat y enviá el mensaje al vendedor.
+        Te va a confirmar stock, cotizar el envío y pasarte el link de pago.
+      </p>
+      <p class="success-fallback">
+        ¿No se abrió WhatsApp?
+        <a href="#" data-success-fallback>Reabrilo desde acá</a>.
+      </p>
+      <div class="success-actions">
+        <a href="/catalogo" class="btn btn-ghost">Seguir comprando</a>
+        <a href="/" class="btn btn-primary">Volver al inicio</a>
+      </div>
+    </section>
   </main>
 
   <Footer />
@@ -383,28 +407,6 @@ const fieldRules = CHECKOUT_FIELD_RULES;
     padding: clamp(28px, 4vw, 56px) clamp(20px, 5vw, 48px) 80px;
     color: var(--color-text);
     position: relative;
-  }
-
-  /* Gradiente cálido de fondo: glow dorado arriba que se desvanece,
-     contraglow sutil abajo a la derecha. Da profundidad sin abandonar
-     la identidad oscura. */
-  .checkout::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background:
-      radial-gradient(
-        ellipse 100% 50% at 50% 0%,
-        rgba(201, 168, 76, 0.09) 0%,
-        transparent 55%
-      ),
-      radial-gradient(
-        ellipse 60% 40% at 90% 100%,
-        rgba(201, 168, 76, 0.04) 0%,
-        transparent 60%
-      );
   }
 
   .checkout-header {
@@ -861,6 +863,51 @@ const fieldRules = CHECKOUT_FIELD_RULES;
     color: var(--color-text-muted);
     text-align: center;
     line-height: 1.6;
+  }
+
+  /* ── Pantalla de éxito post-submit ────────────────────────────── */
+  .success {
+    text-align: center;
+    padding: clamp(40px, 6vw, 64px) clamp(20px, 4vw, 48px);
+  }
+  .success-icon {
+    color: var(--color-gold);
+    margin: 0 auto 22px;
+    display: inline-flex;
+  }
+  .success-title {
+    font-family: var(--font-serif);
+    font-size: clamp(26px, 3.5vw, 36px);
+    color: var(--color-cream);
+    margin: 0 0 14px;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+  }
+  .success-text {
+    color: var(--color-text);
+    font-size: 15px;
+    line-height: 1.65;
+    max-width: 480px;
+    margin: 0 auto 18px;
+  }
+  .success-fallback {
+    color: var(--color-text-muted);
+    font-size: 13px;
+    margin: 0 0 32px;
+  }
+  .success-fallback a {
+    color: var(--color-gold-light);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .success-fallback a:hover {
+    color: var(--color-gold);
+  }
+  .success-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
   }
 
   /* ── Empty state ──────────────────────────────────────────────── */

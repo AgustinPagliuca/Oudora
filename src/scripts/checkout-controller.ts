@@ -327,6 +327,33 @@ function renderSummary(ctx: CheckoutContext, buyer: BuyerData): void {
   }
 }
 
+function showSuccessState(ctx: CheckoutContext, whatsappUrl: string): void {
+  const successEl = document.querySelector<HTMLElement>("[data-success]");
+  const stepper = document.querySelector<HTMLElement>("[data-stepper]");
+
+  // Ocultamos el form y el stepper
+  ctx.form.hidden = true;
+  if (stepper !== null) {
+    stepper.style.display = "none";
+  }
+  if (successEl !== null) {
+    successEl.hidden = false;
+  }
+
+  // Hidratamos el link de fallback con el mismo URL de WhatsApp por si el
+  // popup-blocker del browser haya impedido la apertura automática.
+  const fallbackLink = document.querySelector<HTMLAnchorElement>(
+    "[data-success-fallback]",
+  );
+  if (fallbackLink !== null) {
+    fallbackLink.setAttribute("href", whatsappUrl);
+    fallbackLink.setAttribute("target", "_blank");
+    fallbackLink.setAttribute("rel", "noopener noreferrer");
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 function handleSubmit(event: SubmitEvent, ctx: CheckoutContext): void {
   event.preventDefault();
   // Validamos todo de nuevo por las dudas (no confiamos en que el step 2 esté ok)
@@ -353,6 +380,13 @@ function handleSubmit(event: SubmitEvent, ctx: CheckoutContext): void {
   // Abrir wa.me en una pestaña nueva — en mobile abre la app directamente.
   // `noopener,noreferrer` por seguridad (el destino no recibe window.opener).
   window.open(url, "_blank", "noopener,noreferrer");
+
+  // Vaciamos el carrito: el flujo del cliente quedó "cerrado" desde nuestro lado.
+  // Si por algún motivo el cliente no envía el mensaje, igual conserva el link
+  // de fallback en la pantalla de éxito.
+  ctx.cart.clear();
+
+  showSuccessState(ctx, url);
 }
 
 function bindNavigation(ctx: CheckoutContext): void {

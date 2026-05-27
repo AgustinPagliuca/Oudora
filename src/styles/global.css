@@ -15,6 +15,18 @@ html {
 
 body {
   background: var(--color-bg);
+  background-image:
+    radial-gradient(
+      ellipse 100% 60% at 50% 0%,
+      rgba(201, 168, 76, 0.08) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 90% 100%,
+      rgba(201, 168, 76, 0.035) 0%,
+      transparent 55%
+    );
+  background-attachment: fixed;
   color: var(--color-text);
   font-family: var(--font-sans);
   font-weight: 300;
@@ -24,6 +36,19 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Selects nativos: forzar UI dark en el popup del browser ─────────
+   Sin color-scheme: dark, Chrome/Edge renderizan el popup con system
+   colors (blanco/gris claro) sobre un sitio oscuro → ilegible.
+   Combinado con `option` styling, el desplegable queda coherente. */
+select {
+  color-scheme: dark;
+}
+select option,
+select optgroup {
+  background: var(--color-bg-deep);
+  color: var(--color-cream);
 }
 
 img,
