@@ -25,11 +25,6 @@
   --color-border-strong: rgba(201, 168, 76, 0.35);
   --color-border-subtle: rgba(255, 255, 255, 0.05);
 
-  /* ── Colores semánticos de género (ribbons) ──────────────── */
-  --color-gender-fem: rgba(200, 70, 105, 0.9);
-  --color-gender-masc: rgba(55, 105, 210, 0.9);
-  --color-gender-uni: rgba(115, 80, 190, 0.9);
-
   /* ── Tipografía ──────────────────────────────────────────── */
   /* Manrope: sans-serif moderna, profesional (estilo Rouge). Para UI, body, productos.
      DM Serif Display: serif contemporánea con personalidad. Solo para títulos de hero/sección. */

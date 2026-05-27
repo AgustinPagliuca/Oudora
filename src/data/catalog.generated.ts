@@ -4,7 +4,7 @@
 //
 //  Generado por: scripts/sync-catalog.mjs
 //  Fuente:       Supabase (brands, products, product_images, reviews, reels, announcements, hero_slides)
-//  Última sync:  2026-05-27T04:47:41.944Z
+//  Última sync:  2026-05-27T13:30:49.551Z
 //
 //  Para regenerar: pnpm run sync
 //
@@ -405,13 +405,19 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "masculino",
     "concentration": "EDP",
     "volumeMl": 100,
-    "priceArs": 99999,
+    "priceArs": 99998,
     "stock": 12,
     "notes": [
       "bergamota",
       "iris",
       "ámbar",
       "vainilla"
+    ],
+    "labels": [
+      {
+        "text": "-20%",
+        "color": "red"
+      }
     ]
   },
   {

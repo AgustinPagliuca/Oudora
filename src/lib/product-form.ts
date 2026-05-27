@@ -27,7 +27,7 @@ export interface ProductInput {
   volume_ml: number;
   price_ars: number;
   stock: number;
-  notes: string[] | null;
+  notes: string[];
   featured: boolean;
   labels: ProductLabelInput[];
 }
@@ -77,7 +77,9 @@ export function parseProductForm(formData: FormData): ParseResult {
     .getAll("notes")
     .map((n) => n.toString().trim().toLowerCase())
     .filter((n) => n.length > 0);
-  const notes = notesRaw.length > 0 ? Array.from(new Set(notesRaw)) : null;
+  // Siempre array, nunca null: la columna `notes` en DB es text[] NOT NULL.
+  // Un array vacío `[]` es perfectamente válido y no rompe el constraint.
+  const notes = notesRaw.length > 0 ? Array.from(new Set(notesRaw)) : [];
   const featured = formData.get("featured") === "on";
   const labels = parseLabels(formData);
 

@@ -11,12 +11,6 @@ export const GENDER_LABELS: Readonly<Record<Gender, string>> = {
   unisex: "Unisex",
 } as const;
 
-export const GENDER_SHORT_LABELS: Readonly<Record<Gender, string>> = {
-  femenino: "Fem.",
-  masculino: "Masc.",
-  unisex: "Unisex",
-} as const;
-
 export const GENDER_DESCRIPTIONS: Readonly<Record<Gender, string>> = {
   femenino: "Para ella",
   masculino: "Para él",
