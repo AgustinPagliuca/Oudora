@@ -4,7 +4,7 @@
 //
 //  Generado por: scripts/sync-catalog.mjs
 //  Fuente:       Supabase (brands, products, product_images, reviews, reels, announcements, hero_slides)
-//  Última sync:  2026-05-26T16:46:06.738Z
+//  Última sync:  2026-05-27T04:47:41.944Z
 //
 //  Para regenerar: pnpm run sync
 //
@@ -129,42 +129,6 @@ export const PRODUCTS: readonly Product[] = [
     ]
   },
   {
-    "id": "afnan-souvenir-floral",
-    "slug": "souvenir-floral-bouquet",
-    "brandId": "afnan",
-    "catalog": "arabe",
-    "name": "Souvenir Floral Bouquet",
-    "gender": "femenino",
-    "concentration": "EDP",
-    "volumeMl": 100,
-    "priceArs": 35500,
-    "stock": 6,
-    "notes": [
-      "pera",
-      "rosa",
-      "praliné",
-      "musk"
-    ]
-  },
-  {
-    "id": "afnan-supremacy-silver",
-    "slug": "supremacy-silver",
-    "brandId": "afnan",
-    "catalog": "arabe",
-    "name": "Supremacy Silver",
-    "gender": "masculino",
-    "concentration": "EDP",
-    "volumeMl": 100,
-    "priceArs": 39000,
-    "stock": 5,
-    "notes": [
-      "bergamota",
-      "cardamomo",
-      "iris",
-      "cuero"
-    ]
-  },
-  {
     "id": "al-haramain-amber-oud-carbon",
     "slug": "amber-oud-carbon-edition",
     "brandId": "al-haramain",
@@ -180,42 +144,6 @@ export const PRODUCTS: readonly Product[] = [
       "oud",
       "ámbar gris",
       "almizcle"
-    ]
-  },
-  {
-    "id": "al-haramain-laventure",
-    "slug": "l-aventure",
-    "brandId": "al-haramain",
-    "catalog": "arabe",
-    "name": "L'Aventure",
-    "gender": "masculino",
-    "concentration": "EDP",
-    "volumeMl": 100,
-    "priceArs": 44000,
-    "stock": 5,
-    "notes": [
-      "lavanda",
-      "geranio",
-      "haba tonka",
-      "ámbar"
-    ]
-  },
-  {
-    "id": "al-haramain-mukhalat",
-    "slug": "mukhalat",
-    "brandId": "al-haramain",
-    "catalog": "arabe",
-    "name": "Mukhalat",
-    "gender": "unisex",
-    "concentration": "EDP",
-    "volumeMl": 100,
-    "priceArs": 38000,
-    "stock": 6,
-    "notes": [
-      "azafrán",
-      "oud",
-      "ámbar",
-      "rosa"
     ]
   },
   {
@@ -301,24 +229,6 @@ export const PRODUCTS: readonly Product[] = [
         "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/armaf-odyssey-aqua/8bcc91e9-b648-45c6-93f7-40b05c76cb17.webp",
         "position": 1
       }
-    ]
-  },
-  {
-    "id": "armaf-tres-nuit-sport",
-    "slug": "tres-nuit-sport",
-    "brandId": "armaf",
-    "catalog": "arabe",
-    "name": "Tres Nuit Sport",
-    "gender": "masculino",
-    "concentration": "EDT",
-    "volumeMl": 105,
-    "priceArs": 38500,
-    "stock": 8,
-    "notes": [
-      "pomelo",
-      "cedro",
-      "almizcle",
-      "ámbar"
     ]
   },
   {
@@ -653,60 +563,6 @@ export const PRODUCTS: readonly Product[] = [
     ]
   },
   {
-    "id": "maison-alhambra-exclusif-tobaco",
-    "slug": "exclusif-tobaco",
-    "brandId": "maison-alhambra",
-    "catalog": "arabe",
-    "name": "Exclusif Tobaco",
-    "gender": "masculino",
-    "concentration": "EDP",
-    "volumeMl": 100,
-    "priceArs": 37000,
-    "stock": 6,
-    "notes": [
-      "tabaco",
-      "vainilla",
-      "cacao",
-      "haba tonka"
-    ]
-  },
-  {
-    "id": "maison-alhambra-layali",
-    "slug": "layali",
-    "brandId": "maison-alhambra",
-    "catalog": "arabe",
-    "name": "Layali",
-    "gender": "femenino",
-    "concentration": "EDP",
-    "volumeMl": 100,
-    "priceArs": 39000,
-    "stock": 7,
-    "notes": [
-      "mandarina",
-      "jazmín",
-      "vainilla",
-      "ámbar"
-    ]
-  },
-  {
-    "id": "maison-alhambra-sahar",
-    "slug": "sahar",
-    "brandId": "maison-alhambra",
-    "catalog": "arabe",
-    "name": "Sahar",
-    "gender": "femenino",
-    "concentration": "EDP",
-    "volumeMl": 100,
-    "priceArs": 35000,
-    "stock": 5,
-    "notes": [
-      "pera",
-      "azafrán",
-      "praliné",
-      "vainilla"
-    ]
-  },
-  {
     "id": "paco-1-million",
     "slug": "1-million",
     "brandId": "paco-rabanne",
@@ -743,24 +599,6 @@ export const PRODUCTS: readonly Product[] = [
     ]
   },
   {
-    "id": "rasasi-daarej",
-    "slug": "daarej",
-    "brandId": "rasasi",
-    "catalog": "arabe",
-    "name": "Daarej",
-    "gender": "femenino",
-    "concentration": "EDP",
-    "volumeMl": 100,
-    "priceArs": 33000,
-    "stock": 8,
-    "notes": [
-      "rosa",
-      "azahar",
-      "vainilla",
-      "almizcle"
-    ]
-  },
-  {
     "id": "rasasi-hawas",
     "slug": "hawas",
     "brandId": "rasasi",
@@ -789,24 +627,6 @@ export const PRODUCTS: readonly Product[] = [
     ]
   },
   {
-    "id": "rasasi-la-yuqawam",
-    "slug": "la-yuqawam",
-    "brandId": "rasasi",
-    "catalog": "arabe",
-    "name": "La Yuqawam",
-    "gender": "masculino",
-    "concentration": "EDP",
-    "volumeMl": 75,
-    "priceArs": 45000,
-    "stock": 3,
-    "notes": [
-      "pomelo",
-      "cedro",
-      "vetiver",
-      "ámbar"
-    ]
-  },
-  {
     "id": "tom-ford-black-orchid",
     "slug": "black-orchid",
     "brandId": "tom-ford",
@@ -823,25 +643,6 @@ export const PRODUCTS: readonly Product[] = [
       "pachulí",
       "incienso"
     ]
-  },
-  {
-    "id": "tom-ford-tobacco-vanille",
-    "slug": "tobacco-vanille",
-    "brandId": "tom-ford",
-    "catalog": "disenador",
-    "name": "Tobacco Vanille",
-    "gender": "unisex",
-    "concentration": "EDP",
-    "volumeMl": 50,
-    "priceArs": 285000,
-    "stock": 2,
-    "notes": [
-      "tabaco",
-      "vainilla",
-      "cacao",
-      "haba tonka"
-    ],
-    "featured": true
   },
   {
     "id": "versace-eros",

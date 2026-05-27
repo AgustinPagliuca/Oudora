@@ -36,17 +36,36 @@ async function handleUpdate(
     return redirectTo(`/admin/productos/${id}?error=${parsed.reason}`);
   }
 
-  const { error } = await locals.supabase
+  // Separamos labels del resto: si la columna `labels` no existe (porque
+  // la migración SQL no se corrió todavía), el update principal sigue
+  // funcionando. Después intentamos persistir labels en un update
+  // independiente que puede fallar sin romper el guardado.
+  const { labels, ...mainData } = parsed.data;
+
+  const { error: mainError } = await locals.supabase
     .from("products")
-    .update(parsed.data)
+    .update(mainData)
     .eq("id", id);
 
-  if (error !== null) {
-    if (isSlugTakenError(error)) {
+  if (mainError !== null) {
+    if (isSlugTakenError(mainError)) {
       return redirectTo(`/admin/productos/${id}?error=slug_taken`);
     }
-    console.error("[admin/products/update] Error:", error);
+    console.error("[admin/products/update] Error principal:", mainError);
     return redirectTo(`/admin/productos/${id}?error=server`);
+  }
+
+  // Intento secundario: persistir labels. Si la columna no existe, log y seguimos.
+  const { error: labelsError } = await locals.supabase
+    .from("products")
+    .update({ labels })
+    .eq("id", id);
+
+  if (labelsError !== null) {
+    console.warn(
+      "[admin/products/update] No se pudieron guardar las etiquetas (¿migración SQL pendiente?):",
+      labelsError.message,
+    );
   }
 
   return redirectTo("/admin/productos?updated=1");

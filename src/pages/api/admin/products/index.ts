@@ -18,9 +18,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   const newId = crypto.randomUUID();
+
+  // Separamos labels del insert principal por si la columna no existe en DB.
+  const { labels, ...mainData } = parsed.data;
+
   const { error } = await locals.supabase.from("products").insert({
     id: newId,
-    ...parsed.data,
+    ...mainData,
   });
 
   if (error !== null) {
@@ -29,6 +33,21 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
     console.error("[admin/products] Error al crear:", error);
     return redirectTo("/admin/productos/nuevo?error=server");
+  }
+
+  // Update secundario: si labels tiene contenido y la columna existe, lo persistimos.
+  if (labels.length > 0) {
+    const { error: labelsError } = await locals.supabase
+      .from("products")
+      .update({ labels })
+      .eq("id", newId);
+
+    if (labelsError !== null) {
+      console.warn(
+        "[admin/products] No se pudieron guardar las etiquetas (¿migración SQL pendiente?):",
+        labelsError.message,
+      );
+    }
   }
 
   // En lugar de mandar al listado, vamos al form de edición para que el

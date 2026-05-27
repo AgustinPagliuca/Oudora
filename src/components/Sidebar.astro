@@ -223,6 +223,26 @@ const { groups, activeCatalog } = Astro.props;
     align-self: start;
     position: sticky;
     top: 84px;
+    /* Si el contenido del sidebar (filtros, marcas, slider de precio)
+       supera la altura del viewport restante, debemos permitirle scroll
+       interno para que se vea todo. Sin esto el bottom se corta. */
+    max-height: calc(100vh - 104px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  /* Scrollbar fina y discreta para no romper el look luxury */
+  .sidebar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .sidebar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .sidebar::-webkit-scrollbar-thumb {
+    background: rgba(201, 168, 76, 0.2);
+    border-radius: 3px;
+  }
+  .sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(201, 168, 76, 0.4);
   }
 
   .sidebar-mobile-header {
