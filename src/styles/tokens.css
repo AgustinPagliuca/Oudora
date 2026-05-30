@@ -5,8 +5,9 @@
  */
 
 :root {
-  /* ── Colores: paleta negro absoluto + dorado ─────────────── */
-  --color-bg: #0a0908;
+  /* ── Colores: paleta dark cálido + dorado ────────────────── */
+  /* Para revertir al negro absoluto original: --color-bg: #0a0908; */
+  --color-bg: #1a150f;
   --color-bg-elevated: #121008;
   --color-bg-deep: #070605;
   --color-bg-card: #121008;
