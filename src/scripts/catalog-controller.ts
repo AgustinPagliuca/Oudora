@@ -537,6 +537,221 @@ function applyFilters(state: ControllerState): void {
   }
 }
 
+/**
+ * Sort de productos. Trabaja sobre las cards ya renderizadas, reordenando los
+ * nodos DOM dentro de cada `.product-grid` (preservando el agrupamiento por
+ * marca, que es una decisión visual fuerte del sitio).
+ *
+ * El orden "default" recupera el orden original — para eso guardamos un índice
+ * en cada card al inicializar.
+ */
+type SortValue =
+  | "default"
+  | "price-asc"
+  | "price-desc"
+  | "featured"
+  | "discount";
+
+function snapshotOriginalOrder(): void {
+  const cards = document.querySelectorAll<HTMLElement>("[data-product-card]");
+  cards.forEach((card, index) => {
+    if (card.dataset.originalIndex === undefined) {
+      card.dataset.originalIndex = String(index);
+    }
+  });
+  // Mismo snapshot para las secciones de marca, así "Por defecto" puede
+  // restaurar tanto el orden de cards como el de marcas.
+  const sections = document.querySelectorAll<HTMLElement>("[data-brand-section]");
+  sections.forEach((section, index) => {
+    if (section.dataset.originalSectionIndex === undefined) {
+      section.dataset.originalSectionIndex = String(index);
+    }
+  });
+}
+
+function compareCards(a: HTMLElement, b: HTMLElement, sortBy: SortValue): number {
+  if (sortBy === "default") {
+    const ai = parseInt(a.dataset.originalIndex ?? "0", 10);
+    const bi = parseInt(b.dataset.originalIndex ?? "0", 10);
+    return ai - bi;
+  }
+  if (sortBy === "price-asc") {
+    return parseInt(a.dataset.price ?? "0", 10) - parseInt(b.dataset.price ?? "0", 10);
+  }
+  if (sortBy === "price-desc") {
+    return parseInt(b.dataset.price ?? "0", 10) - parseInt(a.dataset.price ?? "0", 10);
+  }
+  if (sortBy === "featured") {
+    const af = a.dataset.featured === "true" ? 1 : 0;
+    const bf = b.dataset.featured === "true" ? 1 : 0;
+    return bf - af;
+  }
+  if (sortBy === "discount") {
+    const ad = a.dataset.hasDiscount === "true" ? 1 : 0;
+    const bd = b.dataset.hasDiscount === "true" ? 1 : 0;
+    return bd - ad;
+  }
+  return 0;
+}
+
+/**
+ * Devuelve el "valor" que se usa para ordenar una sección de marca según el
+ * criterio. Lo computamos sobre todas las cards de la sección (visibles u
+ * ocultas — un filtro aplicado podría cambiarlo, pero la semántica de "orden
+ * de marcas" se mantiene estable y predecible si miramos todo el catálogo).
+ */
+function getBrandSectionSortKey(section: HTMLElement, sortBy: SortValue): number {
+  if (sortBy === "default") {
+    return parseInt(section.dataset.originalSectionIndex ?? "0", 10);
+  }
+  const cards = Array.from(section.querySelectorAll<HTMLElement>("[data-product-card]"));
+  if (cards.length === 0) return Number.MAX_SAFE_INTEGER;
+
+  if (sortBy === "price-asc") {
+    // El precio mínimo de la marca define su posición — barata primero
+    let min = Number.MAX_SAFE_INTEGER;
+    for (const c of cards) {
+      const p = parseInt(c.dataset.price ?? "0", 10);
+      if (p < min) min = p;
+    }
+    return min;
+  }
+  if (sortBy === "price-desc") {
+    // El precio máximo de la marca define su posición — cara primero (negado)
+    let max = 0;
+    for (const c of cards) {
+      const p = parseInt(c.dataset.price ?? "0", 10);
+      if (p > max) max = p;
+    }
+    return -max;
+  }
+  if (sortBy === "featured") {
+    // Marca con más destacados primero
+    let count = 0;
+    for (const c of cards) {
+      if (c.dataset.featured === "true") count += 1;
+    }
+    return -count;
+  }
+  if (sortBy === "discount") {
+    // Marca con más productos en descuento primero
+    let count = 0;
+    for (const c of cards) {
+      if (c.dataset.hasDiscount === "true") count += 1;
+    }
+    return -count;
+  }
+  return 0;
+}
+
+function sortBrandSections(sortBy: SortValue): void {
+  const container = document.querySelector<HTMLElement>(".catalog-content");
+  if (container === null) return;
+  const sections = Array.from(
+    container.querySelectorAll<HTMLElement>("[data-brand-section]"),
+  );
+  // Decoramos con la posición original para tener un tiebreaker estable
+  // (si dos marcas tienen el mismo precio max, mantiene el orden original).
+  const decorated = sections.map((section, idx) => ({
+    section,
+    key: getBrandSectionSortKey(section, sortBy),
+    originalIdx: idx,
+  }));
+  decorated.sort((a, b) => {
+    if (a.key !== b.key) return a.key - b.key;
+    return a.originalIdx - b.originalIdx;
+  });
+  for (const { section } of decorated) {
+    container.appendChild(section);
+  }
+}
+
+function applySort(sortBy: SortValue): void {
+  // Primero reordenamos las secciones de marca según el criterio (las marcas
+  // más caras/baratas/destacadas suben). Después ordenamos las cards dentro
+  // de cada sección con el mismo criterio.
+  sortBrandSections(sortBy);
+  const sections = document.querySelectorAll<HTMLElement>("[data-brand-section]");
+  sections.forEach((section) => {
+    const grid = section.querySelector<HTMLElement>(".product-grid");
+    if (grid === null) return;
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>("[data-product-card]"));
+    cards.sort((a, b) => compareCards(a, b, sortBy));
+    for (const card of cards) {
+      grid.appendChild(card);
+    }
+  });
+}
+
+function setSortMenuVisualState(sortBy: SortValue): void {
+  // El label del botón es siempre "Filtrar y ordenar" — la opción elegida
+  // se identifica visualmente por el checkmark dentro del panel.
+  document
+    .querySelectorAll<HTMLButtonElement>("[data-sort-value]")
+    .forEach((option) => {
+      const isActive = option.dataset.sortValue === sortBy;
+      option.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+}
+
+function closeSortPanel(): void {
+  const panel = document.querySelector<HTMLElement>("[data-sort-panel]");
+  const toggle = document.querySelector<HTMLButtonElement>("[data-sort-toggle]");
+  if (panel !== null) panel.hidden = true;
+  if (toggle !== null) toggle.setAttribute("aria-expanded", "false");
+}
+
+function setupSortMenu(): void {
+  const menu = document.querySelector<HTMLElement>("[data-sort-menu]");
+  if (menu === null) return;
+  const toggle = menu.querySelector<HTMLButtonElement>("[data-sort-toggle]");
+  const panel = menu.querySelector<HTMLElement>("[data-sort-panel]");
+  if (toggle === null || panel === null) return;
+
+  // Snapshot del orden original antes del primer sort
+  snapshotOriginalOrder();
+
+  toggle.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+    if (isOpen) {
+      closeSortPanel();
+    } else {
+      panel.hidden = false;
+      toggle.setAttribute("aria-expanded", "true");
+    }
+  });
+
+  menu.querySelectorAll<HTMLButtonElement>("[data-sort-value]").forEach((option) => {
+    option.addEventListener("click", () => {
+      const value = option.dataset.sortValue;
+      if (
+        value === "default" ||
+        value === "price-asc" ||
+        value === "price-desc" ||
+        value === "featured" ||
+        value === "discount"
+      ) {
+        applySort(value);
+        setSortMenuVisualState(value);
+      }
+      closeSortPanel();
+    });
+  });
+
+  // Cerrar al click fuera o con ESC
+  document.addEventListener("click", (event) => {
+    if (!menu.contains(event.target as Node)) {
+      closeSortPanel();
+    }
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeSortPanel();
+    }
+  });
+}
+
 export function initCatalogController(): void {
   if (document.querySelector("[data-sidebar]") === null) return;
   const state = getInitialState();
@@ -560,6 +775,7 @@ export function initCatalogController(): void {
   setupSearch(state, refresh);
   setupClearButton(state, refresh);
   setupSidebarMobile();
+  setupSortMenu();
 
   // Si vino con filtro de género preseteado, marca visualmente el chip activo
   if (state.genders.size > 0) {

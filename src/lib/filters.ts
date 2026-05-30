@@ -91,14 +91,20 @@ export function getProductsByCatalog(
 export function getPriceRangeFor(
   products: readonly Product[],
 ): { min: number; max: number } {
-  if (products.length === 0) return { min: 0, max: 0 };
-  let min = products[0]!.priceArs;
-  let max = products[0]!.priceArs;
-  for (const product of products) {
-    if (product.priceArs < min) min = product.priceArs;
-    if (product.priceArs > max) max = product.priceArs;
+  // Política de UX: el slider siempre arranca en 0 (psicológicamente más limpio
+  // que un mínimo arbitrario como $118.000), y termina en un número redondo
+  // múltiplo de 50.000 por encima del precio máximo real. Esto evita números
+  // feos en los topes y deja un colchón si el catálogo crece levemente.
+  if (products.length === 0) {
+    return { min: 0, max: 50000 };
   }
-  return { min, max };
+  let actualMax = products[0]!.priceArs;
+  for (const product of products) {
+    if (product.priceArs > actualMax) actualMax = product.priceArs;
+  }
+  const STEP = 50000;
+  const roundedMax = Math.max(STEP, Math.ceil(actualMax / STEP) * STEP);
+  return { min: 0, max: roundedMax };
 }
 
 export const EMPTY_FILTERS: CatalogFilters = {

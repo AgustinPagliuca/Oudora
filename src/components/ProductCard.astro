@@ -26,6 +26,13 @@ const searchText =
 // Si el producto tiene al menos una imagen subida, usamos la primera (la portada).
 // Sino caemos al SVG genérico con el nombre escrito.
 const coverImage = product.images?.[0]?.url ?? product.imageUrl;
+
+// Hint visible para el sort: ¿el producto está marcado como destacado o tiene
+// alguna etiqueta de descuento (color rojo)? Las leemos como data-attrs para
+// que el catalog-controller pueda reordenar sin recalcular nada.
+const hasDiscountLabel = (product.labels ?? []).some(
+  (label) => label.color === "red",
+);
 ---
 
 <article
@@ -36,6 +43,8 @@ const coverImage = product.images?.[0]?.url ?? product.imageUrl;
   data-catalog={product.catalog}
   data-gender={product.gender}
   data-price={product.priceArs}
+  data-featured={product.featured ? "true" : "false"}
+  data-has-discount={hasDiscountLabel ? "true" : "false"}
   data-search-text={searchText}
 >
   <a class="product-image" href={detailHref} aria-label={`Ver detalle de ${product.name}`}>

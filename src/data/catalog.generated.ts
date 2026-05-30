@@ -4,7 +4,7 @@
 //
 //  Generado por: scripts/sync-catalog.mjs
 //  Fuente:       Supabase (brands, products, product_images, reviews, reels, announcements, hero_slides)
-//  Última sync:  2026-05-27T13:30:49.551Z
+//  Última sync:  2026-05-30T15:06:41.771Z
 //
 //  Para regenerar: pnpm run sync
 //
@@ -96,34 +96,122 @@ export const BRANDS: readonly Brand[] = [
     "slug": "tom-ford",
     "name": "Tom Ford",
     "catalog": "disenador"
+  },
+  {
+    "id": "31d8f7ae-7968-4003-b98b-992fe7b42750",
+    "slug": "french-avenue",
+    "name": "French Avenue",
+    "catalog": "arabe"
   }
 ];
 
 export const PRODUCTS: readonly Product[] = [
   {
-    "id": "afnan-9pm",
-    "slug": "9pm",
-    "brandId": "afnan",
+    "id": "662f4d4a-3d0f-4083-9523-3e289d5513b9",
+    "slug": "liquid-brun",
+    "brandId": "31d8f7ae-7968-4003-b98b-992fe7b42750",
     "catalog": "arabe",
-    "name": "9PM",
-    "gender": "masculino",
+    "name": "Liquid Brun",
+    "gender": "unisex",
     "concentration": "EDP",
     "volumeMl": 100,
-    "priceArs": 60000,
-    "stock": 11,
-    "notes": [
-      "manzana",
-      "lavanda",
-      "vainilla",
-      "haba tonka"
-    ],
+    "priceArs": 70000,
+    "stock": 15,
     "images": [
       {
-        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/afnan-9pm/b1f46ded-7db0-49e8-9349-e1e926f7aeda.webp",
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/662f4d4a-3d0f-4083-9523-3e289d5513b9/75859f24-3c31-4025-98ad-8ddc1c702a0e.webp",
         "position": 0
       },
       {
-        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/afnan-9pm/36bd4024-6191-4f47-b0ac-990900aabc41.webp",
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/662f4d4a-3d0f-4083-9523-3e289d5513b9/6073bec3-3744-4e6e-92f1-eb27cad4fdc0.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "be4958cb-723f-4397-a0ef-67e7db63885f",
+    "slug": "royal-blend-nero-extrait",
+    "brandId": "31d8f7ae-7968-4003-b98b-992fe7b42750",
+    "catalog": "arabe",
+    "name": "Royal Blend Nero Extrait",
+    "gender": "unisex",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 65000,
+    "stock": 15,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/be4958cb-723f-4397-a0ef-67e7db63885f/3daac301-9968-4773-a815-ac120dc90f1f.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/be4958cb-723f-4397-a0ef-67e7db63885f/adc3e030-539b-4019-8af2-22fbe96beeec.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "f6e5f355-bf5a-4b84-a851-a3c3c402a0b2",
+    "slug": "9-pm",
+    "brandId": "afnan",
+    "catalog": "arabe",
+    "name": "9 PM",
+    "gender": "unisex",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 60000,
+    "stock": 15,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/f6e5f355-bf5a-4b84-a851-a3c3c402a0b2/92de8409-e2de-43db-bd0b-28f5431e6b63.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/f6e5f355-bf5a-4b84-a851-a3c3c402a0b2/c11df64b-02a5-4296-ab4b-91619590b9ae.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "73448280-0553-454d-85e3-00c18e57a9f7",
+    "slug": "odyssey-mandarin-sky",
+    "brandId": "afnan",
+    "catalog": "arabe",
+    "name": "Odyssey Mandarin Sky",
+    "gender": "unisex",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 60000,
+    "stock": 15,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/73448280-0553-454d-85e3-00c18e57a9f7/f410978f-b79e-41a8-82eb-b12912b5c075.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/73448280-0553-454d-85e3-00c18e57a9f7/21696b17-e717-4fb2-b2a7-a0e576bd74f7.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "a81113ea-f2b5-4abe-a77b-2f47669174af",
+    "slug": "turathi-blue",
+    "brandId": "afnan",
+    "catalog": "arabe",
+    "name": "Turathi Blue",
+    "gender": "unisex",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 58000,
+    "stock": 15,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/a81113ea-f2b5-4abe-a77b-2f47669174af/e9226c22-e792-41b1-8ae5-340397106e2d.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/a81113ea-f2b5-4abe-a77b-2f47669174af/f1f2a622-3bc1-414b-b559-40adcf1dff41.webp",
         "position": 1
       }
     ]
@@ -138,12 +226,22 @@ export const PRODUCTS: readonly Product[] = [
     "concentration": "EDP",
     "volumeMl": 60,
     "priceArs": 52000,
-    "stock": 2,
+    "stock": 10,
     "notes": [
       "limón",
       "oud",
       "ámbar gris",
       "almizcle"
+    ],
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/al-haramain-amber-oud-carbon/dbfc14a4-844c-460e-85b6-62e96cbed23a.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/al-haramain-amber-oud-carbon/86de9bbc-68c9-4a37-a5e1-5850e91617bd.webp",
+        "position": 1
+      }
     ]
   },
   {
@@ -405,7 +503,7 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "masculino",
     "concentration": "EDP",
     "volumeMl": 100,
-    "priceArs": 99998,
+    "priceArs": 52000,
     "stock": 12,
     "notes": [
       "bergamota",
@@ -413,10 +511,14 @@ export const PRODUCTS: readonly Product[] = [
       "ámbar",
       "vainilla"
     ],
-    "labels": [
+    "images": [
       {
-        "text": "-20%",
-        "color": "red"
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-asad/a582ad4f-2cc6-4f44-92ed-deaebe82ea8f.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-asad/e2d52911-dfda-47fe-8c7f-aea2f93a25b1.webp",
+        "position": 1
       }
     ]
   },
@@ -449,29 +551,23 @@ export const PRODUCTS: readonly Product[] = [
     ]
   },
   {
-    "id": "lattafa-fakhar",
-    "slug": "fakhar",
+    "id": "9c69ac01-7c9e-4b01-a2e6-b87eb8f1795d",
+    "slug": "fakhar-black",
     "brandId": "lattafa",
     "catalog": "arabe",
     "name": "Fakhar Black",
-    "gender": "masculino",
+    "gender": "unisex",
     "concentration": "EDP",
     "volumeMl": 100,
     "priceArs": 55000,
-    "stock": 1,
-    "notes": [
-      "lavanda",
-      "cedro",
-      "tabaco",
-      "vetiver"
-    ],
+    "stock": 15,
     "images": [
       {
-        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-fakhar/3e5558a8-39c8-4fe5-ab49-aa0f6ed0fdfd.webp",
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/9c69ac01-7c9e-4b01-a2e6-b87eb8f1795d/37ff95cb-0a43-448f-874e-060ac06da38d.webp",
         "position": 0
       },
       {
-        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-fakhar/8b19a2cb-56d2-48ec-95ed-c26804cd604c.webp",
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/9c69ac01-7c9e-4b01-a2e6-b87eb8f1795d/0fe5351b-5eea-4119-b75e-9e5a233c0e04.webp",
         "position": 1
       }
     ]
@@ -512,6 +608,50 @@ export const PRODUCTS: readonly Product[] = [
     ]
   },
   {
+    "id": "7306119d-9e93-4808-82ce-941525799630",
+    "slug": "khamrah-qahwa",
+    "brandId": "lattafa",
+    "catalog": "arabe",
+    "name": "Khamrah Qahwa",
+    "gender": "unisex",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 50000,
+    "stock": 15,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/7306119d-9e93-4808-82ce-941525799630/745fbccb-c4ed-4d33-b1ca-044feac359bd.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/7306119d-9e93-4808-82ce-941525799630/87f973f5-7ab4-4a0b-b0f3-ebf589b50ded.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "c295c67d-4148-468f-9e7e-ebb07d4d6c0f",
+    "slug": "lattafa-badee-al-oud-honor-glory",
+    "brandId": "lattafa",
+    "catalog": "arabe",
+    "name": "Lattafa Badee Al Oud Honor & Glory",
+    "gender": "unisex",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 53000,
+    "stock": 15,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/c295c67d-4148-468f-9e7e-ebb07d4d6c0f/4bf8f869-a398-426f-ba38-754c7b747e10.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/c295c67d-4148-468f-9e7e-ebb07d4d6c0f/e72c7333-381e-4ee7-bc6c-3525f5dc3802.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
     "id": "lattafa-maahir-legacy",
     "slug": "maahir-legacy",
     "brandId": "lattafa",
@@ -535,6 +675,50 @@ export const PRODUCTS: readonly Product[] = [
       },
       {
         "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-maahir-legacy/40b7054e-e700-469f-84be-7fb6dd6fecc6.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "dec1c7d8-fcf9-4d45-841c-f1a633011ad0",
+    "slug": "qaed-al-fursan-black",
+    "brandId": "lattafa",
+    "catalog": "arabe",
+    "name": "Qaed al Fursan Black",
+    "gender": "unisex",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 45000,
+    "stock": 15,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/dec1c7d8-fcf9-4d45-841c-f1a633011ad0/386ce336-4799-45d7-9ad5-2ea0afb953f4.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/dec1c7d8-fcf9-4d45-841c-f1a633011ad0/c7916f4b-96ca-43a5-be9c-971a690ab0bb.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "45e167d2-1fcc-4b3a-9a67-4c6228bc39ca",
+    "slug": "the-kingdom",
+    "brandId": "lattafa",
+    "catalog": "arabe",
+    "name": "The Kingdom",
+    "gender": "unisex",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 64000,
+    "stock": 15,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/45e167d2-1fcc-4b3a-9a67-4c6228bc39ca/b3796014-cfb8-49c3-b619-cbbe5dedeb6b.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/45e167d2-1fcc-4b3a-9a67-4c6228bc39ca/4c225fb5-fc5b-4c64-8e22-5800e6247c47.webp",
         "position": 1
       }
     ]
@@ -564,6 +748,116 @@ export const PRODUCTS: readonly Product[] = [
       },
       {
         "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-yara/00499982-46fe-4ac6-951d-7e4aa9f337ed.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "84d2bca9-d888-4e82-a0df-9282c99a16b3",
+    "slug": "jean-lowe-inmortal",
+    "brandId": "maison-alhambra",
+    "catalog": "arabe",
+    "name": "Jean Lowe inmortal",
+    "gender": "unisex",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 50000,
+    "stock": 15,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/84d2bca9-d888-4e82-a0df-9282c99a16b3/2e452e10-1185-4024-9a69-fbbc6406f20d.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/84d2bca9-d888-4e82-a0df-9282c99a16b3/b31900c5-11fa-4894-9446-b3c883114731.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "ba56baff-f724-469d-b05b-fd068bace383",
+    "slug": "jorge-di-profumo",
+    "brandId": "maison-alhambra",
+    "catalog": "arabe",
+    "name": "Jorge Di profumo",
+    "gender": "unisex",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 43000,
+    "stock": 10,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/ba56baff-f724-469d-b05b-fd068bace383/190b2398-e996-425d-9148-8865e3efab5b.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/ba56baff-f724-469d-b05b-fd068bace383/ef4165f2-cd67-4b45-9b38-1573567ae160.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "ba73203b-19a6-4839-a190-12963d22b668",
+    "slug": "salvo",
+    "brandId": "maison-alhambra",
+    "catalog": "arabe",
+    "name": "Salvo",
+    "gender": "unisex",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 45000,
+    "stock": 10,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/ba73203b-19a6-4839-a190-12963d22b668/32b53fe1-5a01-4fa6-a6bd-79ab44cde6f4.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/ba73203b-19a6-4839-a190-12963d22b668/8493b172-e056-4f74-a2df-e35d0a4edf6f.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "b8832e1b-6541-449e-b349-a2825b8f556e",
+    "slug": "victorioso",
+    "brandId": "maison-alhambra",
+    "catalog": "arabe",
+    "name": "Victorioso",
+    "gender": "unisex",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 45000,
+    "stock": 15,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/b8832e1b-6541-449e-b349-a2825b8f556e/4b269b8e-b51e-4732-86cb-daaaf6094b25.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/b8832e1b-6541-449e-b349-a2825b8f556e/3703fc40-aa43-48e7-b965-9e5b6d31a1ab.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "5ac6e0d9-32f5-4d18-a1bb-84dde6902ee3",
+    "slug": "yeah-man",
+    "brandId": "maison-alhambra",
+    "catalog": "arabe",
+    "name": "Yeah Man",
+    "gender": "unisex",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 43000,
+    "stock": 12,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/5ac6e0d9-32f5-4d18-a1bb-84dde6902ee3/a95ee72d-6aa8-47e3-aee8-8d9448b9fc42.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/5ac6e0d9-32f5-4d18-a1bb-84dde6902ee3/e03f7aea-3d97-4c01-85c2-773a368fe009.webp",
         "position": 1
       }
     ]
@@ -605,29 +899,23 @@ export const PRODUCTS: readonly Product[] = [
     ]
   },
   {
-    "id": "rasasi-hawas",
-    "slug": "hawas",
+    "id": "02b91635-e422-409f-8fe1-c568112541d3",
+    "slug": "hawas-for-him",
     "brandId": "rasasi",
     "catalog": "arabe",
-    "name": "Hawas",
-    "gender": "masculino",
+    "name": "Hawas for him",
+    "gender": "unisex",
     "concentration": "EDP",
     "volumeMl": 100,
-    "priceArs": 5203,
-    "stock": 4,
-    "notes": [
-      "jengibre",
-      "manzana",
-      "ámbar gris",
-      "almizcle"
-    ],
+    "priceArs": 57000,
+    "stock": 15,
     "images": [
       {
-        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/rasasi-hawas/07ec3fd9-7322-4daa-8638-088bea3ba2bd.webp",
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/02b91635-e422-409f-8fe1-c568112541d3/968cc298-13bf-43fc-803c-cd702e429954.webp",
         "position": 0
       },
       {
-        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/rasasi-hawas/46943334-e6e9-48ad-bbc7-21c46e831da0.webp",
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/02b91635-e422-409f-8fe1-c568112541d3/4b7c6d0d-879f-43bc-b0a8-a5e8dff6a80b.webp",
         "position": 1
       }
     ]
