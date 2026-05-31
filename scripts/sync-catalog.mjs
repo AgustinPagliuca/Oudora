@@ -126,7 +126,7 @@ async function fetchProducts() {
   const { data, error } = await supabase
     .from("products")
     .select(
-      "id, slug, brand_id, catalog, name, gender, concentration, volume_ml, price_ars, stock, notes, featured, image_url, labels",
+      "id, slug, brand_id, catalog, name, gender, concentration, volume_ml, price_ars, stock, notes, description, featured, image_url, labels",
     )
     .order("brand_id", { ascending: true })
     .order("name", { ascending: true });
@@ -233,6 +233,9 @@ function transformProduct(row, imagesByProduct) {
     stock: row.stock,
     ...(Array.isArray(row.notes) && row.notes.length > 0
       ? { notes: row.notes }
+      : {}),
+    ...(typeof row.description === "string" && row.description.trim().length > 0
+      ? { description: row.description.trim() }
       : {}),
     ...(row.featured ? { featured: true } : {}),
     ...(row.image_url ? { imageUrl: row.image_url } : {}),

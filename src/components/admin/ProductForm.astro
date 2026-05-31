@@ -40,6 +40,7 @@ interface ProductValues {
   priceArs: number;
   stock: number;
   notes: string[];
+  description?: string;
   featured: boolean;
   labels?: LabelRecord[];
   createdAt?: string;
@@ -76,6 +77,7 @@ const values = {
   priceArs: product?.priceArs ?? 0,
   stock: product?.stock ?? 0,
   notes: product?.notes ?? [],
+  description: product?.description ?? "",
   featured: product?.featured ?? false,
   labels: product?.labels ?? [],
 };
@@ -364,6 +366,26 @@ const currentBrand = brands.find((b) => b.id === values.brandId);
       <p class="field-hint" style="margin-top:14px">
         💡 Colores sugeridos: <strong>Negro</strong> para tendencia/tamaños · <strong>Rojo</strong> para descuentos · <strong>Dorado</strong> para edición limitada.
       </p>
+    </section>
+
+    <!-- Panel: Descripción -->
+    <section class="panel form-panel">
+      <h2 class="panel-title">Descripción</h2>
+      <p class="panel-description">
+        Texto largo que aparece en la pestaña <strong>Descripción</strong> del detalle del producto.
+        Contá la historia de la fragancia, las ocasiones para usarla, etc. Opcional.
+      </p>
+      <div class="field">
+        <textarea
+          id="description"
+          name="description"
+          class="field-input"
+          rows="6"
+          maxlength="2000"
+          placeholder="Ej: Fragancia oriental con apertura cítrica y un corazón cálido a oud y especias. Ideal para la noche."
+        >{values.description}</textarea>
+        <p class="field-hint">Máximo 2000 caracteres.</p>
+      </div>
     </section>
 
     <!-- Panel: Notas olfativas -->

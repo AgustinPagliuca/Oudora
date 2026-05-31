@@ -12,6 +12,8 @@ const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const MAX_LABELS = 3;
 const MAX_LABEL_TEXT_LENGTH = 20;
 
+const MAX_DESCRIPTION_LENGTH = 2000;
+
 export interface ProductLabelInput {
   text: string;
   color: string;
@@ -28,6 +30,7 @@ export interface ProductInput {
   price_ars: number;
   stock: number;
   notes: string[];
+  description: string;
   featured: boolean;
   labels: ProductLabelInput[];
 }
@@ -80,6 +83,12 @@ export function parseProductForm(formData: FormData): ParseResult {
   // Siempre array, nunca null: la columna `notes` en DB es text[] NOT NULL.
   // Un array vacío `[]` es perfectamente válido y no rompe el constraint.
   const notes = notesRaw.length > 0 ? Array.from(new Set(notesRaw)) : [];
+  // Descripción opcional: si no se manda, queda string vacío (la columna en DB
+  // debe tener `default ''` o ser nullable). Truncamos a MAX por seguridad.
+  const description = (formData.get("description") ?? "")
+    .toString()
+    .trim()
+    .slice(0, MAX_DESCRIPTION_LENGTH);
   const featured = formData.get("featured") === "on";
   const labels = parseLabels(formData);
 
@@ -111,6 +120,7 @@ export function parseProductForm(formData: FormData): ParseResult {
       price_ars: priceArs,
       stock,
       notes,
+      description,
       featured,
       labels,
     },
