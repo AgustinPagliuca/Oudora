@@ -14,7 +14,7 @@ if (id === undefined) {
 const [{ data: brandRaw }, { count: productsCount }] = await Promise.all([
   supabase
     .from("brands")
-    .select("id, slug, name, catalog, sort_order")
+    .select("id, slug, name, catalog, sort_order, is_active")
     .eq("id", id)
     .maybeSingle(),
   supabase
@@ -33,6 +33,7 @@ const brand = {
   name: brandRaw.name,
   catalog: brandRaw.catalog,
   sort_order: brandRaw.sort_order,
+  is_active: brandRaw.is_active !== false,
   productsCount: productsCount ?? 0,
 };
 

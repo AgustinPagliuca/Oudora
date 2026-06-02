@@ -8,14 +8,22 @@ const supabase = Astro.locals.supabase;
 const [{ data: brandsData }, { data: productsData }] = await Promise.all([
   supabase
     .from("brands")
-    .select("id, slug, name, catalog, sort_order")
+    .select("id, slug, name, catalog, sort_order, is_active")
     .order("sort_order")
     .order("name"),
   supabase.from("products").select("brand_id"),
 ]);
 
-const brands = brandsData ?? [];
+const brandsAll = brandsData ?? [];
 const products = productsData ?? [];
+
+// Filtro de visibility por query string. Default "all".
+const visibilityFilter = Astro.url.searchParams.get("show") ?? "all";
+const brands = brandsAll.filter((b) => {
+  if (visibilityFilter === "visible") return b.is_active !== false;
+  if (visibilityFilter === "hidden") return b.is_active === false;
+  return true;
+});
 
 // Contador de productos por marca (más eficiente que hacer N queries)
 const productCountByBrand = new Map<string, number>();
@@ -26,6 +34,9 @@ for (const p of products) {
   );
 }
 
+const totalBrandsAll = brandsAll.length;
+const totalVisible = brandsAll.filter((b) => b.is_active !== false).length;
+const totalHidden = brandsAll.filter((b) => b.is_active === false).length;
 const totalBrands = brands.length;
 const orphanBrands = brands.filter(
   (b) => (productCountByBrand.get(b.id) ?? 0) === 0,
@@ -34,13 +45,16 @@ const orphanBrands = brands.filter(
 const flashCreated = Astro.url.searchParams.get("created") === "1";
 const flashUpdated = Astro.url.searchParams.get("updated") === "1";
 const flashDeleted = Astro.url.searchParams.get("deleted") === "1";
+const flashToggled = Astro.url.searchParams.get("toggled") === "1";
 const flashMessage = flashCreated
   ? "Marca creada correctamente."
   : flashUpdated
     ? "Cambios guardados correctamente."
     : flashDeleted
       ? "Marca eliminada."
-      : null;
+      : flashToggled
+        ? "Visibilidad actualizada."
+        : null;
 
 const errorParam = Astro.url.searchParams.get("error");
 const errorMessage =
@@ -64,7 +78,8 @@ const CATALOG_LABEL: Record<string, string> = {
       </p>
       <h1>Marcas</h1>
       <p class="page-subtitle">
-        {totalBrands} marcas{orphanBrands > 0 ? ` · ${orphanBrands} sin productos` : ""}
+        {totalBrandsAll} en total · {totalVisible} visibles · {totalHidden} ocultas
+        {orphanBrands > 0 ? ` · ${orphanBrands} sin productos` : ""}
       </p>
     </div>
     <a href="/admin/marcas/nueva" class="btn btn-primary">
@@ -78,6 +93,36 @@ const CATALOG_LABEL: Record<string, string> = {
 
   {flashMessage !== null && <div class="alert alert-success">{flashMessage}</div>}
   {errorMessage !== null && <div class="alert alert-error">{errorMessage}</div>}
+
+  <div class="visibility-tabs" role="tablist">
+    <a
+      href="/admin/marcas"
+      class={`visibility-tab ${visibilityFilter === "all" ? "is-active" : ""}`}
+      role="tab"
+      aria-selected={visibilityFilter === "all"}
+    >
+      Todas
+      <span class="visibility-tab-count">{totalBrandsAll}</span>
+    </a>
+    <a
+      href="/admin/marcas?show=visible"
+      class={`visibility-tab ${visibilityFilter === "visible" ? "is-active" : ""}`}
+      role="tab"
+      aria-selected={visibilityFilter === "visible"}
+    >
+      Visibles
+      <span class="visibility-tab-count">{totalVisible}</span>
+    </a>
+    <a
+      href="/admin/marcas?show=hidden"
+      class={`visibility-tab ${visibilityFilter === "hidden" ? "is-active" : ""}`}
+      role="tab"
+      aria-selected={visibilityFilter === "hidden"}
+    >
+      Ocultas
+      <span class="visibility-tab-count">{totalHidden}</span>
+    </a>
+  </div>
 
   <div class="filters" data-brand-filters>
     <div class="filter-search">
@@ -124,13 +169,19 @@ const CATALOG_LABEL: Record<string, string> = {
               const count = productCountByBrand.get(b.id) ?? 0;
               const canDelete = count === 0;
               const searchText = b.name.toLowerCase();
+              const isHidden = b.is_active === false;
               return (
                 <tr
                   data-brand-row
+                  data-row-href={`/admin/marcas/${b.id}`}
                   data-catalog={b.catalog}
-                  data-search-text={searchText}>
+                  data-search-text={searchText}
+                  class={isHidden ? "row-hidden" : ""}>
                   <td>
-                    <p class="cell-name">{b.name}</p>
+                    <p class="cell-name">
+                      {b.name}
+                      {isHidden && <span class="hidden-badge">Oculto</span>}
+                    </p>
                     <p class="cell-slug">{b.slug}</p>
                   </td>
                   <td class="muted">{CATALOG_LABEL[b.catalog] ?? b.catalog}</td>
@@ -141,6 +192,30 @@ const CATALOG_LABEL: Record<string, string> = {
                     </span>
                   </td>
                   <td class="actions">
+                    <form
+                      method="POST"
+                      action={`/api/admin/brands/${b.id}/toggle-active`}
+                      class="inline-form"
+                    >
+                      <button
+                        type="submit"
+                        class="action-btn"
+                        aria-label={isHidden ? `Mostrar ${b.name}` : `Ocultar ${b.name}`}
+                        title={isHidden ? "Mostrar en la tienda" : "Ocultar de la tienda"}
+                      >
+                        {isHidden ? (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                            <line x1="1" y1="1" x2="23" y2="23" />
+                          </svg>
+                        ) : (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                          </svg>
+                        )}
+                      </button>
+                    </form>
                     <a
                       href={`/admin/marcas/${b.id}`}
                       class="action-btn"
@@ -200,7 +275,9 @@ const CATALOG_LABEL: Record<string, string> = {
 
   <script>
     import { initBrandListController } from "@/scripts/admin/brand-list-controller";
+    import { initRowClickNavigation } from "@/scripts/admin/row-click-navigation";
     initBrandListController();
+    initRowClickNavigation();
   </script>
 </AdminLayout>
 
@@ -450,5 +527,88 @@ const CATALOG_LABEL: Record<string, string> = {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
+  }
+
+  /* ── Tabs de visibility (Todas / Visibles / Ocultas) ─────────── */
+  .visibility-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--admin-border);
+  }
+  .visibility-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    color: var(--admin-text-faint);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .visibility-tab:hover {
+    color: var(--admin-text);
+  }
+  .visibility-tab.is-active {
+    color: var(--admin-text);
+    border-bottom-color: var(--admin-accent);
+  }
+  .visibility-tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    padding: 2px 6px;
+    background: var(--admin-bg-elevated);
+    border-radius: 999px;
+    font-size: 11px;
+    color: var(--admin-text-faint);
+  }
+  .visibility-tab.is-active .visibility-tab-count {
+    background: var(--admin-accent);
+    color: var(--admin-bg);
+    font-weight: 600;
+  }
+
+  /* ── Fila oculta: opacity reducida + badge inline ────────────── */
+  tr.row-hidden td {
+    opacity: 0.55;
+  }
+  tr.row-hidden td.actions {
+    opacity: 1;
+  }
+
+  /* ── Fila clickable: cursor pointer + hover sutil ────────────── */
+  tr[data-row-href] {
+    cursor: pointer;
+  }
+  tr[data-row-href]:hover {
+    background: var(--admin-bg-hover, rgba(255, 255, 255, 0.03));
+  }
+  tr[data-row-href] .actions {
+    cursor: default;
+  }
+  .hidden-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 7px;
+    background: rgba(160, 160, 160, 0.15);
+    border: 1px solid rgba(160, 160, 160, 0.3);
+    border-radius: 4px;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--admin-text-faint);
+    font-weight: 600;
+    vertical-align: middle;
+  }
+
+  /* ── Form inline para el toggle ──────────────────────────────── */
+  .inline-form {
+    display: inline-flex;
+    margin: 0;
   }
 </style>

@@ -32,6 +32,7 @@ export interface ProductInput {
   notes: string[];
   description: string;
   featured: boolean;
+  is_active: boolean;
   labels: ProductLabelInput[];
 }
 
@@ -90,6 +91,9 @@ export function parseProductForm(formData: FormData): ParseResult {
     .trim()
     .slice(0, MAX_DESCRIPTION_LENGTH);
   const featured = formData.get("featured") === "on";
+  // El checkbox "Visible en la tienda" usa name="is_active". Si no aparece en
+  // el FormData es porque está desmarcado → producto oculto.
+  const is_active = formData.get("is_active") === "on";
   const labels = parseLabels(formData);
 
   // Validaciones
@@ -122,6 +126,7 @@ export function parseProductForm(formData: FormData): ParseResult {
       notes,
       description,
       featured,
+      is_active,
       labels,
     },
   };

@@ -11,6 +11,7 @@ export interface BrandInput {
   name: string;
   catalog: string;
   sort_order: number;
+  is_active: boolean;
 }
 
 export type ParseResult =
@@ -35,6 +36,8 @@ export function parseBrandForm(formData: FormData): ParseResult {
     sortOrderRaw === null || sortOrderRaw === ""
       ? 100
       : parseInt0(sortOrderRaw) ?? 100;
+  // Checkbox "Visible en la tienda". Si está desmarcado, no aparece en FormData.
+  const is_active = formData.get("is_active") === "on";
 
   if (slug === "" || !SLUG_REGEX.test(slug)) {
     return { ok: false, reason: "validation" };
@@ -47,7 +50,7 @@ export function parseBrandForm(formData: FormData): ParseResult {
 
   return {
     ok: true,
-    data: { slug, name, catalog, sort_order: sortOrder },
+    data: { slug, name, catalog, sort_order: sortOrder, is_active },
   };
 }
 

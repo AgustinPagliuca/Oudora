@@ -17,7 +17,7 @@ const [{ data: brandsData }, { data: productsData, error: productsError }] =
     supabase
       .from("products")
       .select(
-        "id, slug, brand_id, catalog, name, gender, concentration, volume_ml, price_ars, stock, featured, notes",
+        "id, slug, brand_id, catalog, name, gender, concentration, volume_ml, price_ars, stock, featured, is_active, notes",
       )
       .order("created_at", { ascending: false }),
   ]);
@@ -27,22 +27,38 @@ if (productsError !== null) {
 }
 
 const brands = brandsData ?? [];
-const products = productsData ?? [];
+const productsAll = productsData ?? [];
+
+// Filtro de visibility por query string. Default "all" para no esconder nada.
+// "visible" = solo is_active true (o null = retro-compat).
+// "hidden"  = solo is_active false.
+const visibilityFilter = Astro.url.searchParams.get("show") ?? "all";
+const products = productsAll.filter((p) => {
+  if (visibilityFilter === "visible") return p.is_active !== false;
+  if (visibilityFilter === "hidden") return p.is_active === false;
+  return true;
+});
 
 const brandsById = new Map(brands.map((b) => [b.id, b]));
 const totalProducts = products.length;
+const totalAll = productsAll.length;
+const totalVisible = productsAll.filter((p) => p.is_active !== false).length;
+const totalHidden = productsAll.filter((p) => p.is_active === false).length;
 const featuredCount = products.filter((p) => p.featured).length;
 
 const flashCreated = Astro.url.searchParams.get("created") === "1";
 const flashUpdated = Astro.url.searchParams.get("updated") === "1";
 const flashDeleted = Astro.url.searchParams.get("deleted") === "1";
+const flashToggled = Astro.url.searchParams.get("toggled") === "1";
 const flashMessage = flashCreated
   ? "Producto creado correctamente."
   : flashUpdated
     ? "Cambios guardados correctamente."
     : flashDeleted
       ? "Producto eliminado."
-      : null;
+      : flashToggled
+        ? "Visibilidad actualizada."
+        : null;
 
 const GENDER_LABEL: Record<string, string> = {
   femenino: "Fem.",
@@ -72,7 +88,7 @@ function stockBadgeClass(stock: number): string {
       </p>
       <h1>Productos</h1>
       <p class="page-subtitle">
-        {totalProducts} fragancias · {featuredCount} destacadas
+        {totalAll} en total · {totalVisible} visibles · {totalHidden} ocultos
       </p>
     </div>
     <a href="/admin/productos/nuevo" class="btn btn-primary">
@@ -85,6 +101,36 @@ function stockBadgeClass(stock: number): string {
   </div>
 
   {flashMessage !== null && <div class="alert alert-success">{flashMessage}</div>}
+
+  <div class="visibility-tabs" role="tablist">
+    <a
+      href="/admin/productos"
+      class={`visibility-tab ${visibilityFilter === "all" ? "is-active" : ""}`}
+      role="tab"
+      aria-selected={visibilityFilter === "all"}
+    >
+      Todos
+      <span class="visibility-tab-count">{totalAll}</span>
+    </a>
+    <a
+      href="/admin/productos?show=visible"
+      class={`visibility-tab ${visibilityFilter === "visible" ? "is-active" : ""}`}
+      role="tab"
+      aria-selected={visibilityFilter === "visible"}
+    >
+      Visibles
+      <span class="visibility-tab-count">{totalVisible}</span>
+    </a>
+    <a
+      href="/admin/productos?show=hidden"
+      class={`visibility-tab ${visibilityFilter === "hidden" ? "is-active" : ""}`}
+      role="tab"
+      aria-selected={visibilityFilter === "hidden"}
+    >
+      Ocultos
+      <span class="visibility-tab-count">{totalHidden}</span>
+    </a>
+  </div>
 
   <div class="filters" data-product-filters>
     <div class="filter-search">
@@ -140,16 +186,22 @@ function stockBadgeClass(stock: number): string {
               const brand = brandsById.get(p.brand_id);
               const notesText = Array.isArray(p.notes) ? p.notes.join(" ") : "";
               const searchText = `${brand?.name ?? ""} ${p.name} ${p.concentration ?? ""} ${notesText}`.toLowerCase();
+              const isHidden = p.is_active === false;
               return (
                 <tr
                   data-product-row
+                  data-row-href={`/admin/productos/${p.id}`}
                   data-catalog={p.catalog}
                   data-gender={p.gender}
                   data-search-text={searchText}
+                  class={isHidden ? "row-hidden" : ""}
                 >
                   <td>
                     <p class="cell-brand">{brand?.name ?? "—"}</p>
-                    <p class="cell-name">{p.name}</p>
+                    <p class="cell-name">
+                      {p.name}
+                      {isHidden && <span class="hidden-badge">Oculto</span>}
+                    </p>
                   </td>
                   <td class="muted">
                     {p.concentration} · {p.volume_ml} ml
@@ -164,6 +216,30 @@ function stockBadgeClass(stock: number): string {
                     {p.featured ? <span class="featured-mark">★</span> : <span class="muted">—</span>}
                   </td>
                   <td class="actions">
+                    <form
+                      method="POST"
+                      action={`/api/admin/products/${p.id}/toggle-active`}
+                      class="inline-form"
+                    >
+                      <button
+                        type="submit"
+                        class="action-btn"
+                        aria-label={isHidden ? `Mostrar ${p.name}` : `Ocultar ${p.name}`}
+                        title={isHidden ? "Mostrar en la tienda" : "Ocultar de la tienda"}
+                      >
+                        {isHidden ? (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                            <line x1="1" y1="1" x2="23" y2="23" />
+                          </svg>
+                        ) : (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                          </svg>
+                        )}
+                      </button>
+                    </form>
                     <a
                       href={`/admin/productos/${p.id}`}
                       class="action-btn"
@@ -226,7 +302,9 @@ function stockBadgeClass(stock: number): string {
 
   <script>
     import { initProductListController } from "@/scripts/admin/product-list-controller";
+    import { initRowClickNavigation } from "@/scripts/admin/row-click-navigation";
     initProductListController();
+    initRowClickNavigation();
   </script>
 </AdminLayout>
 
@@ -487,5 +565,90 @@ function stockBadgeClass(stock: number): string {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
+  }
+
+  /* ── Tabs de visibility (Todos / Visibles / Ocultos) ─────────── */
+  .visibility-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--admin-border);
+  }
+  .visibility-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    color: var(--admin-text-faint);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .visibility-tab:hover {
+    color: var(--admin-text);
+  }
+  .visibility-tab.is-active {
+    color: var(--admin-text);
+    border-bottom-color: var(--admin-accent);
+  }
+  .visibility-tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    padding: 2px 6px;
+    background: var(--admin-bg-elevated);
+    border-radius: 999px;
+    font-size: 11px;
+    color: var(--admin-text-faint);
+  }
+  .visibility-tab.is-active .visibility-tab-count {
+    background: var(--admin-accent);
+    color: var(--admin-bg);
+    font-weight: 600;
+  }
+
+  /* ── Fila oculta: opacity reducida + badge inline ────────────── */
+  tr.row-hidden td {
+    opacity: 0.55;
+  }
+  /* Excepción: las acciones siguen full opacity para poder operar */
+  tr.row-hidden td.actions {
+    opacity: 1;
+  }
+
+  /* ── Fila clickable: cursor pointer + hover sutil ────────────── */
+  tr[data-row-href] {
+    cursor: pointer;
+  }
+  tr[data-row-href]:hover {
+    background: var(--admin-bg-hover, rgba(255, 255, 255, 0.03));
+  }
+  /* Los botones/forms dentro de actions mantienen su cursor propio */
+  tr[data-row-href] .actions {
+    cursor: default;
+  }
+  .hidden-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 7px;
+    background: rgba(160, 160, 160, 0.15);
+    border: 1px solid rgba(160, 160, 160, 0.3);
+    border-radius: 4px;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--admin-text-faint);
+    font-weight: 600;
+    vertical-align: middle;
+  }
+
+  /* ── Form inline para el toggle (sin margin/padding extra) ───── */
+  .inline-form {
+    display: inline-flex;
+    margin: 0;
   }
 </style>

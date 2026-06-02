@@ -10,6 +10,7 @@ interface BrandValues {
   name: string;
   catalog: string;
   sort_order: number;
+  is_active?: boolean;
   productsCount?: number;
 }
 
@@ -29,6 +30,7 @@ const values = {
   name: brand?.name ?? "",
   catalog: brand?.catalog ?? "arabe",
   sort_order: brand?.sort_order ?? 100,
+  isActive: brand?.is_active ?? true,
 };
 
 const hasProducts = (brand?.productsCount ?? 0) > 0;
@@ -139,6 +141,14 @@ const hasProducts = (brand?.productsCount ?? 0) > 0;
           </p>
         </div>
       </div>
+
+      <label class="checkbox-row">
+        <input type="checkbox" name="is_active" checked={values.isActive} />
+        <span>Visible en la tienda</span>
+        <span class="field-hint inline">
+          — desmarcá para ocultar la marca y todos sus productos del sitio público
+        </span>
+      </label>
     </section>
 
     {
@@ -285,6 +295,26 @@ const hasProducts = (brand?.productsCount ?? 0) > 0;
     margin-top: 4px;
     font-size: 12px;
     color: var(--admin-text-faint);
+  }
+  .field-hint.inline {
+    display: inline;
+    margin-left: 4px;
+    margin-top: 0;
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .checkbox-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--admin-accent);
   }
 
   .slug-input {

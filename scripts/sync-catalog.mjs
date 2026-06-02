@@ -35,6 +35,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
  * @property {string} slug
  * @property {string} name
  * @property {string} catalog
+ * @property {boolean} [is_active]
  */
 
 /**
@@ -50,7 +51,9 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
  * @property {number} price_ars
  * @property {number} stock
  * @property {string[] | null} notes
+ * @property {string | null} [description]
  * @property {boolean | null} featured
+ * @property {boolean} [is_active]
  * @property {string | null} image_url
  * @property {Array<{text: string, color: string}> | null} labels
  */
@@ -115,7 +118,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 async function fetchBrands() {
   const { data, error } = await supabase
     .from("brands")
-    .select("id, slug, name, catalog")
+    .select("id, slug, name, catalog, is_active")
     .order("sort_order", { ascending: true });
   if (error) throw new Error(`brands: ${error.message}`);
   if (!data || data.length === 0) throw new Error("brands: la tabla vino vacía");
@@ -126,7 +129,7 @@ async function fetchProducts() {
   const { data, error } = await supabase
     .from("products")
     .select(
-      "id, slug, brand_id, catalog, name, gender, concentration, volume_ml, price_ars, stock, notes, description, featured, image_url, labels",
+      "id, slug, brand_id, catalog, name, gender, concentration, volume_ml, price_ars, stock, notes, description, featured, is_active, image_url, labels",
     )
     .order("brand_id", { ascending: true })
     .order("name", { ascending: true });
@@ -254,7 +257,13 @@ function transformProduct(row, imagesByProduct) {
  * @param {HeroSlideRow[]} [heroSlidesRaw]
  */
 function buildOutput(brandsRaw, productsRaw, imagesRaw, reviewsRaw = [], reelsRaw = [], announcementsRaw = [], heroSlidesRaw = []) {
-  const brands = brandsRaw.map((b) => ({
+  // Filtrar marcas marcadas como ocultas (is_active = false). Si la columna no
+  // existe todavía (proyecto pre-migración), `is_active` viene undefined y lo
+  // tratamos como visible. Esto hace que la migración sea retro-compatible.
+  const brandsActive = brandsRaw.filter((b) => b.is_active !== false);
+  const activeBrandIds = new Set(brandsActive.map((b) => b.id));
+
+  const brands = brandsActive.map((b) => ({
     id: b.id,
     slug: b.slug,
     name: b.name,
@@ -275,7 +284,14 @@ function buildOutput(brandsRaw, productsRaw, imagesRaw, reviewsRaw = [], reelsRa
     });
   }
 
-  const products = productsRaw.map((p) => transformProduct(p, imagesByProduct));
+  // Productos: filtramos los marcados como ocultos Y los huérfanos cuya marca
+  // quedó oculta. Si un cliente entra con bookmark a un producto oculto, le
+  // dará 404 (la ruta no se genera). Es el comportamiento esperado.
+  const productsActive = productsRaw.filter(
+    (p) => p.is_active !== false && activeBrandIds.has(p.brand_id),
+  );
+
+  const products = productsActive.map((p) => transformProduct(p, imagesByProduct));
 
   const reviews = reviewsRaw.map((r) => ({
     id: r.id,
@@ -402,9 +418,15 @@ async function main() {
   const withImages = products.filter((p) => p.images !== undefined).length;
 
   console.log(`[sync-catalog] ✓ ${brands.length} marcas`);
+  if (brandsRaw.length > brands.length) {
+    console.log(`[sync-catalog]   ↳ ${brandsRaw.length - brands.length} marca(s) oculta(s) en admin: se omiten`);
+  }
   console.log(
     `[sync-catalog] ✓ ${products.length} productos (${arabeCount} árabes, ${disenadorCount} diseñador, ${featuredCount} destacados)`,
   );
+  if (productsRaw.length > products.length) {
+    console.log(`[sync-catalog]   ↳ ${productsRaw.length - products.length} producto(s) oculto(s) o sin marca activa: se omiten`);
+  }
   console.log(`[sync-catalog] ✓ ${imageCount} imágenes (${withImages} productos con foto)`);
   console.log(`[sync-catalog] ✓ ${reviewCount} reseñas publicadas`);
   console.log(`[sync-catalog] ✓ ${reelCount} reels publicados`);

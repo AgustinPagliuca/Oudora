@@ -42,6 +42,7 @@ interface ProductValues {
   notes: string[];
   description?: string;
   featured: boolean;
+  is_active?: boolean;
   labels?: LabelRecord[];
   createdAt?: string;
   images?: ImageRecord[];
@@ -79,6 +80,7 @@ const values = {
   notes: product?.notes ?? [],
   description: product?.description ?? "",
   featured: product?.featured ?? false,
+  isActive: product?.is_active ?? true,
   labels: product?.labels ?? [],
 };
 
@@ -307,6 +309,14 @@ const currentBrand = brands.find((b) => b.id === values.brandId);
           />
         </div>
       </div>
+
+      <label class="checkbox-row">
+        <input type="checkbox" name="is_active" checked={values.isActive} />
+        <span>Visible en la tienda</span>
+        <span class="field-hint inline">
+          — desmarcá para ocultar el producto del sitio público sin borrarlo
+        </span>
+      </label>
 
       <label class="checkbox-row">
         <input type="checkbox" name="featured" checked={values.featured} />
