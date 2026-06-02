@@ -4,7 +4,7 @@
 //
 //  Generado por: scripts/sync-catalog.mjs
 //  Fuente:       Supabase (brands, products, product_images, reviews, reels, announcements, hero_slides)
-//  Última sync:  2026-06-02T04:36:40.704Z
+//  Última sync:  2026-06-02T05:36:54.742Z
 //
 //  Para regenerar: pnpm run sync
 //
@@ -285,6 +285,41 @@ export const PRODUCTS: readonly Product[] = [
       {
         "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/al-haramain-amber-oud-carbon/86de9bbc-68c9-4a37-a5e1-5850e91617bd.webp",
         "position": 1
+      }
+    ]
+  },
+  {
+    "id": "armaf-club-de-nuit-intense-man",
+    "slug": "club-de-nuit-intense-man",
+    "brandId": "armaf",
+    "catalog": "arabe",
+    "name": "Club de Nuit Intense Man",
+    "gender": "masculino",
+    "concentration": "EDT",
+    "volumeMl": 105,
+    "priceArs": 60000,
+    "stock": 3,
+    "notes": [
+      "piña negra",
+      "manzana",
+      "abedul",
+      "almizcle"
+    ],
+    "featured": true,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/armaf-club-de-nuit-intense-man/640a6492-6488-477a-bcc5-ffba21fcf10f.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/armaf-club-de-nuit-intense-man/b59be177-b9aa-454e-897f-3009d263575b.webp",
+        "position": 1
+      }
+    ],
+    "labels": [
+      {
+        "text": "TAMAÑO XL",
+        "color": "dark"
       }
     ]
   },
@@ -912,6 +947,12 @@ export const PRODUCTS: readonly Product[] = [
       {
         "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-yara/00499982-46fe-4ac6-951d-7e4aa9f337ed.webp",
         "position": 1
+      }
+    ],
+    "labels": [
+      {
+        "text": "-20% OFF",
+        "color": "red"
       }
     ]
   },
