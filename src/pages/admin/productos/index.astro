@@ -30,12 +30,16 @@ const brands = brandsData ?? [];
 const productsAll = productsData ?? [];
 
 // Filtro de visibility por query string. Default "all" para no esconder nada.
-// "visible" = solo is_active true (o null = retro-compat).
-// "hidden"  = solo is_active false.
+// "visible"   = solo is_active true (o null = retro-compat).
+// "hidden"    = solo is_active false.
+// "featured"  = solo featured true (independiente de visibilidad, así el
+//               vendedor también ve los destacados que están ocultos —
+//               se distinguen visualmente por el badge "Oculto").
 const visibilityFilter = Astro.url.searchParams.get("show") ?? "all";
 const products = productsAll.filter((p) => {
   if (visibilityFilter === "visible") return p.is_active !== false;
   if (visibilityFilter === "hidden") return p.is_active === false;
+  if (visibilityFilter === "featured") return p.featured === true;
   return true;
 });
 
@@ -44,12 +48,14 @@ const totalProducts = products.length;
 const totalAll = productsAll.length;
 const totalVisible = productsAll.filter((p) => p.is_active !== false).length;
 const totalHidden = productsAll.filter((p) => p.is_active === false).length;
+const totalFeatured = productsAll.filter((p) => p.featured === true).length;
 const featuredCount = products.filter((p) => p.featured).length;
 
 const flashCreated = Astro.url.searchParams.get("created") === "1";
 const flashUpdated = Astro.url.searchParams.get("updated") === "1";
 const flashDeleted = Astro.url.searchParams.get("deleted") === "1";
 const flashToggled = Astro.url.searchParams.get("toggled") === "1";
+const flashFeatured = Astro.url.searchParams.get("featured") === "1";
 const flashMessage = flashCreated
   ? "Producto creado correctamente."
   : flashUpdated
@@ -58,7 +64,9 @@ const flashMessage = flashCreated
       ? "Producto eliminado."
       : flashToggled
         ? "Visibilidad actualizada."
-        : null;
+        : flashFeatured
+          ? "Marca de destacado actualizada."
+          : null;
 
 const GENDER_LABEL: Record<string, string> = {
   femenino: "Fem.",
@@ -129,6 +137,16 @@ function stockBadgeClass(stock: number): string {
     >
       Ocultos
       <span class="visibility-tab-count">{totalHidden}</span>
+    </a>
+    <a
+      href="/admin/productos?show=featured"
+      class={`visibility-tab ${visibilityFilter === "featured" ? "is-active" : ""}`}
+      role="tab"
+      aria-selected={visibilityFilter === "featured"}
+    >
+      <span class="visibility-tab-star" aria-hidden="true">★</span>
+      Destacados
+      <span class="visibility-tab-count">{totalFeatured}</span>
     </a>
   </div>
 
@@ -213,7 +231,28 @@ function stockBadgeClass(stock: number): string {
                     <span class={stockBadgeClass(p.stock)}>{p.stock}</span>
                   </td>
                   <td class="centered">
-                    {p.featured ? <span class="featured-mark">★</span> : <span class="muted">—</span>}
+                    <form
+                      method="POST"
+                      action={`/api/admin/products/${p.id}/toggle-featured`}
+                      class="inline-form"
+                    >
+                      <button
+                        type="submit"
+                        class={p.featured ? "featured-toggle is-featured" : "featured-toggle"}
+                        aria-label={p.featured ? `Quitar destacado de ${p.name}` : `Destacar ${p.name}`}
+                        title={p.featured ? "Destacado — click para quitar" : "Click para destacar en home"}
+                      >
+                        {p.featured ? (
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        ) : (
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        )}
+                      </button>
+                    </form>
                   </td>
                   <td class="actions">
                     <form
@@ -486,6 +525,36 @@ function stockBadgeClass(stock: number): string {
     color: #d97706;
   }
 
+  /* ── Toggle de destacado: estrella grande clickable ───────────── */
+  .featured-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--admin-text-faint);
+    transition: color 0.15s, background 0.15s, transform 0.1s;
+  }
+  .featured-toggle:hover {
+    background: rgba(217, 119, 6, 0.08);
+    color: #d97706;
+  }
+  .featured-toggle:active {
+    transform: scale(0.92);
+  }
+  .featured-toggle.is-featured {
+    color: #d97706;
+  }
+  .featured-toggle.is-featured:hover {
+    background: rgba(217, 119, 6, 0.12);
+    color: #b45309;
+  }
+
   .actions {
     text-align: right;
     white-space: nowrap;
@@ -609,6 +678,11 @@ function stockBadgeClass(stock: number): string {
     background: var(--admin-accent);
     color: var(--admin-bg);
     font-weight: 600;
+  }
+  .visibility-tab-star {
+    color: var(--admin-warning, #d4a015);
+    font-size: 13px;
+    line-height: 1;
   }
 
   /* ── Fila oculta: opacity reducida + badge inline ────────────── */
