@@ -87,3 +87,19 @@ export function buildWhatsAppFullCheckoutUrl(
   const encoded = encodeURIComponent(message);
   return `https://wa.me/${CONTACT.whatsappE164}?text=${encoded}`;
 }
+
+/**
+ * URL de wa.me para consultar disponibilidad de un producto puntual.
+ * Lo usa el detalle de producto cuando stock = 0, en reemplazo del
+ * botón "Sin stock" que filtraba info de inventario al cliente.
+ *
+ * El vendedor recibe un mensaje con el producto identificable para que
+ * pueda confirmarle a la persona si tiene/cuándo va a tener stock.
+ */
+export function buildWhatsAppInquiryUrl(
+  brandName: string,
+  productName: string,
+): string {
+  const message = `Hola, me interesa la fragancia *${brandName} ${productName}*. ¿Tenés disponibilidad?`;
+  return `https://wa.me/${CONTACT.whatsappE164}?text=${encodeURIComponent(message)}`;
+}

@@ -16,6 +16,7 @@ import {
 } from "@/constants/ui";
 import { formatArs, formatPresentation } from "@/lib/format";
 import { getStockLabel } from "@/lib/grouping";
+import { buildWhatsAppInquiryUrl } from "@/lib/whatsapp";
 
 export const getStaticPaths = (() => {
   return PRODUCTS.map((product) => ({
@@ -34,6 +35,7 @@ if (brand === undefined) {
 const presentation = formatPresentation(product.concentration, product.volumeMl);
 const formattedPrice = formatArs(product.priceArs);
 const stockLabel = getStockLabel(product.stock);
+const inquiryWhatsAppUrl = buildWhatsAppInquiryUrl(brand.name, product.name);
 const variant = product.gender === "femenino"
   ? "warm"
   : product.gender === "masculino"
@@ -115,51 +117,61 @@ const breadcrumbsTrail = [
         <span class="product-detail-price">{formattedPrice}</span>
       </div>
 
-      <div class="product-detail-qty">
-        <p class="product-detail-qty-label">Cantidad</p>
-        <div class="product-detail-qty-row">
-          <div class="qty-stepper" role="group" aria-label="Seleccionar cantidad">
-            <button
-              type="button"
-              class="qty-btn"
-              data-quantity-decrement
-              aria-label="Restar uno"
-            >−</button>
-            <input
-              type="text"
-              inputmode="numeric"
-              class="qty-input"
-              value="1"
-              min="1"
-              max={product.stock > 0 ? product.stock : 1}
-              data-quantity-input
-              aria-label="Cantidad"
-              readonly
-            />
-            <button
-              type="button"
-              class="qty-btn"
-              data-quantity-increment
-              aria-label="Sumar uno"
-            >+</button>
+      {product.stock > 0 ? (
+        <div class="product-detail-qty">
+          <p class="product-detail-qty-label">Cantidad</p>
+          <div class="product-detail-qty-row">
+            <div class="qty-stepper" role="group" aria-label="Seleccionar cantidad">
+              <button
+                type="button"
+                class="qty-btn"
+                data-quantity-decrement
+                aria-label="Restar uno"
+              >−</button>
+              <input
+                type="text"
+                inputmode="numeric"
+                class="qty-input"
+                value="1"
+                min="1"
+                max={product.stock}
+                data-quantity-input
+                aria-label="Cantidad"
+                readonly
+              />
+              <button
+                type="button"
+                class="qty-btn"
+                data-quantity-increment
+                aria-label="Sumar uno"
+              >+</button>
+            </div>
           </div>
-          {product.stock > 0 && (
-            <span class="product-detail-stock-text">
-              {product.stock === 1 ? "Última disponible" : `${product.stock} disponibles`}
-            </span>
-          )}
         </div>
-      </div>
+      ) : null}
 
-      <button
-        type="button"
-        class="product-detail-add"
-        data-add-to-cart
-        data-product-id={product.id}
-        disabled={product.stock <= 0}
-      >
-        {product.stock > 0 ? "Agregar al carrito" : "Sin stock"}
-      </button>
+      {product.stock > 0 ? (
+        <button
+          type="button"
+          class="product-detail-add"
+          data-add-to-cart
+          data-product-id={product.id}
+        >
+          Agregar al carrito
+        </button>
+      ) : (
+        <a
+          href={inquiryWhatsAppUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="product-detail-add product-detail-add-inquiry"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/>
+          </svg>
+          Consultá disponibilidad por WhatsApp
+        </a>
+      )}
 
       <div class="product-detail-services">
         <div class="product-detail-service">
@@ -308,8 +320,7 @@ const breadcrumbsTrail = [
 
   .product-detail-image-real {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: 100%;                                           
   }
 
   .product-detail-stock {
@@ -447,10 +458,6 @@ const breadcrumbsTrail = [
     -webkit-appearance: none;
     margin: 0;
   }
-  .product-detail-stock-text {
-    font-size: 12px;
-    color: var(--color-text-muted);
-  }
 
   /* Botón principal */
   .product-detail-add {
@@ -481,6 +488,25 @@ const breadcrumbsTrail = [
   .product-detail-add:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  /* Variante "Consultar por WhatsApp" cuando no hay stock: verde tipo WA
+     para que se lea como un canal directo, no como un botón de compra. */
+  .product-detail-add-inquiry {
+    background: linear-gradient(180deg, #25d366 0%, #1da851 100%);
+    color: #fff;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 0.5px solid rgba(255, 255, 255, 0.18);
+  }
+  .product-detail-add-inquiry:hover {
+    background: linear-gradient(180deg, #2ddc6c 0%, #20b659 100%);
+  }
+  .product-detail-add-inquiry svg {
+    flex-shrink: 0;
   }
 
   /* Tira de servicios */
@@ -677,7 +703,6 @@ const breadcrumbsTrail = [
   .product-detail-thumb img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
     display: block;
   }
   .product-detail-thumb:hover {

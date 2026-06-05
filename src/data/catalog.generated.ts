@@ -4,7 +4,7 @@
 //
 //  Generado por: scripts/sync-catalog.mjs
 //  Fuente:       Supabase (brands, products, product_images, reviews, reels, announcements, hero_slides)
-//  Última sync:  2026-06-02T05:36:54.742Z
+//  Última sync:  2026-06-04T20:16:27.602Z
 //
 //  Para regenerar: pnpm run sync
 //
@@ -102,6 +102,18 @@ export const BRANDS: readonly Brand[] = [
     "slug": "french-avenue",
     "name": "French Avenue",
     "catalog": "arabe"
+  },
+  {
+    "id": "bc19847f-905a-4c3d-b592-1a6ff4d41b15",
+    "slug": "dolce-gabbana",
+    "name": "Dolce & Gabbana",
+    "catalog": "disenador"
+  },
+  {
+    "id": "9f387c88-6a65-47f8-92c9-1114515c751a",
+    "slug": "giorgio-armani",
+    "name": "Giorgio Armani",
+    "catalog": "disenador"
   }
 ];
 
@@ -190,6 +202,51 @@ export const PRODUCTS: readonly Product[] = [
       },
       {
         "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/012e07cc-b98d-4ad6-a95a-2d73bd5db46b/0c65feb7-c1ce-44bb-bdd4-5f0f33e392ec.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "a64aa7e2-f8cd-4e81-9d87-2f662c1c9c0c",
+    "slug": "emporio-stronger-with-you-intensely",
+    "brandId": "9f387c88-6a65-47f8-92c9-1114515c751a",
+    "catalog": "disenador",
+    "name": "Emporio Stronger With You Intensely",
+    "gender": "masculino",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 160000,
+    "stock": 5,
+    "featured": true,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/a64aa7e2-f8cd-4e81-9d87-2f662c1c9c0c/c09044a4-5af2-43ba-b851-4fe0a13ed27d.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/a64aa7e2-f8cd-4e81-9d87-2f662c1c9c0c/3eda4ffc-4517-40b8-a5ca-4b2c5d48a3c7.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "f85aa51d-81ae-4d94-a412-92902df8bf66",
+    "slug": "my-way",
+    "brandId": "9f387c88-6a65-47f8-92c9-1114515c751a",
+    "catalog": "disenador",
+    "name": "My Way",
+    "gender": "femenino",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 167000,
+    "stock": 5,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/f85aa51d-81ae-4d94-a412-92902df8bf66/a3cba818-e5cf-450e-accd-766ffc49f4b5.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/f85aa51d-81ae-4d94-a412-92902df8bf66/993d8aba-d4d6-4cca-a128-aa2bf4cab74a.webp",
         "position": 1
       }
     ]
@@ -324,6 +381,28 @@ export const PRODUCTS: readonly Product[] = [
     ]
   },
   {
+    "id": "43a1500f-45e5-4a4b-acdb-b6a1f6234521",
+    "slug": "club-de-nuit-maleka",
+    "brandId": "armaf",
+    "catalog": "arabe",
+    "name": "Club de Nuit Maleka",
+    "gender": "femenino",
+    "concentration": "EDP",
+    "volumeMl": 105,
+    "priceArs": 67000,
+    "stock": 5,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/43a1500f-45e5-4a4b-acdb-b6a1f6234521/ad0b2391-cc6f-4c1d-8df4-92b537df3654.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/43a1500f-45e5-4a4b-acdb-b6a1f6234521/f1d84fd2-8e77-4bcf-b960-4dbc6a6a95e6.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
     "id": "armaf-club-de-nuit-sillage",
     "slug": "club-de-nuit-sillage",
     "brandId": "armaf",
@@ -380,21 +459,49 @@ export const PRODUCTS: readonly Product[] = [
     ]
   },
   {
+    "id": "ae48c84d-7038-4af3-a6a7-cb9cef0dc779",
+    "slug": "devotion-intense",
+    "brandId": "bc19847f-905a-4c3d-b592-1a6ff4d41b15",
+    "catalog": "disenador",
+    "name": "Devotion Intense",
+    "gender": "femenino",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 135000,
+    "stock": 5,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/ae48c84d-7038-4af3-a6a7-cb9cef0dc779/def1a01d-9b07-4ca4-96d5-a7cefaa14334.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/ae48c84d-7038-4af3-a6a7-cb9cef0dc779/6bb5473e-2833-47f8-a60c-a2eec189c8bb.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
     "id": "ch-212-vip-rose",
     "slug": "212-vip-rose",
     "brandId": "carolina-herrera",
     "catalog": "disenador",
-    "name": "212 VIP Rose",
+    "name": "212 VIP Rose Elixir",
     "gender": "femenino",
     "concentration": "EDP",
     "volumeMl": 80,
-    "priceArs": 132000,
+    "priceArs": 143000,
     "stock": 5,
     "notes": [
       "champagne rosado",
       "rosa",
       "almizcle",
       "ámbar"
+    ],
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/ch-212-vip-rose/be90f7fc-fb99-44ca-9c7e-08595f31bc96.webp",
+        "position": 0
+      }
     ]
   },
   {
@@ -414,7 +521,16 @@ export const PRODUCTS: readonly Product[] = [
       "jazmín",
       "haba tonka"
     ],
-    "featured": true
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/ch-good-girl/c21b97d6-28f2-4019-a129-6b5ac3771278.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/ch-good-girl/b3bf3f91-3f08-4a48-a9c5-503f35e47d51.webp",
+        "position": 1
+      }
+    ]
   },
   {
     "id": "chanel-bleu-edp",
@@ -433,7 +549,6 @@ export const PRODUCTS: readonly Product[] = [
       "incienso",
       "sándalo"
     ],
-    "featured": true,
     "images": [
       {
         "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/chanel-bleu-edp/545f73a5-f636-4f16-912b-c7275576f899.webp",
@@ -443,24 +558,6 @@ export const PRODUCTS: readonly Product[] = [
         "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/chanel-bleu-edp/4487d072-4f50-4b01-bb20-ac2012a12ec9.webp",
         "position": 1
       }
-    ]
-  },
-  {
-    "id": "chanel-coco-mademoiselle",
-    "slug": "coco-mademoiselle",
-    "brandId": "chanel",
-    "catalog": "disenador",
-    "name": "Coco Mademoiselle",
-    "gender": "femenino",
-    "concentration": "EDP",
-    "volumeMl": 100,
-    "priceArs": 198000,
-    "stock": 3,
-    "notes": [
-      "naranja",
-      "rosa",
-      "pachulí",
-      "almizcle"
     ]
   },
   {
@@ -536,7 +633,6 @@ export const PRODUCTS: readonly Product[] = [
       "ambroxan",
       "vainilla"
     ],
-    "featured": true,
     "images": [
       {
         "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/dior-sauvage-edp/3b52bee0-5f20-4fe1-9024-56ca936a487f.webp",
@@ -605,6 +701,28 @@ export const PRODUCTS: readonly Product[] = [
     ]
   },
   {
+    "id": "24ff769a-d03d-48ae-8b2d-b225258045f3",
+    "slug": "angham",
+    "brandId": "lattafa",
+    "catalog": "arabe",
+    "name": "Angham",
+    "gender": "femenino",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 50000,
+    "stock": 5,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/24ff769a-d03d-48ae-8b2d-b225258045f3/8fcecd7a-4611-42b1-885e-cbe71617af9a.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/24ff769a-d03d-48ae-8b2d-b225258045f3/e0d17c6b-dd07-4404-809a-a69e6e6ee9e8.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
     "id": "lattafa-asad",
     "slug": "asad",
     "brandId": "lattafa",
@@ -633,6 +751,28 @@ export const PRODUCTS: readonly Product[] = [
     ]
   },
   {
+    "id": "722f02e3-1e64-4282-b839-34e2d6fcbdf9",
+    "slug": "asad-bourbon",
+    "brandId": "lattafa",
+    "catalog": "arabe",
+    "name": "Asad Bourbon",
+    "gender": "masculino",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 63000,
+    "stock": 5,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/722f02e3-1e64-4282-b839-34e2d6fcbdf9/c5dae363-222f-494f-b891-6f11722c6ae1.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/722f02e3-1e64-4282-b839-34e2d6fcbdf9/88b5fa6f-e288-4946-bcef-0dd900227c9d.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
     "id": "lattafa-badee-al-oud-amethyst",
     "slug": "badee-al-oud-amethyst",
     "brandId": "lattafa",
@@ -656,6 +796,29 @@ export const PRODUCTS: readonly Product[] = [
       },
       {
         "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-badee-al-oud-amethyst/18d767e0-a668-4420-8064-511480970aad.webp",
+        "position": 1
+      }
+    ]
+  },
+  {
+    "id": "538e4a5e-4caa-4211-bad1-a0728006990e",
+    "slug": "eclaire",
+    "brandId": "lattafa",
+    "catalog": "arabe",
+    "name": "Eclaire",
+    "gender": "femenino",
+    "concentration": "EDP",
+    "volumeMl": 100,
+    "priceArs": 56000,
+    "stock": 5,
+    "featured": true,
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/538e4a5e-4caa-4211-bad1-a0728006990e/e8d0938c-bc0a-488c-8e03-5e77b5db06dc.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/538e4a5e-4caa-4211-bad1-a0728006990e/699ab4e6-6dc8-4c9b-a35f-8f69adbf036b.webp",
         "position": 1
       }
     ]
@@ -948,12 +1111,6 @@ export const PRODUCTS: readonly Product[] = [
         "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/lattafa-yara/00499982-46fe-4ac6-951d-7e4aa9f337ed.webp",
         "position": 1
       }
-    ],
-    "labels": [
-      {
-        "text": "-20% OFF",
-        "color": "red"
-      }
     ]
   },
   {
@@ -1163,13 +1320,23 @@ export const PRODUCTS: readonly Product[] = [
     "gender": "femenino",
     "concentration": "EDP",
     "volumeMl": 80,
-    "priceArs": 138000,
-    "stock": 4,
+    "priceArs": 129000,
+    "stock": 5,
     "notes": [
       "nerolí",
       "frambuesa",
       "jazmín",
       "ámbar"
+    ],
+    "images": [
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/paco-lady-million/504efe0c-83ba-45d9-a99c-54e74478e284.webp",
+        "position": 0
+      },
+      {
+        "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/paco-lady-million/fc805b49-e8e7-4f10-9fe6-e2354239fa04.webp",
+        "position": 1
+      }
     ]
   },
   {
@@ -1311,7 +1478,7 @@ export const PRODUCTS: readonly Product[] = [
 export const REVIEWS: readonly Review[] = [
   {
     "id": "d3719a5c-3859-4429-9104-5c28d5c14ef6",
-    "authorName": "Test",
+    "authorName": "Julian",
     "body": "Producto excelente, lo recomiendo. Llegó rápido y muy bien empaquetado.",
     "rating": 5,
     "featured": true,

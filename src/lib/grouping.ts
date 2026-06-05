@@ -45,10 +45,10 @@ export function getStockStatus(stock: number): StockStatus {
   return "in_stock";
 }
 
-export function getStockLabel(stock: number): string | null {
-  const status = getStockStatus(stock);
-  if (status === "last_unit") return "Última";
-  if (status === "low_stock") return `${stock} disp.`;
-  if (status === "out_of_stock") return "Agotado";
+export function getStockLabel(_stock: number): string | null {
+  // Política de UX: el comprador no ve ninguna info de stock. Ni cantidades,
+  // ni "última", ni "agotado". Si un producto está sin stock, el detalle
+  // muestra un CTA para consultar por WhatsApp en lugar del botón habitual.
+  // El stock real solo lo ve el vendedor en el panel admin.
   return null;
 }
