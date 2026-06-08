@@ -50,9 +50,27 @@
         Escribí para buscar entre todas las fragancias del catálogo.
       </p>
 
-      <p class="search-overlay-no-results" data-search-overlay-no-results hidden>
-        Sin resultados. Probá con otro término.
-      </p>
+      <div class="search-overlay-no-results" data-search-overlay-no-results hidden>
+        <svg
+          class="search-overlay-no-results-icon"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <line x1="21" y1="21" x2="16.5" y2="16.5" />
+        </svg>
+        <p class="search-overlay-no-results-title">Sin resultados</p>
+        <p class="search-overlay-no-results-hint">
+          Probá con otro término o ajustá la búsqueda.
+        </p>
+      </div>
 
       <ul class="search-overlay-results" data-search-overlay-results hidden></ul>
 
@@ -150,8 +168,8 @@
     border: none;
     outline: none;
     color: var(--color-cream);
-    font-size: 16px;
-    letter-spacing: 0.3px;
+    font-size: var(--text-base);
+    letter-spacing: var(--tracking-normal);
     font-family: inherit;
     min-width: 0;
   }
@@ -176,13 +194,47 @@
     width: 100%;
   }
 
-  .search-overlay-hint,
-  .search-overlay-no-results {
+  .search-overlay-hint {
     color: var(--color-text-muted);
-    font-size: 13px;
-    letter-spacing: 1px;
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-wide);
     text-align: center;
-    padding: 24px 12px;
+    padding: var(--space-5) var(--space-3);
+  }
+  .search-overlay-no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--space-6) var(--space-3);
+    gap: var(--space-2);
+  }
+  /* Sin esto, display: flex ganaba a [hidden] del browser y se mostraba
+     simultáneamente con los resultados. */
+  .search-overlay-no-results[hidden] {
+    display: none;
+  }
+  .search-overlay-no-results-icon {
+    color: var(--color-gold);
+    opacity: 0.5;
+    margin-bottom: var(--space-2);
+    width: 32px;
+    height: 32px;
+    align-self: center;
+    flex-shrink: 0;
+  }
+  .search-overlay-no-results-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    color: var(--color-cream);
+    letter-spacing: var(--tracking-tight);
+    margin: 0;
+  }
+  .search-overlay-no-results-hint {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    margin: 0;
+    line-height: 1.55;
   }
 
   .search-overlay-results {
@@ -214,27 +266,27 @@
     grid-area: brand;
     font-family: var(--font-serif);
     font-style: italic;
-    font-size: 13px;
+    font-size: var(--text-sm);
     color: var(--color-text-muted);
   }
   .search-result-name {
     grid-area: name;
-    font-size: 15px;
+    font-size: var(--text-base);
     color: var(--color-cream);
-    letter-spacing: 0.5px;
+    letter-spacing: var(--tracking-normal);
     font-weight: 500;
   }
   .search-result-meta {
     grid-area: meta;
-    font-size: 11px;
+    font-size: var(--text-xs);
     color: var(--color-text-muted);
-    letter-spacing: 1.5px;
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
   }
   .search-result-price {
     grid-area: price;
     font-family: var(--font-serif);
-    font-size: 18px;
+    font-size: var(--text-md);
     color: var(--color-gold);
   }
 
@@ -246,8 +298,8 @@
     border: 0.5px solid rgba(201, 168, 76, 0.25);
     border-radius: var(--radius-pill);
     color: var(--color-gold-light);
-    font-size: 12px;
-    letter-spacing: 2px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
     transition: all var(--transition-fast);
   }

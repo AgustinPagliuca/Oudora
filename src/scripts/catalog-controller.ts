@@ -433,11 +433,13 @@ function setupClearButton(
   state: ControllerState,
   applyFilters: () => void,
 ): void {
-  const clearBtn = document.querySelector<HTMLButtonElement>(
-    "[data-filter-clear]",
+  // Buscamos ambos botones que limpian filtros: el del sidebar y el del
+  // empty state del catálogo. Mismo comportamiento para los dos.
+  const clearBtns = document.querySelectorAll<HTMLButtonElement>(
+    "[data-filter-clear], [data-catalog-empty-clear]",
   );
-  if (clearBtn === null) return;
-  clearBtn.addEventListener("click", () => {
+  if (clearBtns.length === 0) return;
+  const handleClear = (): void => {
     state.brandIds.clear();
     state.genders.clear();
     state.searchTerm = "";
@@ -448,7 +450,8 @@ function setupClearButton(
     clearSearchInput();
     clearPriceInputs();
     applyFilters();
-  });
+  };
+  clearBtns.forEach((btn) => btn.addEventListener("click", handleClear));
 }
 
 function setupSidebarMobile(): void {
@@ -518,6 +521,15 @@ function applyFilters(state: ControllerState): void {
     if (getCardCatalog(card) === state.catalog) totalInCatalog += 1;
     const matches = cardMatches(card, state);
     card.dataset.hidden = matches ? "false" : "true";
+
+    // Cascadea data-hidden al wrapper de reveal (si existe) para que la
+    // grid no deje slots vacíos. Sin esto, al filtrar quedaba "una card
+    // arriba, otra abajo" con huecos invisibles entre medio.
+    const wrapper = card.parentElement;
+    if (wrapper !== null && wrapper.hasAttribute("data-reveal")) {
+      wrapper.dataset.hidden = matches ? "false" : "true";
+    }
+
     if (matches) visibleCount += 1;
   });
 
@@ -534,6 +546,15 @@ function applyFilters(state: ControllerState): void {
     } else {
       counter.textContent = `${visibleCount} de ${totalInCatalog} fragancias`;
     }
+  }
+
+  // Empty state: aparece cuando ningún producto del catálogo activo coincide
+  // con los filtros. Si el catálogo está completamente vacío (totalInCatalog
+  // === 0) no lo mostramos: ese caso lo cubre el `data-result-count` arriba.
+  const emptyState = document.querySelector<HTMLElement>("[data-catalog-empty]");
+  if (emptyState !== null) {
+    const shouldShowEmpty = visibleCount === 0 && totalInCatalog > 0;
+    emptyState.hidden = !shouldShowEmpty;
   }
 }
 
@@ -678,7 +699,14 @@ function applySort(sortBy: SortValue): void {
     const cards = Array.from(grid.querySelectorAll<HTMLElement>("[data-product-card]"));
     cards.sort((a, b) => compareCards(a, b, sortBy));
     for (const card of cards) {
-      grid.appendChild(card);
+      // Si la card está envuelta en un wrapper [data-reveal] (que agregamos
+      // para las animaciones de entrada), movemos el wrapper completo. Sin
+      // esto, el appendChild sacaba el <article> de su wrapper y dejaba el
+      // wrapper vacío ocupando un slot en la grid.
+      const wrapper = card.parentElement;
+      const target =
+        wrapper !== null && wrapper.hasAttribute("data-reveal") ? wrapper : card;
+      grid.appendChild(target);
     }
   });
 }

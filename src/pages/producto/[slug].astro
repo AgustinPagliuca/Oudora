@@ -304,12 +304,7 @@ const breadcrumbsTrail = [
 
   .product-detail-visual {
     position: relative;
-    background: radial-gradient(
-      ellipse at center,
-      #1c1910 0%,
-      var(--color-bg) 80%
-    );
-    border: 0.5px solid rgba(201, 168, 76, 0.15);
+    background: #ffffff;
     border-radius: var(--radius-md);
     aspect-ratio: 1 / 1;
     display: flex;
@@ -327,8 +322,8 @@ const breadcrumbsTrail = [
     position: absolute;
     bottom: 14px;
     right: 14px;
-    font-size: 11px;
-    letter-spacing: 1.5px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
     color: var(--color-gold-light);
     background: rgba(0, 0, 0, 0.7);
@@ -345,9 +340,9 @@ const breadcrumbsTrail = [
   .product-detail-brand a {
     font-family: var(--font-serif);
     font-style: italic;
-    font-size: 16px;
+    font-size: var(--text-base);
     color: var(--color-gold);
-    letter-spacing: 2px;
+    letter-spacing: var(--tracking-normal);
     transition: color var(--transition-fast);
   }
   .product-detail-brand a:hover {
@@ -358,15 +353,15 @@ const breadcrumbsTrail = [
     font-family: var(--font-serif);
     font-size: clamp(28px, 4vw, 44px);
     color: var(--color-cream);
-    letter-spacing: 1px;
+    letter-spacing: var(--tracking-tight);
     line-height: 1.05;
     font-weight: 400;
     margin: 4px 0;
   }
 
   .product-detail-pres {
-    font-size: 11px;
-    letter-spacing: 2.5px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     color: var(--color-text-muted);
     text-transform: uppercase;
     margin-bottom: 12px;
@@ -383,18 +378,18 @@ const breadcrumbsTrail = [
   }
   .product-detail-price {
     font-family: var(--font-sans);
-    font-size: 24px;
-    color: var(--color-gold);
-    letter-spacing: 0;
+    font-size: 20px;
+    color: var(--color-cream);
+    letter-spacing: var(--tracking-tight);
     line-height: 1;
-    font-weight: 400;
+    font-weight: 500;
     font-variant-numeric: tabular-nums lining-nums;
     font-feature-settings: "tnum" 1, "lnum" 1;
   }
   .product-detail-price-label {
-    font-size: 11px;
+    font-size: var(--text-xs);
     color: var(--color-text-muted);
-    letter-spacing: 1px;
+    letter-spacing: var(--tracking-wide);
   }
 
   /* Selector de cantidad */
@@ -402,8 +397,8 @@ const breadcrumbsTrail = [
     margin-top: 4px;
   }
   .product-detail-qty-label {
-    font-size: 11px;
-    letter-spacing: 2px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     color: var(--color-text-muted);
     text-transform: uppercase;
     margin-bottom: 10px;
@@ -426,7 +421,7 @@ const breadcrumbsTrail = [
     color: var(--color-gold-light);
     width: 38px;
     height: 38px;
-    font-size: 18px;
+    font-size: var(--text-md);
     cursor: pointer;
     transition: background var(--transition-fast);
     display: flex;
@@ -446,7 +441,7 @@ const breadcrumbsTrail = [
     background: transparent;
     border: none;
     color: var(--color-cream);
-    font-size: 15px;
+    font-size: var(--text-base);
     font-family: inherit;
     -moz-appearance: textfield;
   }
@@ -460,27 +455,40 @@ const breadcrumbsTrail = [
   }
 
   /* Botón principal */
+  /* Misma signature fill animation que el botón AGREGAR de las cards del
+     catálogo. Outline gold en reposo, rellena de izquierda a derecha en
+     hover, el texto pasa de gold a cocoa para mantener contraste. */
   .product-detail-add {
-    background: linear-gradient(
-      to right,
-      rgba(201, 168, 76, 0.12),
-      rgba(201, 168, 76, 0.22),
-      rgba(201, 168, 76, 0.12)
-    );
+    position: relative;
+    background: transparent;
     border: 0.5px solid var(--color-gold);
-    color: var(--color-gold-light);
-    font-size: 13px;
+    color: var(--color-gold);
+    font-size: var(--text-sm);
     font-weight: 500;
-    letter-spacing: 3px;
+    letter-spacing: var(--tracking-button);
     text-transform: uppercase;
     padding: 18px 24px;
     border-radius: var(--radius-pill);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    overflow: hidden;
+    isolation: isolate;
     margin-top: 6px;
+    transition: color 0.35s var(--ease-premium);
+  }
+  .product-detail-add::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-gold);
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.35s var(--ease-premium);
+    z-index: -1;
   }
   .product-detail-add:hover:not(:disabled) {
-    background: rgba(201, 168, 76, 0.28);
+    color: var(--color-bg);
+  }
+  .product-detail-add:hover:not(:disabled)::before {
+    clip-path: inset(0 0 0 0);
   }
   .product-detail-add:active:not(:disabled) {
     transform: scale(0.985);
@@ -526,15 +534,15 @@ const breadcrumbsTrail = [
     margin: 0 auto;
   }
   .product-detail-service-title {
-    font-size: 11px;
-    letter-spacing: 1.2px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     color: var(--color-cream);
     margin-top: 8px;
     font-weight: 500;
     text-transform: uppercase;
   }
   .product-detail-service-sub {
-    font-size: 11px;
+    font-size: var(--text-xs);
     color: var(--color-text-muted);
     margin-top: 2px;
   }
@@ -565,9 +573,9 @@ const breadcrumbsTrail = [
     border-bottom: 1.5px solid transparent;
     color: var(--color-text-muted);
     font-family: inherit;
-    font-size: 12px;
+    font-size: var(--text-xs);
     font-weight: 400;
-    letter-spacing: 2px;
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
     padding: 14px 0;
     cursor: pointer;
@@ -585,7 +593,7 @@ const breadcrumbsTrail = [
   .product-detail-tab-panel {
     max-width: 720px;
     color: var(--color-text);
-    font-size: 14px;
+    font-size: var(--text-sm);
     line-height: 1.8;
   }
   .product-detail-tab-panel[hidden] {
@@ -603,8 +611,8 @@ const breadcrumbsTrail = [
     padding: 0;
   }
   .product-detail-notes-list li {
-    font-size: 12px;
-    letter-spacing: 1px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
     text-transform: capitalize;
     color: var(--color-text);
     background: rgba(201, 168, 76, 0.08);
@@ -619,15 +627,15 @@ const breadcrumbsTrail = [
   }
   .product-detail-meta dt {
     font-size: 10px;
-    letter-spacing: 2px;
+    letter-spacing: var(--tracking-uppercase);
     color: var(--color-text-muted);
     text-transform: uppercase;
     margin-bottom: 4px;
   }
   .product-detail-meta dd {
-    font-size: 14px;
+    font-size: var(--text-sm);
     color: var(--color-cream);
-    letter-spacing: 0.5px;
+    letter-spacing: var(--tracking-normal);
   }
 
   .product-related {
@@ -640,7 +648,7 @@ const breadcrumbsTrail = [
     font-family: var(--font-serif);
     font-size: clamp(20px, 3vw, 26px);
     color: var(--color-cream);
-    letter-spacing: 1px;
+    letter-spacing: var(--tracking-tight);
     font-weight: 400;
     margin-bottom: 20px;
     text-align: center;
@@ -666,7 +674,7 @@ const breadcrumbsTrail = [
     }
     .product-detail-service-title {
       font-size: 10px;
-      letter-spacing: 0.5px;
+      letter-spacing: var(--tracking-wide);
     }
     .product-detail-service-sub {
       font-size: 10px;

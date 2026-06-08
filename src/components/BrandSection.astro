@@ -22,46 +22,55 @@ const { brand, products } = Astro.props;
     <span class="brand-count" data-brand-count>{products.length} piezas</span>
   </header>
 
-  <div class="product-grid">
-    {products.map((product) => <ProductCard product={product} brand={brand} />)}
+  <div class="product-grid" data-reveal-stagger>
+    {products.map((product) => (
+      <div data-reveal>
+        <ProductCard product={product} brand={brand} />
+      </div>
+    ))}
   </div>
 </section>
 
 <style>
   .brand-section {
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-6);
   }
 
   .brand-header {
     display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 16px;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
     padding: 0 4px;
   }
 
+  /* Marca = título serif italic. Antes tenía letter-spacing 3px que estiraba
+     demasiado el serif. Tracking tight queda más cohesionado y editorial. */
   .brand-name {
     font-family: var(--font-serif);
     font-size: clamp(20px, 3vw, 26px);
     font-weight: 400;
-    letter-spacing: 3px;
-    color: var(--color-gold-light);
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-cream);
     white-space: nowrap;
+    font-style: italic;
   }
 
+  /* Línea dorada que conecta nombre con count, da estructura editorial. */
   .brand-line {
     flex: 1;
-    height: 1px;
+    height: 0.5px;
     background: linear-gradient(
       to right,
       rgba(201, 168, 76, 0.4),
-      transparent
+      rgba(201, 168, 76, 0.05)
     );
+    align-self: center;
   }
 
   .brand-count {
-    font-size: 11px;
-    letter-spacing: 2px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     color: var(--color-text-muted);
     text-transform: uppercase;
     white-space: nowrap;
@@ -70,7 +79,7 @@ const { brand, products } = Astro.props;
   .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(170px, 230px));
-    gap: 16px;
+    gap: var(--space-4);
     justify-content: start;
   }
 

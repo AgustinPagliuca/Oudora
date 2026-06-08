@@ -45,12 +45,13 @@ import PerfumeBottle from "./PerfumeBottle.astro";
   }
 
   .hero-accent {
-    font-family: var(--font-serif);
-    font-size: 13px;
-    letter-spacing: 6px;
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
+    text-transform: uppercase;
     color: var(--color-gold);
-    opacity: 0.55;
     margin-bottom: 10px;
+    font-weight: 500;
   }
 
   .hero-title {
@@ -59,8 +60,8 @@ import PerfumeBottle from "./PerfumeBottle.astro";
     font-size: clamp(28px, 4.5vw, 44px);
     line-height: 1.1;
     color: var(--color-cream);
-    letter-spacing: 0.5px;
-    margin-bottom: 16px;
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-4);
   }
   .hero-title em {
     color: var(--color-gold);
@@ -70,28 +71,47 @@ import PerfumeBottle from "./PerfumeBottle.astro";
   }
 
   .hero-description {
-    font-size: 14px;
+    font-size: var(--text-sm);
     line-height: 1.7;
     color: var(--color-text-muted);
-    margin-bottom: 24px;
+    margin-bottom: var(--space-5);
     max-width: 380px;
   }
 
+  /* Misma signature animation que el resto de CTAs del sitio. */
   .hero-cta {
+    position: relative;
     display: inline-block;
     padding: 12px 28px;
     border: 0.5px solid var(--color-gold);
-    background: rgba(201, 168, 76, 0.08);
-    color: var(--color-gold-light);
-    font-size: 11px;
-    letter-spacing: 2.5px;
+    background: transparent;
+    color: var(--color-gold);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-button);
     text-transform: uppercase;
     border-radius: var(--radius-pill);
-    transition: all var(--transition-default);
+    overflow: hidden;
+    isolation: isolate;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.35s var(--ease-premium),
+                transform 0.35s var(--ease-premium);
+  }
+  .hero-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-gold);
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.35s var(--ease-premium);
+    z-index: -1;
   }
   .hero-cta:hover {
-    background: rgba(201, 168, 76, 0.18);
+    color: var(--color-bg);
     transform: translateY(-1px);
+  }
+  .hero-cta:hover::before {
+    clip-path: inset(0 0 0 0);
   }
 
   .hero-visual {

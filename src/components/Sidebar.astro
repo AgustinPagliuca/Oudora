@@ -255,9 +255,9 @@ const { groups, activeCatalog } = Astro.props;
 
   .sidebar-mobile-title {
     font-family: var(--font-serif);
-    font-size: 20px;
+    font-size: var(--text-lg);
     color: var(--color-cream);
-    letter-spacing: 3px;
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
   }
 
@@ -283,8 +283,8 @@ const { groups, activeCatalog } = Astro.props;
   }
 
   .sidebar-label {
-    font-size: 12px;
-    letter-spacing: 2.5px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     color: var(--color-text-muted);
     text-transform: uppercase;
     font-weight: 500;
@@ -300,8 +300,8 @@ const { groups, activeCatalog } = Astro.props;
   .sidebar-tab {
     text-align: left;
     font-family: var(--font-sans);
-    font-size: 14px;
-    letter-spacing: 2px;
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
     color: var(--color-text-muted);
     padding: 11px 12px;
@@ -338,8 +338,8 @@ const { groups, activeCatalog } = Astro.props;
     border: none;
     outline: none;
     color: var(--color-cream);
-    font-size: 14px;
-    letter-spacing: 0.3px;
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-normal);
     min-width: 0;
   }
   .sidebar-search input::placeholder {
@@ -357,10 +357,10 @@ const { groups, activeCatalog } = Astro.props;
     justify-content: space-between;
     align-items: center;
     padding: 9px 10px;
-    font-size: 14px;
+    font-size: var(--text-sm);
     color: var(--color-text-muted);
     border-radius: var(--radius-sm);
-    letter-spacing: 0.3px;
+    letter-spacing: var(--tracking-normal);
     transition: all var(--transition-fast);
   }
   .sidebar-row:hover {
@@ -374,8 +374,8 @@ const { groups, activeCatalog } = Astro.props;
   .sidebar-row strong {
     color: var(--color-text-faint);
     font-weight: 500;
-    font-size: 12px;
-    letter-spacing: 1px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
   }
   .sidebar-row.active strong {
     color: var(--color-gold);
@@ -390,8 +390,8 @@ const { groups, activeCatalog } = Astro.props;
   .sidebar-chip {
     border: 0.5px solid rgba(255, 255, 255, 0.12);
     color: var(--color-text-muted);
-    font-size: 12px;
-    letter-spacing: 1.5px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
     padding: 7px 13px;
     border-radius: var(--radius-pill);
@@ -501,15 +501,15 @@ const { groups, activeCatalog } = Astro.props;
     display: flex;
     justify-content: space-between;
     font-family: var(--font-serif);
-    font-size: 13px;
+    font-size: var(--text-sm);
     color: var(--color-gold-light);
     padding: 8px 4px 0;
   }
 
   .sidebar-clear {
     margin-top: 6px;
-    font-size: 12px;
-    letter-spacing: 1.5px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
     color: var(--color-text-muted);
     text-decoration: underline;

@@ -4,7 +4,7 @@
 //
 //  Generado por: scripts/sync-catalog.mjs
 //  Fuente:       Supabase (brands, products, product_images, reviews, reels, announcements, hero_slides)
-//  Última sync:  2026-06-04T20:16:27.602Z
+//  Última sync:  2026-06-08T16:35:17.938Z
 //
 //  Para regenerar: pnpm run sync
 //
@@ -240,6 +240,7 @@ export const PRODUCTS: readonly Product[] = [
     "volumeMl": 100,
     "priceArs": 167000,
     "stock": 5,
+    "featured": true,
     "images": [
       {
         "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/f85aa51d-81ae-4d94-a412-92902df8bf66/a3cba818-e5cf-450e-accd-766ffc49f4b5.webp",
@@ -633,6 +634,7 @@ export const PRODUCTS: readonly Product[] = [
       "ambroxan",
       "vainilla"
     ],
+    "featured": true,
     "images": [
       {
         "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/dior-sauvage-edp/3b52bee0-5f20-4fe1-9024-56ca936a487f.webp",
@@ -689,6 +691,7 @@ export const PRODUCTS: readonly Product[] = [
       "haba tonka",
       "miel"
     ],
+    "featured": true,
     "images": [
       {
         "url": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/product-images/jpg-le-male-elixir/7754b8fb-9bf3-4619-856a-32b569b0dce0.webp",
@@ -1569,7 +1572,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     "id": "8217649d-75c3-4b71-80c5-0b63b2704525",
     "overline": "NUEVA COLECCIÓN",
     "title": "Perfumes de diseñador",
-    "subtitle": "Dior, Chanel, Tom Ford, Prada",
+    "subtitle": "Dior, Chanel, Versace, Giorgio Armani",
     "imageUrl": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/hero-slides/slides/4b8d2391-9638-4b3f-9706-18f40fd8eaea.jpg",
     "imagePath": "slides/4b8d2391-9638-4b3f-9706-18f40fd8eaea.jpg",
     "ctaLabel": "Explorar",
@@ -1582,7 +1585,7 @@ export const HERO_SLIDES: readonly HeroSlide[] = [
     "id": "ef79860b-b4ba-43ce-b5c5-e5a788e95eb5",
     "overline": "ENVÍO GRATIS",
     "title": "Recibilo en todo el país",
-    "subtitle": "Sin cargo a partir de $130.000.",
+    "subtitle": "Envío sin cargo a partir de $130.000.",
     "imageUrl": "https://kvnibtoewaugqrdhljnx.supabase.co/storage/v1/object/public/hero-slides/slides/e253897d-05bf-4442-8653-db71be1c51b9.jpg",
     "imagePath": "slides/e253897d-05bf-4442-8653-db71be1c51b9.jpg",
     "ctaLabel": "Ver catálogo",

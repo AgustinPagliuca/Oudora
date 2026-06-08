@@ -2,22 +2,15 @@
 import Layout from "@/layouts/Layout.astro";
 import Nav from "@/components/Nav.astro";
 import Footer from "@/components/Footer.astro";
-import Breadcrumbs from "@/components/Breadcrumbs.astro";
 import PageHeader from "@/components/PageHeader.astro";
 
 import { CONTACT, SITE_METADATA } from "@/constants/ui";
-
-const breadcrumbsTrail = [
-  { label: "Inicio", href: "/" },
-  { label: "Contacto" },
-];
 
 const whatsappLink = `https://wa.me/${CONTACT.whatsappE164}`;
 ---
 
 <Layout title="Contacto">
   <Nav />
-  <Breadcrumbs trail={breadcrumbsTrail} />
   <PageHeader
     title="Hablemos por"
     highlight="WhatsApp"
@@ -157,23 +150,23 @@ const whatsappLink = `https://wa.me/${CONTACT.whatsappE164}`;
   }
 
   .contact-channel-label {
-    font-size: 11px;
-    letter-spacing: 2.5px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     color: var(--color-text-muted);
     text-transform: uppercase;
   }
 
   .contact-channel-value {
     font-family: var(--font-serif);
-    font-size: 20px;
+    font-size: var(--text-lg);
     color: var(--color-cream);
-    letter-spacing: 1px;
+    letter-spacing: var(--tracking-tight);
     line-height: 1.2;
   }
 
   .contact-channel-action {
-    font-size: 11px;
-    letter-spacing: 2px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
     color: var(--color-gold-light);
     margin-top: 4px;
@@ -200,22 +193,22 @@ const whatsappLink = `https://wa.me/${CONTACT.whatsappE164}`;
   .contact-info-item h3 {
     font-family: var(--font-serif);
     font-style: italic;
-    font-size: 16px;
+    font-size: var(--text-base);
     color: var(--color-gold-light);
     margin-bottom: 6px;
-    letter-spacing: 1px;
+    letter-spacing: var(--tracking-tight);
     font-weight: 400;
   }
   .contact-info-item p {
-    font-size: 13px;
+    font-size: var(--text-sm);
     line-height: 1.6;
     color: var(--color-text-muted);
   }
 
   .contact-location {
     text-align: center;
-    font-size: 11px;
-    letter-spacing: 3px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     color: var(--color-text-muted);
     text-transform: uppercase;
     padding-top: 12px;

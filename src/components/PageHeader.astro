@@ -1,14 +1,27 @@
 ---
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+
+interface Crumb {
+  readonly label: string;
+  readonly href?: string;
+}
+
 interface Props {
   title: string;
   highlight?: string;
   subtitle?: string;
+  breadcrumbsTrail?: readonly Crumb[];
 }
 
-const { title, highlight, subtitle } = Astro.props;
+const { title, highlight, subtitle, breadcrumbsTrail } = Astro.props;
 ---
 
 <header class="page-header">
+  {breadcrumbsTrail !== undefined && (
+    <div class="page-header-breadcrumbs">
+      <Breadcrumbs trail={breadcrumbsTrail} />
+    </div>
+  )}
   <h1 class="page-header-title">
     {title}
     {highlight && <em>{highlight}</em>}
@@ -18,7 +31,7 @@ const { title, highlight, subtitle } = Astro.props;
 
 <style>
   .page-header {
-    padding: 40px 24px 28px;
+    padding: 32px 24px 28px;
     text-align: center;
     background: radial-gradient(
       ellipse 60% 80% at 50% 0%,
@@ -27,11 +40,21 @@ const { title, highlight, subtitle } = Astro.props;
     );
   }
 
+  /* Breadcrumbs dentro del header: centradas, sin el padding propio que
+     traen por default. */
+  .page-header-breadcrumbs :global(.breadcrumbs) {
+    padding: 0;
+    margin: 0 0 16px;
+  }
+  .page-header-breadcrumbs :global(.breadcrumbs ol) {
+    justify-content: center;
+  }
+
   .page-header-title {
     font-family: var(--font-serif);
     font-size: clamp(26px, 4vw, 38px);
     color: var(--color-cream);
-    letter-spacing: 1px;
+    letter-spacing: var(--tracking-tight);
     font-weight: 400;
     line-height: 1.1;
   }
@@ -41,8 +64,8 @@ const { title, highlight, subtitle } = Astro.props;
   }
 
   .page-header-subtitle {
-    font-size: 12px;
-    letter-spacing: 2px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     color: var(--color-text-muted);
     margin-top: 8px;
     text-transform: uppercase;

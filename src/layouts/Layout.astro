@@ -45,10 +45,12 @@ const pageDescription = description ?? SITE_METADATA.description;
     <script>
       import { initCartController } from "@/scripts/cart-controller";
       import { initSearchController } from "@/scripts/search-controller";
+      import { initScrollReveal } from "@/scripts/scroll-reveal";
 
       function bootGlobal(): void {
         initCartController();
         initSearchController();
+        initScrollReveal();
       }
 
       if (document.readyState === "loading") {

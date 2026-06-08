@@ -2,26 +2,19 @@
 import Layout from "@/layouts/Layout.astro";
 import Nav from "@/components/Nav.astro";
 import Footer from "@/components/Footer.astro";
-import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import PageHeader from "@/components/PageHeader.astro";
 import { REELS } from "@/data/catalog.generated";
 import { CONTACT, SITE_METADATA } from "@/constants/ui";
-
-const breadcrumbsTrail = [
-  { label: "Inicio", href: "/" },
-  { label: "Nosotros", href: "/nosotros" },
-];
 ---
 
 <Layout title={`Nosotros · ${SITE_METADATA.name}`}>
   <Nav />
-  <Breadcrumbs trail={breadcrumbsTrail} />
 
-  <section class="about-hero">
-    <p class="about-overline">Nuestra historia en video</p>
-    <h1 class="about-title">
-      Conocé a <em>OUDORA</em>
-    </h1>
-  </section>
+  <PageHeader
+    title="Conocé a"
+    highlight="OUDORA"
+    subtitle="Nuestra historia en video"
+  />
 
   {REELS.length > 0 && (
     <section class="about-reels-section">
@@ -117,33 +110,8 @@ const breadcrumbsTrail = [
 </Layout>
 
 <style>
-  .about-hero {
-    padding: 40px 24px 28px;
-    text-align: center;
-    background: radial-gradient(ellipse 60% 80% at 50% 0%, #1c1910 0%, var(--color-bg) 70%);
-  }
-  .about-overline {
-    font-size: 11px;
-    letter-spacing: 4px;
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .about-title {
-    font-family: var(--font-serif);
-    font-size: clamp(36px, 6vw, 56px);
-    color: var(--color-cream);
-    font-weight: 400;
-    letter-spacing: 1px;
-    margin: 0;
-  }
-  .about-title em {
-    color: var(--color-gold);
-    font-style: italic;
-  }
-
   .about-reels-section {
-    padding: 0 clamp(16px, 4vw, 32px) 56px;
+    padding: 56px 32px;
     max-width: var(--max-content-width);
     margin: 0 auto;
   }
@@ -224,13 +192,13 @@ const breadcrumbsTrail = [
   .about-reel-title {
     font-family: var(--font-serif);
     font-style: italic;
-    font-size: 16px;
+    font-size: var(--text-base);
     color: var(--color-gold);
     margin-bottom: 4px;
   }
   .about-reel-duration {
     font-size: 10px;
-    letter-spacing: 1.5px;
+    letter-spacing: var(--tracking-uppercase);
     color: var(--color-text-muted);
     text-transform: uppercase;
   }
@@ -250,8 +218,8 @@ const breadcrumbsTrail = [
     border-radius: var(--radius-pill);
     color: var(--color-cream);
     text-decoration: none;
-    font-size: 12px;
-    letter-spacing: 1.5px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
     transition: all var(--transition-default);
   }
@@ -273,8 +241,8 @@ const breadcrumbsTrail = [
     text-align: center;
   }
   .about-story-overline {
-    font-size: 11px;
-    letter-spacing: 4px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     color: var(--color-text-muted);
     text-transform: uppercase;
     margin-bottom: 16px;
@@ -284,7 +252,7 @@ const breadcrumbsTrail = [
     font-size: clamp(28px, 4vw, 40px);
     font-weight: 400;
     color: var(--color-cream);
-    letter-spacing: 1px;
+    letter-spacing: var(--tracking-tight);
     margin: 0 0 28px;
   }
   .about-story-title em {
@@ -292,7 +260,7 @@ const breadcrumbsTrail = [
     font-style: italic;
   }
   .about-story p {
-    font-size: 15px;
+    font-size: var(--text-base);
     line-height: 1.85;
     color: var(--color-text);
     margin: 0 0 18px;
@@ -327,13 +295,13 @@ const breadcrumbsTrail = [
   .about-value h3 {
     font-family: var(--font-serif);
     font-weight: 400;
-    font-size: 20px;
+    font-size: var(--text-lg);
     color: var(--color-cream);
     margin: 16px 0 8px;
-    letter-spacing: 1px;
+    letter-spacing: var(--tracking-tight);
   }
   .about-value p {
-    font-size: 13px;
+    font-size: var(--text-sm);
     line-height: 1.7;
     color: var(--color-text-muted);
     margin: 0;

@@ -120,6 +120,39 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
             )),
           )
         }
+
+        {/* Empty state: aparece cuando los filtros activos no devuelven
+            ningún producto. El catalog-controller lo togglea seteando
+            data-empty="true" en el contenedor padre. */}
+        <div class="catalog-empty" data-catalog-empty hidden>
+          <svg
+            class="catalog-empty-icon"
+            width="40"
+            height="40"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <line x1="21" y1="21" x2="16.5" y2="16.5" />
+          </svg>
+          <p class="catalog-empty-title">No encontramos fragancias</p>
+          <p class="catalog-empty-subtitle">
+            Probá ajustando los filtros o limpiá la selección actual para
+            ver todo el catálogo.
+          </p>
+          <button
+            type="button"
+            class="catalog-empty-action"
+            data-catalog-empty-clear
+          >
+            Limpiar filtros
+          </button>
+        </div>
       </div>
     </main>
   </div>
@@ -179,8 +212,8 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
     border-radius: var(--radius-pill);
     color: var(--color-cream);
     font-family: var(--font-sans);
-    font-size: 11px;
-    letter-spacing: 2px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
     font-weight: 600;
     cursor: pointer;
@@ -231,7 +264,7 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
     border: none;
     color: var(--color-text);
     font-family: var(--font-sans);
-    font-size: 13px;
+    font-size: var(--text-sm);
     text-align: left;
     padding: 10px 14px;
     border-radius: var(--radius-sm);
@@ -253,8 +286,8 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
   }
 
   .catalog-result {
-    font-size: 11px;
-    letter-spacing: 2px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     color: var(--color-text-muted);
     text-transform: uppercase;
   }
@@ -276,7 +309,7 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
   @media (max-width: 520px) {
     .sort-toggle {
       padding: 8px 12px 8px 10px;
-      letter-spacing: 1.5px;
+      letter-spacing: var(--tracking-wide);
       font-size: 10.5px;
     }
     .sort-panel {
@@ -286,5 +319,85 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
       min-width: 220px;
       max-width: calc(100vw - 32px);
     }
+  }
+
+  /* ── Empty state del catálogo filtrado ───────────────────────
+     Aparece cuando ningún producto coincide con los filtros activos.
+     Diseño centrado, ícono sutil dorado, mensaje + CTA para limpiar. */
+  .catalog-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-9) var(--space-5);
+    gap: var(--space-3);
+    min-height: 320px;
+    /* La hairline arriba sutil mantiene la sensación de contenido, no de bug */
+    box-shadow: var(--elev-1);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.012);
+  }
+  /* Sin esto, display: flex ganaba en especificidad a [hidden] del browser
+     y el bloque se mostraba siempre. */
+  .catalog-empty[hidden] {
+    display: none;
+  }
+  .catalog-empty-icon {
+    color: var(--color-gold);
+    opacity: 0.6;
+    margin-bottom: var(--space-2);
+    width: 40px;
+    height: 40px;
+    align-self: center;
+    flex-shrink: 0;
+  }
+  .catalog-empty-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-weight: 400;
+    color: var(--color-cream);
+    letter-spacing: var(--tracking-tight);
+    margin: 0;
+  }
+  .catalog-empty-subtitle {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin: 0;
+    max-width: 360px;
+    line-height: 1.55;
+  }
+  /* CTA con la misma signature fill animation del resto del sitio */
+  .catalog-empty-action {
+    position: relative;
+    background: transparent;
+    border: 0.5px solid var(--color-gold);
+    color: var(--color-gold);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-button);
+    text-transform: uppercase;
+    padding: 10px 22px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    overflow: hidden;
+    isolation: isolate;
+    margin-top: var(--space-3);
+    transition: color 0.35s var(--ease-premium);
+  }
+  .catalog-empty-action::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-gold);
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.35s var(--ease-premium);
+    z-index: -1;
+  }
+  .catalog-empty-action:hover {
+    color: var(--color-bg);
+  }
+  .catalog-empty-action:hover::before {
+    clip-path: inset(0 0 0 0);
   }
 </style>

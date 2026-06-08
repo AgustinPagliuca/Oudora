@@ -14,7 +14,7 @@ const visibleProducts = products.slice(0, 8);
 ---
 
 <section class="featured">
-  <header class="featured-header">
+  <header class="featured-header" data-reveal>
     <h2 class="featured-title">
       {title}
       {highlight && <em>{highlight}</em>}
@@ -22,12 +22,16 @@ const visibleProducts = products.slice(0, 8);
     <a href="/catalogo" class="featured-link">Ver todo el catálogo →</a>
   </header>
 
-  <div class="featured-grid">
+  <div class="featured-grid" data-reveal-stagger>
     {
       visibleProducts.map((product) => {
         const brand = getBrandById(product.brandId);
         if (brand === undefined) return null;
-        return <ProductCard product={product} brand={brand} />;
+        return (
+          <div data-reveal>
+            <ProductCard product={product} brand={brand} />
+          </div>
+        );
       })
     }
   </div>
@@ -35,41 +39,48 @@ const visibleProducts = products.slice(0, 8);
 
 <style>
   .featured {
-    padding: 48px clamp(16px, 4vw, 32px) 32px;
+    padding: var(--space-7) clamp(16px, 4vw, 32px) var(--space-6);
     max-width: var(--max-content-width);
     margin: 0 auto;
   }
 
   .featured-header {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 22px;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
   }
 
   .featured-title {
     font-family: var(--font-serif);
     font-size: clamp(22px, 3vw, 28px);
     color: var(--color-cream);
-    letter-spacing: 1px;
+    letter-spacing: var(--tracking-tight);
     font-weight: 400;
+    line-height: 1.1;
   }
   .featured-title em {
     color: var(--color-gold);
     font-style: italic;
   }
 
+  /* Link "Ver todo el catálogo" ahora con subrayado dorado sutil — comunica
+     mejor "esto es clickeable" sin romper la jerarquía. */
   .featured-link {
-    font-size: 11px;
-    letter-spacing: 2px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
-    color: var(--color-gold-light);
-    transition: color var(--transition-fast);
+    color: var(--color-gold);
+    text-decoration: none;
+    border-bottom: 0.5px solid rgba(201, 168, 76, 0.3);
+    padding-bottom: 3px;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
   }
   .featured-link:hover {
     color: var(--color-cream);
+    border-color: var(--color-cream);
   }
 
   .featured-grid {

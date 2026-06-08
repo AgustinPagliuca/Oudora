@@ -55,7 +55,10 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
         />
         <div class="hero-slide-overlay" aria-hidden="true"></div>
         <div class="hero-slide-content">
-          <div class="hero-slide-text">
+          <div
+            class="hero-slide-text"
+            {...(idx === 0 ? { "data-fade-in-on-load": "" } : {})}
+          >
             {slide.overline && <p class="hero-slide-overline">{slide.overline}</p>}
             <h1 class="hero-slide-title">
               {parseTitleEmphasis(slide.title).map((p) =>
@@ -347,11 +350,11 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
 
   .hero-slide-overline {
     font-family: var(--font-sans);
-    font-size: 11px;
-    letter-spacing: 4px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
     color: var(--color-gold);
-    margin: 0 0 20px;
+    margin: 0 0 var(--space-4);
     font-weight: 500;
     position: relative;
     padding-left: 56px;
@@ -362,7 +365,7 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     left: 0;
     top: 50%;
     width: 40px;
-    height: 1px;
+    height: 0.5px;
     background: var(--color-gold);
     opacity: 0.7;
   }
@@ -373,8 +376,8 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     font-weight: 400;
     line-height: 1.05;
     color: var(--color-cream);
-    margin: 0 0 22px;
-    letter-spacing: 0;
+    margin: 0 0 var(--space-5);
+    letter-spacing: var(--tracking-tight);
     text-shadow: 0 2px 24px rgba(0, 0, 0, 0.5);
   }
   .hero-slide-title em {
@@ -388,14 +391,17 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     font-size: clamp(14px, 1.15vw, 16px);
     line-height: 1.7;
     color: var(--color-cream);
-    margin: 0 0 36px;
+    margin: 0 0 var(--space-6);
     max-width: 460px;
     font-weight: 400;
     text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
   }
 
-  /* CTA: pointer-events: auto para que el click no se confunda con drag */
+  /* CTA: misma signature animation que el botón AGREGAR del card —
+     coherencia visual en toda la app. Pointer-events: auto para que el
+     click no se confunda con drag del carousel. */
   .hero-slide-cta {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 12px;
@@ -404,19 +410,35 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     color: var(--color-gold-light);
     background: rgba(7, 6, 5, 0.55);
     font-family: var(--font-sans);
-    font-size: 12px;
-    letter-spacing: 3px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-button);
     text-transform: uppercase;
     border-radius: var(--radius-pill);
     text-decoration: none;
     font-weight: 600;
     backdrop-filter: blur(4px);
-    transition: all var(--transition-default);
+    overflow: hidden;
+    isolation: isolate;
+    transition: color 0.35s var(--ease-premium),
+                transform 0.35s var(--ease-premium),
+                border-color 0.35s var(--ease-premium);
+  }
+  .hero-slide-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-gold);
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.4s var(--ease-premium);
+    z-index: -1;
   }
   .hero-slide-cta:hover {
-    background: rgba(201, 168, 76, 0.22);
+    color: var(--color-bg);
+    border-color: var(--color-gold);
     transform: translateX(3px);
-    border-color: var(--color-gold-light);
+  }
+  .hero-slide-cta:hover::before {
+    clip-path: inset(0 0 0 0);
   }
 
   .hero-arrow {

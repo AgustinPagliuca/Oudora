@@ -31,9 +31,31 @@
     </header>
 
     <div class="cart-drawer-body">
-      <p class="cart-empty" data-cart-empty>
-        Todavía no agregaste fragancias. Explorá el catálogo y sumá tus favoritas.
-      </p>
+      <div class="cart-empty" data-cart-empty>
+        <svg
+          class="cart-empty-icon"
+          width="40"
+          height="40"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M6 2 L3 6 v14 a2 2 0 0 0 2 2 h14 a2 2 0 0 0 2 -2 V6 l-3 -4 z" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <path d="M16 10 a4 4 0 0 1 -8 0" />
+        </svg>
+        <p class="cart-empty-title">Tu carrito está vacío</p>
+        <p class="cart-empty-subtitle">
+          Explorá el catálogo y sumá tus fragancias favoritas.
+        </p>
+        <a href="/catalogo" class="cart-empty-action" data-cart-empty-action>
+          Ver el catálogo
+        </a>
+      </div>
 
       <ul class="cart-lines" data-cart-lines hidden></ul>
     </div>
@@ -44,7 +66,7 @@
         <span class="cart-total-amount" data-cart-total>$ 0</span>
       </div>
       <p class="cart-disclaimer">
-        Te llevamos a un form para completar tus datos. Al final, te abrimos WhatsApp
+        Para iniciar la compra, deberás completar tus datos de contacto. Al finalizar, se abrirá WhatsApp
         con el pedido para que el vendedor te confirme stock y forma de pago.
       </p>
       <div class="cart-cta-row">
@@ -151,9 +173,9 @@
   }
   .cart-drawer-title {
     font-family: var(--font-sans);
-    font-size: 18px;
+    font-size: var(--text-md);
     color: var(--color-cream);
-    letter-spacing: 1px;
+    letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
     font-weight: 400;
   }
@@ -175,11 +197,77 @@
   }
 
   .cart-empty {
-    color: var(--color-text-muted);
-    font-size: 14px;
-    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    margin-top: 32px;
+    padding: var(--space-7) var(--space-4);
+    gap: var(--space-3);
+    min-height: 300px;
+  }
+  /* Sin esto, display: flex ganaba a [hidden] y se mostraba con productos. */
+  .cart-empty[hidden] {
+    display: none;
+  }
+  .cart-empty-icon {
+    color: var(--color-gold);
+    opacity: 0.5;
+    margin-bottom: var(--space-2);
+    /* Defensa contra global svg { max-width: 100% }: explicitar dimensiones
+       e indicar centrado en el cross-axis del flex. */
+    width: 40px;
+    height: 40px;
+    align-self: center;
+    flex-shrink: 0;
+  }
+  .cart-empty-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    font-weight: 400;
+    color: var(--color-cream);
+    letter-spacing: var(--tracking-tight);
+    margin: 0;
+  }
+  .cart-empty-subtitle {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin: 0;
+    max-width: 240px;
+    line-height: 1.55;
+  }
+  .cart-empty-action {
+    position: relative;
+    background: transparent;
+    border: 0.5px solid var(--color-gold);
+    color: var(--color-gold);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-button);
+    text-transform: uppercase;
+    padding: 10px 22px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    overflow: hidden;
+    isolation: isolate;
+    margin-top: var(--space-3);
+    text-decoration: none;
+    transition: color 0.35s var(--ease-premium);
+  }
+  .cart-empty-action::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-gold);
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.35s var(--ease-premium);
+    z-index: -1;
+  }
+  .cart-empty-action:hover {
+    color: var(--color-bg);
+  }
+  .cart-empty-action:hover::before {
+    clip-path: inset(0 0 0 0);
   }
   .cart-lines {
     list-style: none;
@@ -203,20 +291,20 @@
   .cart-line-brand {
     font-family: var(--font-serif);
     font-style: italic;
-    font-size: 12px;
+    font-size: var(--text-xs);
     color: var(--color-text-muted);
   }
   .cart-line-name {
-    font-size: 14px;
+    font-size: var(--text-sm);
     color: var(--color-cream);
-    letter-spacing: 0.5px;
+    letter-spacing: var(--tracking-normal);
     text-transform: uppercase;
     font-weight: 500;
   }
   .cart-line-pres {
-    font-size: 11px;
+    font-size: var(--text-xs);
     color: var(--color-text-muted);
-    letter-spacing: 1.5px;
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
   }
 
@@ -239,7 +327,7 @@
   .cart-qty button {
     color: var(--color-gold-light);
     padding: 4px 12px;
-    font-size: 16px;
+    font-size: var(--text-base);
     line-height: 1;
     transition: background var(--transition-fast);
   }
@@ -248,7 +336,7 @@
   }
   .cart-qty span {
     color: var(--color-cream);
-    font-size: 14px;
+    font-size: var(--text-sm);
     padding: 0 8px;
     min-width: 20px;
     text-align: center;
@@ -256,7 +344,7 @@
 
   .cart-line-total {
     font-family: var(--font-sans);
-    font-size: 15px;
+    font-size: var(--text-base);
     color: var(--color-gold);
     flex: 1;
     text-align: right;
@@ -268,8 +356,8 @@
 
   .cart-line-remove {
     color: var(--color-text-muted);
-    font-size: 11px;
-    letter-spacing: 1.5px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -294,14 +382,14 @@
     align-items: baseline;
   }
   .cart-total-label {
-    font-size: 12px;
-    letter-spacing: 2px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
     color: var(--color-text-muted);
   }
   .cart-total-amount {
     font-family: var(--font-sans);
-    font-size: 22px;
+    font-size: var(--text-xl);
     color: var(--color-gold);
     letter-spacing: 0;
     font-weight: 500;
@@ -310,7 +398,7 @@
   }
 
   .cart-disclaimer {
-    font-size: 11px;
+    font-size: var(--text-xs);
     line-height: 1.6;
     color: var(--color-text-muted);
   }
@@ -329,9 +417,9 @@
     background: rgba(201, 168, 76, 0.1);
     border: 0.5px solid var(--color-gold);
     color: var(--color-gold-light);
-    font-size: 12px;
+    font-size: var(--text-xs);
     font-weight: 500;
-    letter-spacing: 1.5px;
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
     border-radius: var(--radius-pill);
     transition: all var(--transition-fast);
@@ -351,9 +439,9 @@
     padding: 14px 16px;
     background: var(--color-gold);
     color: var(--color-bg-deep);
-    font-size: 12px;
+    font-size: var(--text-xs);
     font-weight: 600;
-    letter-spacing: 2px;
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
     border-radius: var(--radius-pill);
     text-decoration: none;
@@ -375,8 +463,8 @@
 
   .cart-clear {
     color: var(--color-text-muted);
-    font-size: 11px;
-    letter-spacing: 1.5px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
     text-decoration: underline;
     text-underline-offset: 3px;

@@ -2,7 +2,6 @@
 import Layout from "@/layouts/Layout.astro";
 import Nav from "@/components/Nav.astro";
 import Footer from "@/components/Footer.astro";
-import Breadcrumbs from "@/components/Breadcrumbs.astro";
 import PageHeader from "@/components/PageHeader.astro";
 
 import { BRANDS, getBrandsByCatalog } from "@/data/brands";
@@ -24,16 +23,10 @@ const catalogGroups = ALL_CATALOGS.map((catalog) => {
     brands: brandsWithCount,
   };
 });
-
-const breadcrumbsTrail = [
-  { label: "Inicio", href: "/" },
-  { label: "Marcas" },
-];
 ---
 
 <Layout title="Marcas">
   <Nav />
-  <Breadcrumbs trail={breadcrumbsTrail} />
   <PageHeader
     title="Nuestras"
     highlight="marcas"
@@ -81,7 +74,7 @@ const breadcrumbsTrail = [
     font-style: italic;
     font-size: clamp(20px, 3vw, 26px);
     color: var(--color-gold-light);
-    letter-spacing: 2px;
+    letter-spacing: var(--tracking-tight);
     font-weight: 400;
     margin-bottom: 18px;
     padding-bottom: 10px;
@@ -115,13 +108,13 @@ const breadcrumbsTrail = [
     font-family: var(--font-serif);
     font-size: 22px;
     color: var(--color-cream);
-    letter-spacing: 2px;
+    letter-spacing: var(--tracking-tight);
     font-weight: 400;
   }
 
   .brands-card-count {
-    font-size: 11px;
-    letter-spacing: 1.5px;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
     color: var(--color-text-muted);
     text-transform: uppercase;
   }
@@ -130,7 +123,7 @@ const breadcrumbsTrail = [
     position: absolute;
     top: 22px;
     right: 20px;
-    font-size: 18px;
+    font-size: var(--text-md);
     color: var(--color-gold);
     opacity: 0;
     transform: translateX(-4px);
