@@ -49,6 +49,15 @@ export const SITE_METADATA = {
 } as const;
 
 /**
+ * Analytics. El Meta Pixel rastrea PageView (automático), AddToCart e
+ * InitiateCheckout. La conversión final (Purchase) ocurre en WhatsApp,
+ * fuera del sitio, así que no se trackea acá.
+ */
+export const ANALYTICS = {
+  metaPixelId: "1273162014938078",
+} as const;
+
+/**
  * Datos de contacto. El número de WhatsApp se usa para el checkout
  * desde el carrito. Reemplazar por el real antes de ir a producción.
  */

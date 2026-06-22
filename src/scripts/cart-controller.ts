@@ -3,6 +3,7 @@ import { BRANDS_BY_ID } from "@/data/brands";
 import { PRODUCTS } from "@/data/products";
 import { CartStore } from "@/lib/cart-store";
 import { formatArs, formatPresentation } from "@/lib/format";
+import { trackAddToCart, trackInitiateCheckout } from "@/lib/analytics";
 
 /**
  * Controlador del carrito.
@@ -180,6 +181,18 @@ function setupAddToCartButtons(store: CartStore): void {
             : 1;
 
         store.addItem(productId, qty);
+
+        // Meta Pixel: registrar el AddToCart con datos del producto.
+        const product = PRODUCTS_BY_ID.get(productId);
+        if (product !== undefined) {
+          trackAddToCart({
+            contentName: product.name,
+            contentId: productId,
+            value: product.priceArs * qty,
+            quantity: qty,
+          });
+        }
+
         setDrawerOpen(true);
       });
     });
@@ -201,6 +214,19 @@ function setupDrawerControls(store: CartStore): void {
   document
     .querySelector<HTMLButtonElement>("[data-cart-continue]")
     ?.addEventListener("click", () => setDrawerOpen(false));
+
+  // Meta Pixel: InitiateCheckout al tocar "Iniciar compra". No bloqueamos
+  // la navegación a /checkout — fbq es síncrono al encolar el evento.
+  document
+    .querySelector<HTMLAnchorElement>("[data-cart-checkout]")
+    ?.addEventListener("click", () => {
+      const snapshot = store.getSnapshot();
+      if (snapshot.lines.length === 0) return;
+      trackInitiateCheckout({
+        value: snapshot.total,
+        numItems: snapshot.itemCount,
+      });
+    });
 
   document
     .querySelector<HTMLButtonElement>("[data-cart-clear]")

@@ -5,6 +5,7 @@ import CartDrawer from "@/components/CartDrawer.astro";
 import SearchOverlay from "@/components/SearchOverlay.astro";
 import AnnouncementBar from "@/components/AnnouncementBar.astro";
 import WhatsAppButton from "@/components/WhatsAppButton.astro";
+import MetaPixel from "@/components/MetaPixel.astro";
 
 interface Props {
   title?: string;
@@ -33,6 +34,7 @@ const pageDescription = description ?? SITE_METADATA.description;
       href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <MetaPixel />
     <title>{pageTitle}</title>
   </head>
   <body>
