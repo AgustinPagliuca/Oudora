@@ -28,17 +28,9 @@ export const CATALOG_LABELS: Readonly<Record<Catalog, string>> = {
   disenador: "Perfumes de diseñador",
 } as const;
 
-export const CATALOG_SHORT_LABELS: Readonly<Record<Catalog, string>> = {
-  arabe: "Árabes",
-  disenador: "Diseñador",
-} as const;
-
 export const ALL_CATALOGS: readonly Catalog[] = ["arabe", "disenador"] as const;
 
 export const DEFAULT_CATALOG: Catalog = "arabe";
-
-export const LOW_STOCK_THRESHOLD = 3;
-export const LAST_UNIT_THRESHOLD = 1;
 
 export const SITE_METADATA = {
   name: "OUDORA",
@@ -49,12 +41,14 @@ export const SITE_METADATA = {
 } as const;
 
 /**
- * Analytics. El Meta Pixel rastrea PageView (automático), AddToCart e
- * InitiateCheckout. La conversión final (Purchase) ocurre en WhatsApp,
- * fuera del sitio, así que no se trackea acá.
+ * Analytics. Todo se centraliza en Google Tag Manager: el contenedor carga
+ * en el <head> y desde su interfaz se configuran los tags (Meta Pixel, GA4,
+ * etc.). El sitio solo empuja add_to_cart y begin_checkout al dataLayer.
+ * La conversión final (Purchase) ocurre en WhatsApp, fuera del sitio,
+ * así que no se trackea acá.
  */
 export const ANALYTICS = {
-  metaPixelId: "1273162014938078",
+  gtmId: "GTM-MWBFTCSR",
 } as const;
 
 /**

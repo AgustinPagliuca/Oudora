@@ -1,10 +1,4 @@
-import type {
-  Catalog,
-  CatalogFilters,
-  Gender,
-  Product,
-} from "@/types/catalog";
-import { DEFAULT_CATALOG } from "@/constants/ui";
+import type { Catalog, Product } from "@/types/catalog";
 
 /**
  * Filtros puros sobre productos. Sin estado, sin efectos secundarios.
@@ -13,72 +7,6 @@ import { DEFAULT_CATALOG } from "@/constants/ui";
 
 export function normalizeSearchTerm(raw: string): string {
   return raw.trim().toLowerCase();
-}
-
-function productMatchesCatalog(product: Product, catalog: Catalog): boolean {
-  return product.catalog === catalog;
-}
-
-function productMatchesBrand(
-  product: Product,
-  brandIds: readonly string[],
-): boolean {
-  if (brandIds.length === 0) return true;
-  return brandIds.includes(product.brandId);
-}
-
-function productMatchesGender(
-  product: Product,
-  genders: readonly Gender[],
-): boolean {
-  if (genders.length === 0) return true;
-  return genders.includes(product.gender);
-}
-
-function productMatchesPrice(
-  product: Product,
-  priceRange: CatalogFilters["priceRange"],
-): boolean {
-  if (priceRange === undefined) return true;
-  return (
-    product.priceArs >= priceRange.min && product.priceArs <= priceRange.max
-  );
-}
-
-function productMatchesSearch(
-  product: Product,
-  brandName: string,
-  normalizedTerm: string,
-): boolean {
-  if (normalizedTerm.length === 0) return true;
-  const haystack = [
-    product.name,
-    brandName,
-    product.concentration,
-    ...(product.notes ?? []),
-  ]
-    .join(" ")
-    .toLowerCase();
-  return haystack.includes(normalizedTerm);
-}
-
-export interface ProductFilterContext {
-  readonly brandName: string;
-}
-
-export function productMatchesFilters(
-  product: Product,
-  filters: CatalogFilters,
-  context: ProductFilterContext,
-): boolean {
-  const normalizedTerm = normalizeSearchTerm(filters.searchTerm);
-  return (
-    productMatchesCatalog(product, filters.catalog) &&
-    productMatchesBrand(product, filters.brandIds) &&
-    productMatchesGender(product, filters.genders) &&
-    productMatchesPrice(product, filters.priceRange) &&
-    productMatchesSearch(product, context.brandName, normalizedTerm)
-  );
 }
 
 export function getProductsByCatalog(
@@ -106,10 +34,3 @@ export function getPriceRangeFor(
   const roundedMax = Math.max(STEP, Math.ceil(actualMax / STEP) * STEP);
   return { min: 0, max: roundedMax };
 }
-
-export const EMPTY_FILTERS: CatalogFilters = {
-  catalog: DEFAULT_CATALOG,
-  brandIds: [],
-  genders: [],
-  searchTerm: "",
-};

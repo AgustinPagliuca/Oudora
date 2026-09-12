@@ -182,7 +182,7 @@ function setupAddToCartButtons(store: CartStore): void {
 
         store.addItem(productId, qty);
 
-        // Meta Pixel: registrar el AddToCart con datos del producto.
+        // GTM: registrar el add_to_cart con datos del producto.
         const product = PRODUCTS_BY_ID.get(productId);
         if (product !== undefined) {
           trackAddToCart({
@@ -215,8 +215,8 @@ function setupDrawerControls(store: CartStore): void {
     .querySelector<HTMLButtonElement>("[data-cart-continue]")
     ?.addEventListener("click", () => setDrawerOpen(false));
 
-  // Meta Pixel: InitiateCheckout al tocar "Iniciar compra". No bloqueamos
-  // la navegación a /checkout — fbq es síncrono al encolar el evento.
+  // GTM: begin_checkout al tocar "Iniciar compra". No bloqueamos la
+  // navegación a /checkout — encolar en el dataLayer es síncrono.
   document
     .querySelector<HTMLAnchorElement>("[data-cart-checkout]")
     ?.addEventListener("click", () => {
@@ -225,6 +225,13 @@ function setupDrawerControls(store: CartStore): void {
       trackInitiateCheckout({
         value: snapshot.total,
         numItems: snapshot.itemCount,
+        items: snapshot.lines.map((line) => ({
+          item_id: line.product.id,
+          item_name: line.product.name,
+          item_brand: line.brand.name,
+          price: line.product.priceArs,
+          quantity: line.quantity,
+        })),
       });
     });
 

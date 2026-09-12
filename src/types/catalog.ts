@@ -10,8 +10,6 @@ export type Gender = "femenino" | "masculino" | "unisex";
 
 export type Concentration = "EDP" | "EDT" | "Extrait" | "Parfum";
 
-export type StockStatus = "in_stock" | "low_stock" | "last_unit" | "out_of_stock";
-
 /**
  * Etiquetas custom que aparecen sobre la foto del producto en el card.
  * Configurables desde el admin (máx 3 por producto). Reemplazan al ribbon de género.

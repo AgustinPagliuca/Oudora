@@ -3,12 +3,7 @@ import type {
   BrandWithCount,
   Product,
   ProductsByBrand,
-  StockStatus,
 } from "@/types/catalog";
-import {
-  LAST_UNIT_THRESHOLD,
-  LOW_STOCK_THRESHOLD,
-} from "@/constants/ui";
 
 /**
  * Operaciones de agrupación y conteo. Funciones puras.
@@ -36,13 +31,6 @@ export function countProductsByBrand(
     ...brand,
     productCount: products.filter((p) => p.brandId === brand.id).length,
   }));
-}
-
-export function getStockStatus(stock: number): StockStatus {
-  if (stock <= 0) return "out_of_stock";
-  if (stock <= LAST_UNIT_THRESHOLD) return "last_unit";
-  if (stock <= LOW_STOCK_THRESHOLD) return "low_stock";
-  return "in_stock";
 }
 
 export function getStockLabel(_stock: number): string | null {

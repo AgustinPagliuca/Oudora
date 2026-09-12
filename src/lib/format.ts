@@ -9,7 +9,7 @@ export function formatArs(value: number): string {
   return ARS_FORMATTER.format(value);
 }
 
-export function formatVolume(volumeMl: number): string {
+function formatVolume(volumeMl: number): string {
   return `${volumeMl} ml`;
 }
 
