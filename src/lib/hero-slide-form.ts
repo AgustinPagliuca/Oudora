@@ -3,6 +3,8 @@
  * La imagen se sube por separado al endpoint de upload.
  */
 
+import type { ParseResult } from "@/lib/parse-result";
+
 export interface HeroSlideInput {
   overline: string | null;
   title: string;
@@ -14,10 +16,6 @@ export interface HeroSlideInput {
   sort_order: number;
   published: boolean;
 }
-
-export type ParseResult =
-  | { ok: true; data: HeroSlideInput }
-  | { ok: false; reason: "validation" };
 
 function parseIntOrNull(value: FormDataEntryValue | null): number | null {
   if (typeof value !== "string") return null;
@@ -33,7 +31,7 @@ function nullIfEmpty(v: string): string | null {
   return trimmed === "" ? null : trimmed;
 }
 
-export function parseHeroSlideForm(formData: FormData): ParseResult {
+export function parseHeroSlideForm(formData: FormData): ParseResult<HeroSlideInput> {
   const overline = nullIfEmpty(formData.get("overline")?.toString() ?? "");
   const title = formData.get("title")?.toString().trim() ?? "";
   const subtitle = nullIfEmpty(formData.get("subtitle")?.toString() ?? "");

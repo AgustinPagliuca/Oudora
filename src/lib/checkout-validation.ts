@@ -77,133 +77,220 @@ function validateLength(value: string, min: number, max: number): boolean {
   return value.length >= min && value.length <= max;
 }
 
+/** Lee un campo del FormData ya recortado. */
+function readField(formData: FormData, name: string): string {
+  return (formData.get(name) ?? "").toString().trim();
+}
+
+/**
+ * Validadores por campo. Cada uno devuelve el mensaje de error o null si
+ * el valor es aceptable, sin conocer el resto del formulario.
+ */
+
+function validateShippingMethod(raw: string): string | null {
+  return raw === "retiro" || raw === "domicilio"
+    ? null
+    : "Elegí cómo querés recibir el pedido.";
+}
+
+function validateFirstName(value: string): string | null {
+  const rule = CHECKOUT_FIELD_RULES.firstName;
+  if (!validateLength(value, rule.minLength, rule.maxLength)) {
+    return `Ingresá tu nombre (entre ${rule.minLength} y ${rule.maxLength} caracteres).`;
+  }
+  if (!matchesPattern(value, rule.pattern)) {
+    return "Solo letras, espacios, apóstrofes y guiones.";
+  }
+  return null;
+}
+
+function validateLastName(value: string): string | null {
+  const rule = CHECKOUT_FIELD_RULES.lastName;
+  if (!validateLength(value, rule.minLength, rule.maxLength)) {
+    return `Ingresá tu apellido (entre ${rule.minLength} y ${rule.maxLength} caracteres).`;
+  }
+  if (!matchesPattern(value, rule.pattern)) {
+    return "Solo letras, espacios, apóstrofes y guiones.";
+  }
+  return null;
+}
+
+function validateEmail(value: string): string | null {
+  if (value.length === 0) {
+    return "Ingresá tu email.";
+  }
+  if (!isValidEmail(value)) {
+    return "El email no parece válido.";
+  }
+  return null;
+}
+
+function validatePhone(value: string): string | null {
+  const rule = CHECKOUT_FIELD_RULES.phone;
+  if (value.length === 0) {
+    return "Ingresá tu teléfono.";
+  }
+  const digits = digitCount(value);
+  if (digits < rule.minDigits || digits > rule.maxDigits) {
+    return `El teléfono debe tener entre ${rule.minDigits} y ${rule.maxDigits} dígitos.`;
+  }
+  if (!matchesPattern(value, rule.pattern)) {
+    return "Solo números, espacios, guiones, paréntesis y +.";
+  }
+  return null;
+}
+
+function validateDni(value: string): string | null {
+  return matchesPattern(value, CHECKOUT_FIELD_RULES.dni.pattern)
+    ? null
+    : "Ingresá tu DNI (entre 7 y 9 dígitos, sin puntos).";
+}
+
+function validateStreet(value: string): string | null {
+  const rule = CHECKOUT_FIELD_RULES.street;
+  return validateLength(value, rule.minLength, rule.maxLength)
+    ? null
+    : "Ingresá la dirección completa (calle, número y piso/depto).";
+}
+
+function validateCity(value: string): string | null {
+  const rule = CHECKOUT_FIELD_RULES.city;
+  if (!validateLength(value, rule.minLength, rule.maxLength)) {
+    return "Ingresá la ciudad.";
+  }
+  if (!matchesPattern(value, rule.pattern)) {
+    return "La ciudad solo puede tener letras, números y signos comunes.";
+  }
+  return null;
+}
+
+function validatePostalCode(value: string): string | null {
+  return matchesPattern(value, CHECKOUT_FIELD_RULES.postalCode.pattern)
+    ? null
+    : "Ingresá el código postal (4 a 8 caracteres alfanuméricos).";
+}
+
+function validateProvince(value: string): string | null {
+  return PROVINCE_SET.has(value) ? null : "Elegí una provincia de la lista.";
+}
+
+function validateNotes(value: string): string | null {
+  const { maxLength } = CHECKOUT_FIELD_RULES.notes;
+  return value.length > maxLength
+    ? `Las notas no pueden superar ${maxLength} caracteres.`
+    : null;
+}
+
+/** Campos que solo se exigen cuando el envío es a domicilio. */
+type ShippingFields = Pick<
+  BuyerData,
+  "lastName" | "street" | "city" | "postalCode" | "province"
+>;
+
+const EMPTY_SHIPPING_FIELDS: ShippingFields = {
+  lastName: null,
+  street: null,
+  city: null,
+  postalCode: null,
+  province: null,
+};
+
+/**
+ * Valida el bloque de domicilio. Cada campo queda en null si falló su
+ * validación, de modo que BuyerData nunca lleve un valor no validado.
+ */
+function validateShippingFields(
+  formData: FormData,
+  errors: ValidationErrors,
+): ShippingFields {
+  const lastName = readField(formData, "lastName");
+  errors.lastName = validateLastName(lastName) ?? undefined;
+
+  const street = readField(formData, "street");
+  errors.street = validateStreet(street) ?? undefined;
+
+  const city = readField(formData, "city");
+  errors.city = validateCity(city) ?? undefined;
+
+  const postalCode = readField(formData, "postalCode").toUpperCase();
+  errors.postalCode = validatePostalCode(postalCode) ?? undefined;
+
+  const province = readField(formData, "province");
+  errors.province = validateProvince(province) ?? undefined;
+
+  return {
+    lastName: errors.lastName === undefined ? lastName : null,
+    street: errors.street === undefined ? street : null,
+    city: errors.city === undefined ? city : null,
+    postalCode: errors.postalCode === undefined ? postalCode : null,
+    province: errors.province === undefined ? province : null,
+  };
+}
+
+/** Descarta las claves en undefined que dejan los validadores sin error. */
+function compactErrors(errors: ValidationErrors): ValidationErrors {
+  const compacted: ValidationErrors = {};
+  for (const [field, message] of Object.entries(errors)) {
+    if (message !== undefined) {
+      compacted[field as keyof BuyerData] = message;
+    }
+  }
+  return compacted;
+}
+
 /**
  * Toma un FormData del browser y devuelve los datos validados o un mapa de errores.
  * No usa early returns: recolecta TODOS los errores en una pasada para que el
  * usuario los vea juntos en lugar de uno a uno.
  */
 export function validateCheckoutForm(formData: FormData): ValidationResult {
-  const errors: ValidationErrors = {};
+  const raw: ValidationErrors = {};
 
   const rawShipping = (formData.get("shippingMethod") ?? "").toString();
-  const shippingMethod: ShippingMethod | null =
-    rawShipping === "retiro" || rawShipping === "domicilio" ? rawShipping : null;
-  if (shippingMethod === null) {
-    errors.shippingMethod = "Elegí cómo querés recibir el pedido.";
+  raw.shippingMethod = validateShippingMethod(rawShipping) ?? undefined;
+  const shippingMethod = rawShipping as ShippingMethod;
+
+  const firstName = readField(formData, "firstName");
+  raw.firstName = validateFirstName(firstName) ?? undefined;
+
+  const email = readField(formData, "email").toLowerCase();
+  raw.email = validateEmail(email) ?? undefined;
+
+  const phone = readField(formData, "phone");
+  raw.phone = validatePhone(phone) ?? undefined;
+
+  const dni = readField(formData, "dni");
+  raw.dni = validateDni(dni) ?? undefined;
+
+  const shippingFields = rawShipping === "domicilio"
+    ? validateShippingFields(formData, raw)
+    : EMPTY_SHIPPING_FIELDS;
+
+  const notesRaw = readField(formData, "notes");
+  raw.notes = validateNotes(notesRaw) ?? undefined;
+  const notes = raw.notes === undefined && notesRaw.length > 0 ? notesRaw : null;
+
+  const errors = compactErrors(raw);
+  if (Object.keys(errors).length > 0) {
+    return { ok: false, errors };
   }
 
-  const firstName = (formData.get("firstName") ?? "").toString().trim();
-  const firstNameRule = CHECKOUT_FIELD_RULES.firstName;
-  if (!validateLength(firstName, firstNameRule.minLength, firstNameRule.maxLength)) {
-    errors.firstName = `Ingresá tu nombre (entre ${firstNameRule.minLength} y ${firstNameRule.maxLength} caracteres).`;
-  } else if (!matchesPattern(firstName, firstNameRule.pattern)) {
-    errors.firstName = "Solo letras, espacios, apóstrofes y guiones.";
-  }
-
-  const email = (formData.get("email") ?? "").toString().trim().toLowerCase();
-  if (email.length === 0) {
-    errors.email = "Ingresá tu email.";
-  } else if (!isValidEmail(email)) {
-    errors.email = "El email no parece válido.";
-  }
-
-  const phone = (formData.get("phone") ?? "").toString().trim();
-  const phoneRule = CHECKOUT_FIELD_RULES.phone;
-  if (phone.length === 0) {
-    errors.phone = "Ingresá tu teléfono.";
-  } else {
-    const digits = digitCount(phone);
-    if (digits < phoneRule.minDigits || digits > phoneRule.maxDigits) {
-      errors.phone = `El teléfono debe tener entre ${phoneRule.minDigits} y ${phoneRule.maxDigits} dígitos.`;
-    } else if (!matchesPattern(phone, phoneRule.pattern)) {
-      errors.phone = "Solo números, espacios, guiones, paréntesis y +.";
-    }
-  }
-
-  const dni = (formData.get("dni") ?? "").toString().trim();
-  const dniRule = CHECKOUT_FIELD_RULES.dni;
-  if (!matchesPattern(dni, dniRule.pattern)) {
-    errors.dni = "Ingresá tu DNI (entre 7 y 9 dígitos, sin puntos).";
-  }
-
-  // Campos solo requeridos cuando el envío es a domicilio
-  const isDomicilio = shippingMethod === "domicilio";
-  let lastName: string | null = null;
-  let street: string | null = null;
-  let city: string | null = null;
-  let postalCode: string | null = null;
-  let province: string | null = null;
-
-  if (isDomicilio) {
-    const lastNameRaw = (formData.get("lastName") ?? "").toString().trim();
-    const lastNameRule = CHECKOUT_FIELD_RULES.lastName;
-    if (!validateLength(lastNameRaw, lastNameRule.minLength, lastNameRule.maxLength)) {
-      errors.lastName = `Ingresá tu apellido (entre ${lastNameRule.minLength} y ${lastNameRule.maxLength} caracteres).`;
-    } else if (!matchesPattern(lastNameRaw, lastNameRule.pattern)) {
-      errors.lastName = "Solo letras, espacios, apóstrofes y guiones.";
-    } else {
-      lastName = lastNameRaw;
-    }
-
-    const streetRaw = (formData.get("street") ?? "").toString().trim();
-    const streetRule = CHECKOUT_FIELD_RULES.street;
-    if (!validateLength(streetRaw, streetRule.minLength, streetRule.maxLength)) {
-      errors.street = "Ingresá la dirección completa (calle, número y piso/depto).";
-    } else {
-      street = streetRaw;
-    }
-
-    const cityRaw = (formData.get("city") ?? "").toString().trim();
-    const cityRule = CHECKOUT_FIELD_RULES.city;
-    if (!validateLength(cityRaw, cityRule.minLength, cityRule.maxLength)) {
-      errors.city = "Ingresá la ciudad.";
-    } else if (!matchesPattern(cityRaw, cityRule.pattern)) {
-      errors.city = "La ciudad solo puede tener letras, números y signos comunes.";
-    } else {
-      city = cityRaw;
-    }
-
-    const postalCodeRaw = (formData.get("postalCode") ?? "").toString().trim().toUpperCase();
-    const postalCodeRule = CHECKOUT_FIELD_RULES.postalCode;
-    if (!matchesPattern(postalCodeRaw, postalCodeRule.pattern)) {
-      errors.postalCode = "Ingresá el código postal (4 a 8 caracteres alfanuméricos).";
-    } else {
-      postalCode = postalCodeRaw;
-    }
-
-    const provinceRaw = (formData.get("province") ?? "").toString().trim();
-    if (!PROVINCE_SET.has(provinceRaw)) {
-      errors.province = "Elegí una provincia de la lista.";
-    } else {
-      province = provinceRaw;
-    }
-  }
-
-  const notesRaw = (formData.get("notes") ?? "").toString().trim();
-  let notes: string | null = null;
-  if (notesRaw.length > CHECKOUT_FIELD_RULES.notes.maxLength) {
-    errors.notes = `Las notas no pueden superar ${CHECKOUT_FIELD_RULES.notes.maxLength} caracteres.`;
-  } else if (notesRaw.length > 0) {
-    notes = notesRaw;
-  }
-
-  const hasErrors = Object.keys(errors).length > 0;
-  return hasErrors
-    ? { ok: false, errors }
-    : {
-        ok: true,
-        data: {
-          shippingMethod: shippingMethod as ShippingMethod,
-          firstName,
-          lastName,
-          email,
-          phone,
-          dni,
-          street,
-          city,
-          postalCode,
-          province,
-          notes,
-        },
-      };
+  // El orden de los campos replica el de BuyerData: es observable al
+  // serializar el objeto, así que se mantiene explícito.
+  return {
+    ok: true,
+    data: {
+      shippingMethod,
+      firstName,
+      lastName: shippingFields.lastName,
+      email,
+      phone,
+      dni,
+      street: shippingFields.street,
+      city: shippingFields.city,
+      postalCode: shippingFields.postalCode,
+      province: shippingFields.province,
+      notes,
+    },
+  };
 }

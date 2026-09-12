@@ -3,6 +3,7 @@
  */
 
 import type { AnnouncementIcon } from "@/types/catalog";
+import type { ParseResult } from "@/lib/parse-result";
 
 export interface AnnouncementInput {
   text: string;
@@ -10,10 +11,6 @@ export interface AnnouncementInput {
   sort_order: number;
   published: boolean;
 }
-
-export type ParseResult =
-  | { ok: true; data: AnnouncementInput }
-  | { ok: false; reason: "validation" };
 
 const VALID_ICONS = new Set<AnnouncementIcon>([
   "truck",
@@ -34,7 +31,7 @@ function parseIntOrNull(value: FormDataEntryValue | null): number | null {
   return n;
 }
 
-export function parseAnnouncementForm(formData: FormData): ParseResult {
+export function parseAnnouncementForm(formData: FormData): ParseResult<AnnouncementInput> {
   const text = formData.get("text")?.toString().trim() ?? "";
   const iconRaw = formData.get("icon")?.toString().trim() ?? "";
   const icon =

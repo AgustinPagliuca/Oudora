@@ -3,6 +3,8 @@
  * El thumbnail se sube por separado a un endpoint dedicado de upload.
  */
 
+import type { ParseResult } from "@/lib/parse-result";
+
 export interface ReelInput {
   title: string;
   thumbnail_url: string;
@@ -12,10 +14,6 @@ export interface ReelInput {
   sort_order: number;
   published: boolean;
 }
-
-export type ParseResult =
-  | { ok: true; data: ReelInput }
-  | { ok: false; reason: "validation" };
 
 function parseIntOrNull(value: FormDataEntryValue | null): number | null {
   if (typeof value !== "string") return null;
@@ -28,7 +26,7 @@ function parseIntOrNull(value: FormDataEntryValue | null): number | null {
 
 const INSTAGRAM_URL_REGEX = /^https?:\/\/(www\.)?instagram\.com\/.+/i;
 
-export function parseReelForm(formData: FormData): ParseResult {
+export function parseReelForm(formData: FormData): ParseResult<ReelInput> {
   const title = formData.get("title")?.toString().trim() ?? "";
   const thumbnailUrl = formData.get("thumbnail_url")?.toString().trim() ?? "";
   const thumbnailPath = formData.get("thumbnail_path")?.toString().trim() ?? "";

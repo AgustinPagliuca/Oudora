@@ -2,14 +2,11 @@ export const prerender = false;
 
 import type { APIRoute } from "astro";
 import { parseProductForm, isSlugTakenError } from "@/lib/product-form";
+import { redirectTo } from "@/lib/http";
 
 // Nombre del bucket de Storage para imágenes de producto.
 // (mismo valor que el handler de upload en `./[id]/images.ts`)
 const STORAGE_BUCKET = "product-images";
-
-function redirectTo(path: string): Response {
-  return new Response(null, { status: 303, headers: { Location: path } });
-}
 
 /**
  * Despachador: los forms HTML solo soportan GET y POST. Usamos un hidden

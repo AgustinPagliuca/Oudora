@@ -2,12 +2,9 @@ export const prerender = false;
 
 import type { APIRoute } from "astro";
 import { parseReelForm } from "@/lib/reel-form";
+import { redirectTo } from "@/lib/http";
 
 const BUCKET = "reel-thumbnails";
-
-function redirectTo(path: string): Response {
-  return new Response(null, { status: 303, headers: { Location: path } });
-}
 
 export const POST: APIRoute = async (context) => {
   const { request } = context;

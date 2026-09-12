@@ -7,6 +7,7 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
+import { redirectTo } from "@/lib/http";
 
 function redirectBack(request: Request, fallback: string): Response {
   const referer = request.headers.get("referer");
@@ -20,10 +21,7 @@ function redirectBack(request: Request, fallback: string): Response {
 export const POST: APIRoute = async ({ locals, params, request }) => {
   const id = params.id;
   if (locals.user === null) {
-    return new Response(null, {
-      status: 303,
-      headers: { Location: "/admin/login" },
-    });
+    return redirectTo("/admin/login");
   }
   if (id === undefined) {
     return redirectBack(request, "/admin/productos");

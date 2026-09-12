@@ -3,6 +3,8 @@
  * de creación (POST) y actualización (PUT).
  */
 
+import type { ParseResult } from "@/lib/parse-result";
+
 const VALID_CATALOGS = new Set(["arabe", "disenador"]);
 const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -14,10 +16,6 @@ export interface BrandInput {
   is_active: boolean;
 }
 
-export type ParseResult =
-  | { ok: true; data: BrandInput }
-  | { ok: false; reason: "validation" };
-
 function parseInt0(value: FormDataEntryValue | null): number | null {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
@@ -27,7 +25,7 @@ function parseInt0(value: FormDataEntryValue | null): number | null {
   return n;
 }
 
-export function parseBrandForm(formData: FormData): ParseResult {
+export function parseBrandForm(formData: FormData): ParseResult<BrandInput> {
   const slug = formData.get("slug")?.toString().trim().toLowerCase() ?? "";
   const name = formData.get("name")?.toString().trim() ?? "";
   const catalog = formData.get("catalog")?.toString().trim() ?? "";

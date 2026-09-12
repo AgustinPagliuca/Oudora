@@ -3,6 +3,8 @@
  * de creación (POST) y actualización (PUT).
  */
 
+import type { ParseResult } from "@/lib/parse-result";
+
 export interface ReviewInput {
   author_name: string;
   body: string;
@@ -11,10 +13,6 @@ export interface ReviewInput {
   published: boolean;
   sort_order: number;
 }
-
-export type ParseResult =
-  | { ok: true; data: ReviewInput }
-  | { ok: false; reason: "validation" };
 
 function parseIntOrNull(value: FormDataEntryValue | null): number | null {
   if (typeof value !== "string") return null;
@@ -25,7 +23,7 @@ function parseIntOrNull(value: FormDataEntryValue | null): number | null {
   return n;
 }
 
-export function parseReviewForm(formData: FormData): ParseResult {
+export function parseReviewForm(formData: FormData): ParseResult<ReviewInput> {
   const authorName = formData.get("author_name")?.toString().trim() ?? "";
   const body = formData.get("body")?.toString().trim() ?? "";
   const ratingRaw = formData.get("rating");

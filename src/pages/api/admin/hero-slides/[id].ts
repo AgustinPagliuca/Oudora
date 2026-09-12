@@ -2,12 +2,9 @@ export const prerender = false;
 
 import type { APIRoute } from "astro";
 import { parseHeroSlideForm } from "@/lib/hero-slide-form";
+import { redirectTo } from "@/lib/http";
 
 const BUCKET = "hero-slides";
-
-function redirectTo(path: string): Response {
-  return new Response(null, { status: 303, headers: { Location: path } });
-}
 
 export const POST: APIRoute = async (context) => {
   const { request } = context;

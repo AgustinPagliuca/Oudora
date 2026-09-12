@@ -4,6 +4,8 @@
  * de validación en un solo lugar.
  */
 
+import type { ParseResult } from "@/lib/parse-result";
+
 const VALID_CATALOGS = new Set(["arabe", "disenador"]);
 const VALID_GENDERS = new Set(["femenino", "masculino", "unisex"]);
 const VALID_CONCENTRATIONS = new Set(["EDP", "EDT", "Parfum", "Extrait"]);
@@ -36,10 +38,6 @@ export interface ProductInput {
   labels: ProductLabelInput[];
 }
 
-export type ParseResult =
-  | { ok: true; data: ProductInput }
-  | { ok: false; reason: "validation" };
-
 function parseInt0(value: FormDataEntryValue | null): number | null {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
@@ -67,7 +65,7 @@ function parseLabels(formData: FormData): ProductLabelInput[] | null {
   return labels;
 }
 
-export function parseProductForm(formData: FormData): ParseResult {
+export function parseProductForm(formData: FormData): ParseResult<ProductInput> {
   const slug = formData.get("slug")?.toString().trim().toLowerCase() ?? "";
   const brandId = formData.get("brand_id")?.toString().trim() ?? "";
   const catalog = formData.get("catalog")?.toString().trim() ?? "";

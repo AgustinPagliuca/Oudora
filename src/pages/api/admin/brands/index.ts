@@ -2,10 +2,7 @@ export const prerender = false;
 
 import type { APIRoute } from "astro";
 import { parseBrandForm, isSlugTakenError } from "@/lib/brand-form";
-
-function redirectTo(path: string): Response {
-  return new Response(null, { status: 303, headers: { Location: path } });
-}
+import { redirectTo } from "@/lib/http";
 
 export const POST: APIRoute = async ({ request, locals }) => {
   if (locals.user === null) return redirectTo("/admin/login");
