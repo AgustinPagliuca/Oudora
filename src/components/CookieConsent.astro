@@ -1,0 +1,198 @@
+---
+/**
+ * Banner de consentimiento de cookies.
+ *
+ * Se renderiza siempre pero arranca con `hidden`: la decisión de mostrarlo la
+ * toma cookie-consent.ts en el cliente, después de leer localStorage. Así
+ * evitamos el flash del banner en quien ya decidió.
+ *
+ * Posición: barra centrada abajo. En desktop queda lejos del FAB de WhatsApp
+ * (abajo a la derecha) gracias al gutter lateral; en mobile ocupa el ancho
+ * completo y empujamos el FAB hacia arriba mientras está abierta.
+ */
+---
+
+<aside
+  class="cookie-banner"
+  data-cookie-banner
+  hidden
+  role="region"
+  aria-label="Consentimiento de cookies"
+>
+  <p class="cookie-banner-text">
+    Usamos cookies para analizar el tráfico y mejorar tu experiencia. Podés
+    aceptarlas o rechazarlas.
+    <a href="/cookies" class="cookie-banner-link">Más información</a>
+  </p>
+
+  <div class="cookie-banner-actions">
+    <button type="button" class="cookie-btn cookie-btn-ghost" data-cookie-reject>
+      Rechazar
+    </button>
+    <button type="button" class="cookie-btn cookie-btn-primary" data-cookie-accept>
+      Aceptar
+    </button>
+  </div>
+</aside>
+
+<style>
+  /* Sin esta regla el banner NUNCA se oculta: el `display: flex` de abajo es
+     estilo de autor y le gana al `[hidden] { display: none }` del user-agent
+     stylesheet, así que `hidden = true` desde JS no tiene ningún efecto
+     visible. El selector con atributo tiene más especificidad que la clase
+     sola, de modo que el orden en el archivo no importa. */
+  .cookie-banner[hidden] {
+    display: none;
+  }
+
+  .cookie-banner {
+    position: fixed;
+    z-index: 95;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    /* El gutter de 180px deja libre la esquina del FAB de WhatsApp (56px + 24px
+       de margen) a cualquier ancho de desktop. */
+    width: min(900px, calc(100vw - 180px));
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4) var(--space-5);
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-bg-card);
+    border: 0.5px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    box-shadow: var(--elev-3);
+    animation: cookie-banner-in 0.4s var(--ease-premium) both;
+  }
+
+  .cookie-banner-text {
+    flex: 1 1 340px;
+    font-size: var(--text-sm);
+    line-height: 1.65;
+    color: var(--color-text);
+    margin: 0;
+  }
+
+  .cookie-banner-link {
+    color: var(--color-gold-light);
+    border-bottom: 0.5px solid rgba(201, 168, 76, 0.4);
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+    white-space: nowrap;
+  }
+  .cookie-banner-link:hover {
+    color: var(--color-gold);
+    border-bottom-color: var(--color-gold);
+  }
+
+  .cookie-banner-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-shrink: 0;
+  }
+
+  /* Mismos tokens y forma que los .btn del checkout, un punto más compactos:
+     el banner es UI secundaria, no una acción principal de la página. */
+  .cookie-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 22px;
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
+    text-transform: uppercase;
+    font-weight: 600;
+    border-radius: var(--radius-pill);
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all var(--transition-default);
+  }
+
+  .cookie-btn-primary {
+    background: var(--color-gold);
+    color: var(--color-bg-deep);
+  }
+  .cookie-btn-primary:hover {
+    background: var(--color-gold-light);
+  }
+
+  .cookie-btn-ghost {
+    background: transparent;
+    color: var(--color-text-muted);
+    border: 0.5px solid var(--color-border);
+  }
+  .cookie-btn-ghost:hover {
+    border-color: var(--color-gold);
+    color: var(--color-cream);
+  }
+
+  @keyframes cookie-banner-in {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  /* ── Mobile: barra full-width pegada abajo ──────────────────────── */
+  @media (max-width: 720px) {
+    .cookie-banner {
+      bottom: 0;
+      left: 0;
+      transform: none;
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      border-bottom: none;
+      padding: var(--space-4);
+      animation-name: cookie-banner-in-mobile;
+    }
+    .cookie-banner-text {
+      flex: initial;
+    }
+    .cookie-banner-actions {
+      justify-content: stretch;
+    }
+    .cookie-btn {
+      flex: 1;
+    }
+
+    /* El FAB de WhatsApp vive en otro componente (estilos scoped), así que lo
+       corremos desde acá con :global mientras la barra ocupa el borde inferior.
+       En desktop no hace falta: el gutter lateral ya los separa. */
+    :global(html.cookie-banner-open .whatsapp-fab-wrapper) {
+      bottom: 170px;
+      transition: bottom var(--transition-default);
+    }
+  }
+
+  @keyframes cookie-banner-in-mobile {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cookie-banner {
+      animation: none;
+    }
+    :global(html.cookie-banner-open .whatsapp-fab-wrapper) {
+      transition: none;
+    }
+  }
+</style>

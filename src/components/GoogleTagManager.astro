@@ -1,22 +1,46 @@
 ---
 import { ANALYTICS } from "@/constants/ui";
+import { COOKIE_CONSENT } from "@/constants/legal";
 
 const gtmId = ANALYTICS.gtmId;
+const consentKey = COOKIE_CONSENT.storageKey;
+const acceptedValue = COOKIE_CONSENT.accepted;
 ---
 
-{/* Google Tag Manager — debe ir como primer elemento del <head> para que el
-    contenedor cargue antes que cualquier otro script. Desde GTM se configuran
-    los tags concretos (Meta Pixel, GA4, etc.); el sitio solo empuja eventos
-    al dataLayer vía @/lib/analytics. */}
-<script is:inline define:vars={{ gtmId }}>
-  (function (w, d, s, l, i) {
-    w[l] = w[l] || [];
-    w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
-    var f = d.getElementsByTagName(s)[0],
-      j = d.createElement(s),
-      dl = l != "dataLayer" ? "&l=" + l : "";
-    j.async = true;
-    j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
-    f.parentNode.insertBefore(j, f);
-  })(window, document, "script", "dataLayer", gtmId);
+{/* Google Tag Manager — bloqueo total hasta que haya consentimiento.
+    Este script NO carga GTM por sí solo: define la función que lo inyecta y
+    la llama únicamente si en localStorage ya hay una decisión "accepted".
+
+    Va inline en el <head> a propósito. Si lo dejáramos en el módulo diferido
+    de cookie-consent.ts, el visitante que ya aceptó tendría que esperar a que
+    parsee todo el HTML antes de que arranque el contenedor, y se perderían
+    los primeros eventos. Acá corre apenas el browser llega al <head>.
+
+    Quien todavía no decidió no dispara nada: el banner llama a
+    window.oudoraLoadGTM() en el momento en que toca "Aceptar". */}
+<script is:inline define:vars={{ gtmId, consentKey, acceptedValue }}>
+  window.oudoraLoadGTM = function () {
+    // Idempotente: el banner puede llamarla después de que el arranque
+    // temprano ya la ejecutó (por ejemplo si se reabre y se re-acepta).
+    if (window.__oudoraGtmLoaded === true) return;
+    window.__oudoraGtmLoaded = true;
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+
+    var first = document.getElementsByTagName("script")[0];
+    var tag = document.createElement("script");
+    tag.async = true;
+    tag.src = "https://www.googletagmanager.com/gtm.js?id=" + gtmId;
+    first.parentNode.insertBefore(tag, first);
+  };
+
+  try {
+    if (window.localStorage.getItem(consentKey) === acceptedValue) {
+      window.oudoraLoadGTM();
+    }
+  } catch (err) {
+    // Modo privado o storage bloqueado: sin decisión legible no cargamos nada.
+    // Es el lado seguro — preferimos no trackear antes que trackear sin consentir.
+  }
 </script>

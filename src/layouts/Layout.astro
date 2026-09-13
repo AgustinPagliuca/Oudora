@@ -5,8 +5,8 @@ import CartDrawer from "@/components/CartDrawer.astro";
 import SearchOverlay from "@/components/SearchOverlay.astro";
 import AnnouncementBar from "@/components/AnnouncementBar.astro";
 import WhatsAppButton from "@/components/WhatsAppButton.astro";
+import CookieConsent from "@/components/CookieConsent.astro";
 import GoogleTagManager from "@/components/GoogleTagManager.astro";
-import GoogleTagManagerNoscript from "@/components/GoogleTagManagerNoscript.astro";
 
 interface Props {
   title?: string;
@@ -23,6 +23,9 @@ const pageDescription = description ?? SITE_METADATA.description;
 <!doctype html>
 <html lang="es">
   <head>
+    {/* Define el loader de GTM y lo dispara solo si ya hay consentimiento
+        guardado. Sigue primero en el <head> para no demorar el contenedor
+        en quienes ya aceptaron. */}
     <GoogleTagManager />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -39,22 +42,27 @@ const pageDescription = description ?? SITE_METADATA.description;
     <title>{pageTitle}</title>
   </head>
   <body>
-    <GoogleTagManagerNoscript />
+    {/* Sin el <noscript> de GTM a propósito: ese iframe carga el contenedor sin
+        pasar por el consentimiento, y sin JS no hay forma de leer la decisión
+        ni de mostrar el banner. Preferimos no medir a esa minoría. */}
     <AnnouncementBar />
     <slot />
     <CartDrawer />
     <SearchOverlay />
     <WhatsAppButton />
+    <CookieConsent />
 
     <script>
       import { initCartController } from "@/scripts/cart-controller";
       import { initSearchController } from "@/scripts/search-controller";
       import { initScrollReveal } from "@/scripts/scroll-reveal";
+      import { initCookieConsent } from "@/scripts/cookie-consent";
 
       function bootGlobal(): void {
         initCartController();
         initSearchController();
         initScrollReveal();
+        initCookieConsent();
       }
 
       if (document.readyState === "loading") {
