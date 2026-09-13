@@ -1,0 +1,199 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/Nav.astro";
+import Footer from "@/components/Footer.astro";
+import PageHeader from "@/components/PageHeader.astro";
+import LegalDocument from "@/components/LegalDocument.astro";
+
+import { LEGAL } from "@/constants/legal";
+---
+
+<Layout
+  title="Política de Cookies"
+  description="Qué cookies usa OUDORA, para qué sirven y cómo administrarlas."
+>
+  <Nav />
+  <PageHeader
+    title="Política de"
+    highlight="Cookies"
+    subtitle="Qué usamos y cómo lo controlás"
+  />
+
+  <LegalDocument lastUpdated={LEGAL.lastUpdated}>
+    <h2>Qué son las <em>cookies</em></h2>
+    <p>
+      Las cookies son archivos de texto muy chicos que un sitio web guarda en tu
+      navegador cuando lo visitás. Sirven para recordar información entre páginas y
+      entre visitas: por ejemplo, qué productos agregaste al carrito o si ya
+      respondiste el aviso de cookies.
+    </p>
+    <p>
+      Algunas las genera este sitio (<strong>cookies propias</strong>) y otras las
+      generan servicios externos que usamos, como Google o Meta (<strong
+        >cookies de terceros</strong
+      >). Junto con las cookies, se usan tecnologías equivalentes como el
+      almacenamiento local del navegador y los píxeles de seguimiento; todo lo que
+      decimos acá aplica también a ellas.
+    </p>
+
+    <h2>Qué cookies usa <em>este sitio</em></h2>
+
+    <h3>Cookies necesarias</h3>
+    <p>
+      Son imprescindibles para que el sitio funcione. Sin ellas no podrías armar un
+      pedido. No requieren tu consentimiento porque no se usan para publicidad ni
+      para seguirte por otros sitios.
+    </p>
+    <ul>
+      <li>
+        <strong>Carrito de compras:</strong> guarda los productos que agregaste
+        para que sigan ahí si cambiás de página o volvés más tarde.
+      </li>
+      <li>
+        <strong>Preferencia de consentimiento:</strong> recuerda si aceptaste o
+        rechazaste las cookies opcionales, para no volver a preguntarte en cada
+        visita.
+      </li>
+      <li>
+        <strong>Sesión de administración:</strong> solo aplica al panel interno del
+        sitio, no a la navegación de los visitantes.
+      </li>
+    </ul>
+
+    <h3>Cookies de analítica</h3>
+    <p>
+      Nos ayudan a entender cómo se usa el sitio de forma agregada: qué páginas se
+      visitan más, cuánto tiempo se quedan, desde qué dispositivos entran. Con eso
+      mejoramos el catálogo y la navegación. Se cargan a través de
+      <strong>Google Tag Manager</strong>.
+    </p>
+
+    <h3>Cookies de marketing</h3>
+    <p>
+      Se usan para medir el rendimiento de nuestras campañas publicitarias y para
+      mostrarte avisos más relevantes en otras plataformas. Se cargan a través de
+      <strong>Google Tag Manager</strong> y del <strong>Meta Pixel</strong>
+      (Facebook e Instagram).
+    </p>
+
+    <h2>Cookies de <em>terceros</em></h2>
+    <p>
+      Las cookies de analítica y marketing las gestionan proveedores externos, que
+      son responsables de su propio tratamiento de datos. Pueden almacenar la
+      información en servidores fuera de Argentina.
+    </p>
+    <ul>
+      <li>
+        <strong>Google</strong> (Google Tag Manager y los servicios de analítica y
+        publicidad que se configuran desde ahí). Podés consultar su política en
+        <a
+          href="https://policies.google.com/technologies/cookies"
+          target="_blank"
+          rel="noopener noreferrer">policies.google.com</a
+        >.
+      </li>
+      <li>
+        <strong>Meta Platforms</strong> (Meta Pixel, para Facebook e Instagram).
+        Podés consultar su política en <a
+          href="https://www.facebook.com/policies/cookies/"
+          target="_blank"
+          rel="noopener noreferrer">facebook.com/policies/cookies</a
+        >.
+      </li>
+    </ul>
+    <p>
+      Los plazos de conservación de estas cookies los define cada proveedor y
+      varían según el tipo de cookie: algunas se borran al cerrar el navegador y
+      otras persisten por meses.
+    </p>
+
+    <h3>Transferencia de datos fuera de Argentina</h3>
+    <p>
+      Google y Meta almacenan y procesan estos datos en servidores ubicados fuera
+      de la República Argentina, principalmente en Estados Unidos. Esa
+      transferencia internacional se realiza <strong
+        >con tu consentimiento expreso</strong
+      >, el que prestás al aceptar las cookies de analítica y marketing en el
+      banner. Si las rechazás, no se activan esas cookies y no se produce
+      transferencia alguna de tus datos al exterior. El detalle está en nuestra
+      <a href="/privacidad">Política de Privacidad</a>.
+    </p>
+
+    <h2>Cómo <em>aceptar o rechazar</em> las cookies</h2>
+    <p>
+      Al entrar por primera vez al sitio vas a ver un <strong
+        >banner de consentimiento</strong
+      > donde podés aceptar o rechazar las cookies de analítica y marketing. Las
+      cookies necesarias se cargan siempre, porque sin ellas el sitio no funciona.
+    </p>
+    <p>
+      Si rechazás, no se activan las cookies de analítica ni de marketing y el
+      sitio sigue funcionando con normalidad: no se carga Google Tag Manager ni el
+      Meta Pixel, y no se produce ninguna transferencia de datos al exterior.
+    </p>
+    <p>
+      Tu elección queda guardada en tu navegador y <strong
+        >podés cambiarla cuando quieras</strong
+      >: al pie de cualquier página hay un enlace <strong>Configurar cookies</strong
+      > que vuelve a abrir el banner. Si pasás de aceptadas a rechazadas, la página
+      se recarga para que las herramientas ya cargadas dejen de funcionar de
+      inmediato.
+    </p>
+
+    <h2>Cómo <em>administrarlas</em> desde el navegador</h2>
+    <p>
+      Más allá del banner, todos los navegadores permiten ver, bloquear y eliminar
+      cookies desde sus opciones de configuración. Tené en cuenta que bloquear
+      todas las cookies puede afectar el funcionamiento del carrito y de otros
+      sitios que visites.
+    </p>
+    <ul>
+      <li>
+        <strong>Google Chrome:</strong> Configuración → Privacidad y seguridad →
+        Cookies y otros datos de sitios
+      </li>
+      <li>
+        <strong>Mozilla Firefox:</strong> Ajustes → Privacidad y seguridad →
+        Cookies y datos del sitio
+      </li>
+      <li>
+        <strong>Safari:</strong> Preferencias → Privacidad → Gestionar datos de
+        sitios web
+      </li>
+      <li>
+        <strong>Microsoft Edge:</strong> Configuración → Cookies y permisos del
+        sitio
+      </li>
+    </ul>
+    <p>
+      En el celular, la ruta suele estar dentro de los ajustes de la aplicación del
+      navegador, en la sección de privacidad.
+    </p>
+
+    <h2>Datos personales y <em>cookies</em></h2>
+    <p>
+      Cuando las cookies recolectan información que puede asociarse a una persona,
+      ese tratamiento se rige por la <strong>Ley 25.326</strong> de Protección de
+      Datos Personales y por nuestra <a href="/privacidad"
+        >Política de Privacidad</a
+      >, donde también encontrás cómo ejercer tus derechos de acceso,
+      rectificación y supresión.
+    </p>
+
+    <h2><em>Cambios</em> en esta política</h2>
+    <p>
+      Si agregamos, quitamos o cambiamos las herramientas que usan cookies,
+      actualizamos esta política y la fecha que figura al inicio del documento.
+    </p>
+
+    <h2><em>Contacto</em></h2>
+    <p>
+      El responsable del sitio es <strong>{LEGAL.responsable}</strong>. Ante
+      cualquier consulta sobre el uso de cookies, escribinos a <a
+        href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a
+      >.
+    </p>
+  </LegalDocument>
+
+  <Footer />
+</Layout>

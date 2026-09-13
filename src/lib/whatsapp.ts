@@ -22,7 +22,7 @@ function buildLineText(line: CartSnapshot["lines"][number]): string {
 
 /**
  * Mensaje completo del checkout v1.0: items + datos del comprador formateados
- * para que el vendedor confirme stock, cotice envío (si aplica) y mande link de MP.
+ * para que el vendedor confirme stock, cotice envío (si aplica) y coordine el pago.
  */
 function buildWhatsAppFullCheckoutMessage(
   snapshot: CartSnapshot,

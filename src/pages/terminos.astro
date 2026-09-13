@@ -1,0 +1,239 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/Nav.astro";
+import Footer from "@/components/Footer.astro";
+import PageHeader from "@/components/PageHeader.astro";
+import LegalDocument from "@/components/LegalDocument.astro";
+
+import { CONTACT, SITE_METADATA } from "@/constants/ui";
+import { LEGAL } from "@/constants/legal";
+---
+
+<Layout
+  title="Términos y Condiciones"
+  description="Condiciones de uso del sitio y de compra en OUDORA."
+>
+  <Nav />
+  <PageHeader
+    title="Términos y"
+    highlight="Condiciones"
+    subtitle="Condiciones de uso y de compra"
+  />
+
+  <LegalDocument lastUpdated={LEGAL.lastUpdated}>
+    <h2>Quiénes <em>somos</em></h2>
+    <p>
+      Este sitio pertenece a <strong>{LEGAL.responsable}</strong>, titular del
+      emprendimiento personal que opera bajo el nombre comercial <strong
+        >{SITE_METADATA.name}</strong
+      >, con domicilio en {LEGAL.localidad}. Contacto legal: <a
+        href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a
+      >.
+    </p>
+
+    <h2><em>Aceptación</em> de estos términos</h2>
+    <p>
+      Al navegar y usar este sitio aceptás estos Términos y Condiciones. Si no
+      estás de acuerdo con alguno de sus puntos, te pedimos que no lo utilices.
+      Podemos modificarlos en cualquier momento; la versión vigente es siempre la
+      publicada en esta página, con su fecha de última actualización.
+    </p>
+
+    <h2>Uso del <em>sitio</em></h2>
+    <p>
+      El sitio funciona como catálogo online de fragancias. Al usarlo te
+      comprometés a:
+    </p>
+    <ul>
+      <li>Brindar información veraz, exacta y actualizada al hacer un pedido</li>
+      <li>
+        No utilizar el sitio con fines ilícitos ni de forma que pueda dañarlo,
+        sobrecargarlo o afectar su funcionamiento
+      </li>
+      <li>
+        No intentar acceder a áreas restringidas ni a los sistemas que dan soporte
+        al sitio
+      </li>
+      <li>Ser mayor de 18 años para realizar una compra</li>
+    </ul>
+
+    <h2>Cómo se <em>cierra</em> una compra</h2>
+    <p>
+      <strong>El sitio no procesa pagos ni concreta ventas de forma
+      automática.</strong> El carrito y el formulario de checkout sirven para armar
+      tu pedido y enviárnoslo. El pedido se transmite y se cierra por
+      <strong>WhatsApp</strong>, donde te confirmamos disponibilidad, precio final,
+      costo de envío y forma de pago.
+    </p>
+    <p>
+      Enviar un pedido desde el sitio constituye una solicitud de compra, no una
+      compra confirmada. La operación queda perfeccionada recién cuando confirmamos
+      el pedido por WhatsApp y acordamos el pago. Nos reservamos el derecho de no
+      aceptar un pedido por falta de stock, error de precio evidente o
+      imposibilidad de envío a la zona indicada.
+    </p>
+
+    <h2><em>Precios</em></h2>
+    <ul>
+      <li>
+        Todos los precios están expresados en <strong>pesos argentinos (ARS)</strong
+        > e incluyen los impuestos aplicables.
+      </li>
+      <li>
+        Los precios publicados <strong>pueden variar sin previo aviso</strong>. El
+        precio válido es el que confirmamos por WhatsApp al momento de cerrar el
+        pedido.
+      </li>
+      <li>
+        El costo de envío no está incluido en el precio del producto, salvo que se
+        indique lo contrario. Se informa al confirmar el pedido.
+      </li>
+      <li>
+        Si se publica un precio con un error material evidente, nos reservamos el
+        derecho de corregirlo y de no dar curso al pedido, informándote la
+        situación.
+      </li>
+    </ul>
+
+    <h2>Disponibilidad de <em>stock</em></h2>
+    <p>
+      El catálogo se actualiza de forma manual y periódica. La publicación de un
+      producto no garantiza su disponibilidad inmediata. Si un producto no tiene
+      stock al momento de tu pedido, te lo informamos por WhatsApp y te ofrecemos
+      alternativas, la reposición estimada o la cancelación sin cargo.
+    </p>
+    <p>
+      Las imágenes son ilustrativas. Puede haber diferencias menores de color,
+      empaque o presentación respecto del producto físico, propias de las distintas
+      partidas de fabricación.
+    </p>
+
+    <h2>Entrega y <em>envío</em></h2>
+    <p>Podés recibir tu pedido de dos formas:</p>
+    <ul>
+      <li>
+        <strong>Retiro en persona</strong> en la zona de Santos Lugares, sin cargo.
+        Coordinamos horario y dirección exacta por WhatsApp. Para el retiro no
+        necesitamos tu dirección de envío.
+      </li>
+      <li>
+        <strong>Envío a domicilio</strong> a todo el territorio de la República
+        Argentina, con costo a calcular según el destino.
+      </li>
+    </ul>
+    <p>Sobre los envíos a domicilio:</p>
+    <ul>
+      <li>
+        Los envíos se despachan a través de empresas de correo y transporte. Para
+        el despacho se requiere tu nombre completo, DNI, teléfono y dirección
+        completa.
+      </li>
+      <li>
+        Los plazos de entrega son estimados y dependen de la empresa de transporte
+        y del destino. No respondemos por demoras atribuibles al correo, a
+        condiciones climáticas, medidas de fuerza u otros hechos ajenos a nuestra
+        voluntad.
+      </li>
+      <li>
+        El costo del envío corre por cuenta del comprador, salvo promoción vigente
+        que indique lo contrario.
+      </li>
+      <li>
+        Es responsabilidad del comprador informar una dirección correcta y
+        completa. Los costos de un reenvío por dirección errónea o por ausencia
+        reiterada en el domicilio quedan a su cargo.
+      </li>
+    </ul>
+
+    <h2>Derecho de <em>arrepentimiento</em></h2>
+    <p>
+      De acuerdo con el artículo 34 de la <strong>Ley 24.240</strong> de Defensa
+      del Consumidor y el artículo 1110 del Código Civil y Comercial de la Nación,
+      en las compras realizadas a distancia tenés derecho a arrepentirte de la
+      compra dentro de los <strong>10 (diez) días corridos</strong> contados desde
+      la entrega del producto o desde la celebración del contrato, lo que ocurra
+      último.
+    </p>
+    <p>
+      Para ejercerlo, escribinos a <a href={`mailto:${LEGAL.email}`}
+        >{LEGAL.email}</a
+      > o por WhatsApp al {CONTACT.whatsappDisplay} dentro de ese plazo. El
+      producto debe devolverse <strong>sin uso, en su empaque original y en las
+      mismas condiciones</strong> en que fue recibido. Los perfumes son productos de
+      uso personal: una vez abiertos o utilizados, no pueden reintegrarse al
+      circuito comercial.
+    </p>
+    <p>
+      Ejercido el derecho de arrepentimiento, te devolvemos el importe abonado. El
+      costo de la devolución del producto corre por nuestra cuenta, conforme a la
+      normativa vigente.
+    </p>
+
+    <h2>Cambios y <em>garantía</em></h2>
+    <p>
+      Si el producto llega dañado, incompleto o no se corresponde con lo pedido,
+      avisanos dentro de las 48 horas de recibido, con fotos del producto y del
+      empaque, y lo resolvemos con un cambio o la devolución del importe. Todas
+      nuestras fragancias son originales e importadas.
+    </p>
+
+    <h2>Propiedad <em>intelectual</em></h2>
+    <p>
+      Todo el contenido de este sitio —textos, fotografías, ilustraciones, logos,
+      el nombre <strong>{SITE_METADATA.name}</strong>, el diseño, la selección y
+      disposición de los elementos y el código— es propiedad del titular del sitio
+      o se utiliza con la debida autorización, y está protegido por la Ley 11.723
+      de Propiedad Intelectual y demás normativa aplicable.
+    </p>
+    <p>
+      No está permitida su reproducción, distribución, modificación,
+      comercialización ni comunicación pública, total o parcial, sin autorización
+      previa y por escrito. Las marcas de las fragancias que comercializamos
+      pertenecen a sus respectivos titulares y se muestran únicamente con fines
+      identificatorios del producto.
+    </p>
+
+    <h2>Limitación de <em>responsabilidad</em></h2>
+    <p>
+      Hacemos todo lo posible para que la información del sitio sea correcta y esté
+      actualizada, pero no garantizamos que esté libre de errores tipográficos, de
+      precio o de descripción, ni que el sitio esté disponible de forma
+      ininterrumpida. No respondemos por daños derivados del uso o de la
+      imposibilidad de uso del sitio, ni por el contenido de sitios de terceros a
+      los que enlacemos.
+    </p>
+    <p>Nada en esta cláusula limita los derechos que la ley te reconoce como consumidor.</p>
+
+    <h2>Protección de <em>datos personales</em></h2>
+    <p>
+      El tratamiento de tus datos personales se rige por nuestra <a
+        href="/privacidad">Política de Privacidad</a
+      > y el uso de cookies por nuestra <a href="/cookies">Política de Cookies</a>.
+    </p>
+
+    <h2>Ley aplicable y <em>jurisdicción</em></h2>
+    <p>
+      Estos Términos y Condiciones se rigen por las leyes de la <strong
+        >República Argentina</strong
+      >, en particular la Ley 24.240 de Defensa del Consumidor, el Código Civil y
+      Comercial de la Nación y la Ley 25.326 de Protección de Datos Personales.
+    </p>
+    <p>
+      Ante cualquier controversia, las partes se someten a los tribunales ordinarios
+      competentes de la Provincia de Buenos Aires, sin perjuicio del derecho del
+      consumidor a demandar ante el tribunal de su domicilio conforme al artículo
+      36 de la Ley 24.240. También podés iniciar un reclamo ante la autoridad de
+      aplicación en materia de defensa del consumidor o a través del sistema de
+      Ventanilla Única Federal.
+    </p>
+
+    <h2><em>Contacto</em></h2>
+    <p>
+      Ante cualquier duda sobre estos términos, escribinos a <a
+        href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a
+      > o por WhatsApp al {CONTACT.whatsappDisplay}.
+    </p>
+  </LegalDocument>
+
+  <Footer />
+</Layout>

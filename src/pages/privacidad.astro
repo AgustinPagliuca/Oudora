@@ -1,0 +1,298 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/Nav.astro";
+import Footer from "@/components/Footer.astro";
+import PageHeader from "@/components/PageHeader.astro";
+import LegalDocument from "@/components/LegalDocument.astro";
+
+import { LEGAL } from "@/constants/legal";
+---
+
+<Layout
+  title="Política de Privacidad"
+  description="Cómo OUDORA trata tus datos personales, con qué finalidad y cómo ejercer tus derechos."
+>
+  <Nav />
+  <PageHeader
+    title="Política de"
+    highlight="Privacidad"
+    subtitle="Ley 25.326 de Protección de Datos Personales"
+  />
+
+  <LegalDocument lastUpdated={LEGAL.lastUpdated}>
+    <h2>Quién es el <em>responsable</em></h2>
+    <p>
+      El responsable del tratamiento de tus datos personales es <strong
+        >{LEGAL.responsable}</strong
+      >, titular del emprendimiento personal que opera bajo el nombre comercial
+      <strong>OUDORA</strong>, con domicilio en {LEGAL.localidad}.
+    </p>
+    <p>
+      Para cualquier consulta sobre esta política o sobre tus datos, escribinos a
+      <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a>.
+    </p>
+
+    <h2>Qué pasa con los datos que <em>cargás en el checkout</em></h2>
+    <p>
+      Es importante que entiendas cómo funciona este sitio, porque no es el caso
+      habitual de una tienda online:
+      <strong
+        >el sitio no guarda los datos que cargás en el formulario de pedido</strong
+      >. Los datos quedan en tu navegador el tiempo que dura la carga, se arman en
+      un mensaje y se abren en WhatsApp para que vos lo envíes. No viajan a ningún
+      servidor nuestro ni quedan almacenados en ninguna base de datos del sitio.
+    </p>
+    <p>
+      A partir de que enviás ese mensaje, tus datos están en la conversación de
+      WhatsApp con OUDORA, y ahí sí los conservamos para gestionar tu pedido.
+    </p>
+
+    <h3>Qué datos te pedimos</h3>
+    <p>Para poder preparar y despachar el pedido te pedimos:</p>
+    <ul>
+      <li><strong>Obligatorios en todos los casos:</strong> nombre, correo electrónico, teléfono y DNI.</li>
+      <li>
+        <strong>Obligatorios solo si elegís envío a domicilio:</strong> apellido,
+        calle y número, ciudad, código postal y provincia. Si retirás en persona
+        no te los pedimos.
+      </li>
+      <li><strong>Opcional:</strong> notas del pedido.</li>
+    </ul>
+    <p>
+      No estás obligado a darnos ningún dato, pero sin los obligatorios no podemos
+      procesar ni enviar tu pedido. Si los datos que cargás son inexactos o están
+      incompletos, el pedido puede demorarse o no llegar a destino, y el costo de
+      un reenvío corre por tu cuenta según nuestros
+      <a href="/terminos">Términos y Condiciones</a>.
+    </p>
+    <p>
+      También recolectamos datos de navegación a través de cookies de terceros,
+      como se explica más abajo.
+    </p>
+
+    <h3>Sobre el DNI</h3>
+    <p>
+      El DNI se solicita con una finalidad puntual: <strong
+        >gestionar el envío de tu pedido</strong
+      >. Las empresas de transporte y correo lo requieren para despachar y
+      entregar paquetes en Argentina. No lo usamos para ninguna otra finalidad,
+      no lo publicamos y no lo compartimos con nadie fuera del circuito de envío.
+    </p>
+
+    <h3>Datos sensibles</h3>
+    <p>
+      <strong>No recolectamos datos sensibles</strong> en los términos del artículo
+      7 de la Ley 25.326: no te pedimos ni tratamos información sobre tu origen
+      racial o étnico, opiniones políticas, convicciones religiosas, filosóficas o
+      morales, afiliación sindical, salud ni vida sexual.
+    </p>
+
+    <h3>Datos de pago</h3>
+    <p>
+      El sitio <strong>no procesa pagos</strong>. Las consultas y el cierre de la
+      compra se hacen por WhatsApp, por fuera del sitio. No pedimos, no
+      almacenamos ni tenemos acceso a datos de tarjetas de crédito o débito.
+    </p>
+
+    <h2>Con qué <em>finalidad</em> usamos tus datos</h2>
+    <ul>
+      <li>Procesar, preparar y despachar tu pedido</li>
+      <li>Contactarte para coordinar la compra, el pago y la entrega</li>
+      <li>
+        Responder tus consultas por los canales de contacto (WhatsApp, Instagram,
+        TikTok)
+      </li>
+      <li>
+        Entender de forma agregada cómo se usa el sitio y medir el rendimiento de
+        nuestras campañas publicitarias
+      </li>
+    </ul>
+    <p>
+      No usamos tus datos para tomar decisiones automatizadas ni elaboramos
+      perfiles con efectos jurídicos sobre vos. No los usamos para finalidades
+      distintas o incompatibles con las que motivaron su obtención.
+    </p>
+
+    <h2>Base <em>legal</em> del tratamiento</h2>
+    <p>
+      Los datos del pedido se tratan sobre la base de la <strong
+        >relación contractual</strong
+      > que se genera con la compra: son los datos necesarios para su desarrollo y
+      cumplimiento, supuesto contemplado en el artículo 5, inciso 2.d de la Ley
+      25.326. Por eso no requieren tu consentimiento expreso, sin perjuicio de que
+      esta política te informa previamente todo lo que exige el artículo 6.
+    </p>
+    <p>
+      Las <strong>cookies de analítica y marketing</strong> son distintas: no derivan
+      de ninguna relación contractual, así que se tratan únicamente con tu
+      <strong>consentimiento libre, expreso e informado</strong>, que prestás
+      aceptándolas en el banner de consentimiento del sitio. Podés rechazarlas o
+      cambiar de opinión en cualquier momento.
+    </p>
+
+    <h2>Con quién <em>compartimos</em> tus datos</h2>
+    <p>
+      No vendemos ni cedemos tus datos personales. Los compartimos únicamente con:
+    </p>
+    <ul>
+      <li>
+        <strong>Empresas de transporte y correo</strong>, para poder entregarte el
+        pedido. Reciben tu nombre, apellido, DNI, teléfono y dirección de envío.
+        Es una cesión necesaria para cumplir el contrato de compra.
+      </li>
+      <li>
+        <strong>Google</strong> (Google Tag Manager y los servicios de analítica y
+        publicidad que se configuran desde ahí), que recibe datos de navegación
+        agregados y seudonimizados a través de cookies.
+      </li>
+      <li>
+        <strong>Meta Platforms</strong> (Facebook e Instagram, vía Meta Pixel), que
+        recibe datos de navegación a través de cookies para medir y optimizar
+        campañas publicitarias.
+      </li>
+    </ul>
+    <p>
+      Cuando una cesión se apoya en tu consentimiento, <strong
+        >ese consentimiento es revocable</strong
+      > en cualquier momento, conforme al artículo 11, inciso 2 de la Ley 25.326.
+      Podés revocarlo escribiéndonos a <a href={`mailto:${LEGAL.email}`}
+        >{LEGAL.email}</a
+      > o, en el caso de las cookies, rechazándolas en el banner.
+    </p>
+
+    <h2>Transferencia <em>internacional</em> de datos</h2>
+    <p>
+      Google y Meta almacenan y procesan los datos de navegación en servidores
+      ubicados <strong>fuera de la República Argentina</strong>, principalmente en
+      Estados Unidos.
+    </p>
+    <p>
+      El artículo 12 de la Ley 25.326 regula estas transferencias. En nuestro caso
+      la transferencia se realiza <strong
+        >con tu consentimiento expreso</strong
+      >, el que prestás al aceptar las cookies de analítica y marketing en el
+      banner de consentimiento. Si las rechazás, no se activan esas cookies y no
+      se produce ninguna transferencia internacional de tus datos.
+    </p>
+
+    <h2><em>Cookies</em></h2>
+    <p>
+      El sitio usa cookies propias necesarias para su funcionamiento y cookies de
+      terceros de analítica y marketing, gestionadas mediante Google Tag Manager y
+      Meta Pixel. El detalle de qué cookies usamos y cómo administrarlas está en
+      nuestra <a href="/cookies">Política de Cookies</a>.
+    </p>
+
+    <h2>Cuánto tiempo <em>conservamos</em> tus datos</h2>
+    <p>
+      Como el sitio no almacena los datos del pedido, no hay nada que conservar
+      del lado del sitio. Lo que sí conservamos es la conversación de WhatsApp y
+      la información del pedido que se genera a partir de ella, mientras dure la
+      relación comercial y luego por el plazo necesario para cumplir con las
+      obligaciones legales, contables e impositivas aplicables, o para atender un
+      eventual reclamo. Cumplido ese plazo, los datos se destruyen, conforme al
+      artículo 4, inciso 7 de la Ley 25.326.
+    </p>
+    <p>
+      Los datos recolectados por cookies de terceros se conservan según los plazos
+      que fija cada proveedor, detallados en la Política de Cookies.
+    </p>
+
+    <h2>Tus <em>derechos</em> como titular de los datos</h2>
+    <p>Podés ejercer en cualquier momento los siguientes derechos:</p>
+    <ul>
+      <li>
+        <strong>Acceso:</strong> saber qué datos tuyos tenemos y con qué finalidad
+        los tratamos. Te respondemos dentro de los <strong>10 días corridos</strong
+        > de recibido el pedido, conforme al artículo 14, inciso 2.
+      </li>
+      <li>
+        <strong>Rectificación y actualización:</strong> corregir datos inexactos,
+        incompletos o desactualizados. Lo hacemos dentro de los <strong
+          >5 días hábiles</strong
+        > de recibido tu reclamo, conforme al artículo 16, inciso 2.
+      </li>
+      <li>
+        <strong>Supresión:</strong> pedir que eliminemos tus datos cuando ya no
+        sean necesarios para la finalidad por la que se recolectaron, en el mismo
+        plazo de 5 días hábiles.
+      </li>
+      <li>
+        <strong>Confidencialidad:</strong> pedir que tus datos queden sometidos a
+        confidencialidad, en los términos de la Ley 25.326.
+      </li>
+    </ul>
+    <p>
+      La <strong>rectificación, actualización y supresión</strong> de datos
+      inexactos o incompletos se realiza <strong>sin cargo alguno</strong> para
+      vos, conforme al artículo 19 de la Ley 25.326.
+    </p>
+    <p>
+      La supresión no procede cuando pudiese causar perjuicios a derechos o
+      intereses legítimos de terceros, o cuando exista una obligación legal de
+      conservar los datos —por ejemplo, la documentación respaldatoria de una
+      venta— conforme al artículo 16, inciso 5.
+    </p>
+    <p>
+      Para ejercer cualquiera de estos derechos, escribinos a <a
+        href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a
+      > acreditando tu identidad e indicando el pedido o la consulta a la que se
+      refiere. Podés pedirnos que te enviemos la información por escrito, por
+      medios electrónicos o por el medio que te resulte más cómodo.
+    </p>
+    <p>
+      El titular de los datos personales tiene la facultad de ejercer el derecho de
+      acceso al mismo en forma gratuita a intervalos no inferiores a seis meses,
+      salvo que se acredite un interés legítimo al efecto conforme lo establecido
+      en el artículo 14, inciso 3 de la Ley Nº 25.326.
+    </p>
+    <p>
+      La AGENCIA DE ACCESO A LA INFORMACIÓN PÚBLICA, Órgano de Control de la Ley Nº
+      25.326, tiene la atribución de atender las denuncias y reclamos que se
+      interpongan con relación al incumplimiento de las normas sobre protección de
+      datos personales.
+    </p>
+
+    <h2><em>Seguridad</em> y confidencialidad</h2>
+    <p>
+      Adoptamos las medidas técnicas y organizativas necesarias para garantizar la
+      seguridad y confidencialidad de tus datos y evitar su adulteración, pérdida,
+      consulta o tratamiento no autorizado, conforme al artículo 9 de la Ley
+      25.326. Ningún sistema es infalible, pero trabajamos para mantener un nivel
+      de protección adecuado a la sensibilidad de la información que manejamos.
+    </p>
+    <p>
+      El responsable y toda persona que intervenga en cualquier fase del
+      tratamiento de tus datos están obligados al <strong>secreto profesional</strong
+      > respecto de ellos, obligación que subsiste aun después de finalizada la
+      relación, conforme al artículo 10 de la Ley 25.326.
+    </p>
+
+    <h2><em>Menores</em> de edad</h2>
+    <p>
+      El sitio está dirigido a personas mayores de 18 años. No recolectamos
+      intencionalmente datos de menores. Si detectamos que recibimos datos de una
+      persona menor de edad sin autorización de sus padres o tutores, los
+      eliminamos.
+    </p>
+
+    <h2><em>Cambios</em> en esta política</h2>
+    <p>
+      Podemos actualizar esta política para reflejar cambios en el sitio o en la
+      normativa aplicable. La fecha de última actualización figura al inicio del
+      documento. Si el cambio es sustancial, lo comunicamos por los canales
+      habituales.
+    </p>
+
+    <h2>Ley aplicable y <em>jurisdicción</em></h2>
+    <p>
+      Esta política se rige por la Ley 25.326 de Protección de Datos Personales y
+      demás normativa argentina aplicable. Sin perjuicio de la acción de protección
+      de los datos personales o de hábeas data prevista en la propia ley, cualquier
+      controversia se somete a los tribunales ordinarios competentes de la
+      Provincia de Buenos Aires, República Argentina.
+    </p>
+  </LegalDocument>
+
+  <Footer />
+</Layout>

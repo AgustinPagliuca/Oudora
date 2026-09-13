@@ -1,5 +1,6 @@
 ---
 import { CONTACT, DEVELOPER_CREDIT, SITE_METADATA } from "@/constants/ui";
+import { LEGAL_LINKS } from "@/constants/legal";
 
 const whatsappHref = `https://wa.me/${CONTACT.whatsappE164}`;
 const currentYear = new Date().getFullYear();
@@ -27,6 +28,23 @@ const currentYear = new Date().getFullYear();
       </a>
     </div>
   </div>
+
+  <div class="footer-divider" aria-hidden="true"></div>
+
+  <nav class="footer-legal" aria-label="Enlaces legales">
+    {LEGAL_LINKS.map((link, index) => (
+      <>
+        {index > 0 && <span aria-hidden="true">·</span>}
+        <a href={link.href}>{link.label}</a>
+      </>
+    ))}
+    <span aria-hidden="true">·</span>
+    {/* Revocar o cambiar la decisión de cookies: reabre el banner.
+        Lo engancha cookie-consent.ts por el data-attribute. */}
+    <button type="button" class="footer-legal-btn" data-cookie-settings>
+      Configurar cookies
+    </button>
+  </nav>
 
   <div class="footer-divider" aria-hidden="true"></div>
 
@@ -107,6 +125,38 @@ const currentYear = new Date().getFullYear();
       rgba(201, 168, 76, 0.20),
       transparent
     );
+  }
+
+  /* Fila legal: misma convención de link que .footer-contact, un escalón más
+     tenue porque es secundaria respecto de los canales de contacto. */
+  .footer-legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    color: var(--color-text-faint);
+  }
+  .footer-legal a {
+    transition: color var(--transition-fast);
+    letter-spacing: var(--tracking-uppercase);
+  }
+  .footer-legal a:hover {
+    color: var(--color-cream);
+  }
+  /* Es un <button> porque abre el banner, no navega. Se ve igual que los
+     links de al lado: el reset global ya le saca fondo y borde. */
+  .footer-legal-btn {
+    font-family: inherit;
+    font-size: inherit;
+    letter-spacing: var(--tracking-uppercase);
+    text-transform: inherit;
+    color: inherit;
+    padding: 0;
+    transition: color var(--transition-fast);
+  }
+  .footer-legal-btn:hover {
+    color: var(--color-cream);
   }
 
   /* Credit line: tipografía más pequeña, sin uppercase (es metadata, no UI). */

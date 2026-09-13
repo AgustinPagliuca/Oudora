@@ -354,6 +354,42 @@ function showSuccessState(ctx: CheckoutContext, whatsappUrl: string): void {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+/**
+ * Aceptación de la Política de Privacidad y los Términos y Condiciones. La base
+ * legal del tratamiento de los datos del pedido es contractual, así que este
+ * checkbox registra únicamente la aceptación de esos dos documentos.
+ *
+ * Vive solo en el paso 3, así que no puede validarse en `validateCheckoutForm`:
+ * ese validador también corre en el paso 2, donde todavía no se mostró.
+ * Devuelve true si está tildado.
+ */
+function validateLegalAcceptance(): boolean {
+  const checkbox = document.querySelector<HTMLInputElement>("#legalAccept");
+  const errorEl = document.querySelector<HTMLElement>(
+    "[data-error-for='legalAccept']",
+  );
+  const wrapper = checkbox?.closest<HTMLElement>(".consent") ?? null;
+
+  if (checkbox !== null && checkbox.checked) {
+    if (errorEl !== null) {
+      errorEl.hidden = true;
+      errorEl.textContent = "";
+    }
+    wrapper?.removeAttribute("data-invalid");
+    return true;
+  }
+
+  if (errorEl !== null) {
+    errorEl.textContent =
+      "Necesitamos que aceptes la Política de Privacidad y los Términos y Condiciones para continuar.";
+    errorEl.hidden = false;
+  }
+  wrapper?.setAttribute("data-invalid", "true");
+  checkbox?.focus();
+  checkbox?.scrollIntoView({ behavior: "smooth", block: "center" });
+  return false;
+}
+
 function handleSubmit(event: SubmitEvent, ctx: CheckoutContext): void {
   event.preventDefault();
   // Validamos todo de nuevo por las dudas (no confiamos en que el step 2 esté ok)
@@ -362,6 +398,12 @@ function handleSubmit(event: SubmitEvent, ctx: CheckoutContext): void {
   if (!result.ok) {
     paintErrors(result.errors);
     showStep(ctx, 2);
+    return;
+  }
+
+  // Después de los campos: si no aceptó los documentos legales no seguimos, y
+  // nos quedamos en el paso 3 (el checkbox está acá, no en el 2).
+  if (!validateLegalAcceptance()) {
     return;
   }
 

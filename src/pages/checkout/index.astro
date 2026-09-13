@@ -8,6 +8,7 @@ import {
   PICKUP_POINT,
   SHIPPING_METHODS,
 } from "@/constants/checkout";
+import { LEGAL } from "@/constants/legal";
 
 /**
  * Checkout v1.0 — 3 pasos en una sola página:
@@ -36,7 +37,7 @@ const fieldRules = CHECKOUT_FIELD_RULES;
       <h1 class="checkout-title">Finalizá tu compra</h1>
       <p class="checkout-subtitle">
         Completá los datos y te abrimos WhatsApp con el pedido para que el vendedor
-        te confirme stock, cotice el envío y te pase el link de Mercado Pago.
+        te confirme stock, te cotice el envío y coordinen el pago.
       </p>
     </header>
 
@@ -301,6 +302,33 @@ const fieldRules = CHECKOUT_FIELD_RULES;
           </div>
         </div>
 
+        {/* Aviso del art. 6 de la Ley 25.326: hay que informar finalidad,
+            responsable, carácter obligatorio/facultativo de cada respuesta y
+            consecuencias — y hacerlo ANTES de recolectar, o sea acá, no solo
+            en /privacidad. */}
+        <aside class="privacy-notice">
+          <p>
+            Los campos marcados con <span class="privacy-notice-mark">*</span> son
+            obligatorios: sin ellos no podemos preparar ni despachar el pedido. Las
+            notas son opcionales. Si los datos son inexactos o están incompletos, el
+            pedido puede demorarse o no llegar, y el reenvío corre por tu cuenta.
+          </p>
+          <p>
+            Pedimos el <strong>DNI</strong> únicamente porque las transportadoras lo
+            exigen para despachar el envío.
+          </p>
+          <p>
+            <strong>Este sitio no guarda estos datos.</strong> Se usan para armar el
+            mensaje que abrís en WhatsApp y no viajan a ningún servidor nuestro. El
+            responsable es {LEGAL.responsable} ({LEGAL.localidad}). Podés ejercer tus
+            derechos de acceso, rectificación y supresión escribiendo a
+            <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a>. El detalle está en la
+            <a href="/privacidad" target="_blank" rel="noopener noreferrer"
+              >Política de Privacidad</a
+            >.
+          </p>
+        </aside>
+
         <div class="step-actions">
           <button type="button" class="btn btn-ghost" data-step-back="1">
             Atrás
@@ -348,6 +376,31 @@ const fieldRules = CHECKOUT_FIELD_RULES;
           </dl>
         </div>
 
+        {/* Aceptación de los documentos legales antes de cerrar el pedido.
+            La base legal del tratamiento de los datos del pedido es contractual
+            (ver /privacidad), así que este checkbox registra únicamente que el
+            comprador aceptó la Política de Privacidad y los Términos y
+            Condiciones — nada más.
+
+            Lo valida el controller en handleSubmit, no checkout-validation.ts:
+            ese validador también corre en el paso 2, donde el checkbox todavía
+            no está en pantalla. */}
+        <div class="consent">
+          <label class="consent-label">
+            <input type="checkbox" id="legalAccept" name="legalAccept" required />
+            <span>
+              Leí y acepto la <a
+                href="/privacidad"
+                target="_blank"
+                rel="noopener noreferrer">Política de Privacidad</a
+              > y los <a href="/terminos" target="_blank" rel="noopener noreferrer"
+                >Términos y Condiciones</a
+              >.
+            </span>
+          </label>
+          <p class="error-text" data-error-for="legalAccept" hidden></p>
+        </div>
+
         <div class="step-actions step-actions-final">
           <button type="button" class="btn btn-ghost" data-step-back="2">
             Atrás
@@ -362,7 +415,7 @@ const fieldRules = CHECKOUT_FIELD_RULES;
 
         <p class="footnote">
           Te abrimos WhatsApp con todos los datos del pedido. El vendedor te confirma stock,
-          te cotiza el envío y te pasa el link de Mercado Pago.
+          te cotiza el envío y coordinan el pago (efectivo o transferencia).
         </p>
       </section>
     </form>
@@ -379,7 +432,7 @@ const fieldRules = CHECKOUT_FIELD_RULES;
       <h2 class="success-title">Te abrimos WhatsApp</h2>
       <p class="success-text">
         Revisá tu chat y enviá el mensaje al vendedor.
-        Te va a confirmar stock, cotizar el envío y pasarte el link de pago.
+        Te va a confirmar stock, cotizar el envío y coordinar el pago con vos.
       </p>
       <p class="success-fallback">
         ¿No se abrió WhatsApp?
@@ -711,6 +764,75 @@ const fieldRules = CHECKOUT_FIELD_RULES;
     font-size: var(--text-xs);
     margin: 4px 0 0;
     line-height: 1.4;
+  }
+
+  /* ── Aviso de privacidad (art. 6 Ley 25.326) ───────────────────── */
+  .privacy-notice {
+    margin-top: var(--space-5);
+    padding: var(--space-4);
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: rgba(0, 0, 0, 0.2);
+  }
+  .privacy-notice p {
+    font-size: var(--text-xs);
+    line-height: 1.7;
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-2);
+  }
+  .privacy-notice p:last-child {
+    margin-bottom: 0;
+  }
+  .privacy-notice strong {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .privacy-notice a {
+    color: var(--color-gold-light);
+    transition: color var(--transition-fast);
+  }
+  .privacy-notice a:hover {
+    color: var(--color-gold);
+  }
+  .privacy-notice-mark {
+    color: var(--color-gold);
+  }
+
+  /* ── Aceptación de los documentos legales ──────────────────────── */
+  .consent {
+    margin-top: var(--space-5);
+    padding: var(--space-4);
+    border: 0.5px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background: rgba(201, 168, 76, 0.05);
+  }
+  .consent-label {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    cursor: pointer;
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    color: var(--color-text);
+  }
+  .consent-label input[type="checkbox"] {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--color-gold);
+    cursor: pointer;
+  }
+  .consent-label a {
+    color: var(--color-gold-light);
+    transition: color var(--transition-fast);
+  }
+  .consent-label a:hover {
+    color: var(--color-gold);
+  }
+  .consent[data-invalid="true"] {
+    border-color: #c2363a;
+    background: rgba(194, 54, 58, 0.08);
   }
 
   /* ── Actions ───────────────────────────────────────────────────── */
