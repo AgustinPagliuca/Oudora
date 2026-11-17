@@ -195,10 +195,45 @@ function isActive(href: string): boolean {
     color: var(--color-cream);
   }
 
+  /* Desktop: logo centrado arriba e íconos a la derecha; el menú va en
+     una segunda fila centrada (patrón de perfumerías de lujo). */
+  @media (min-width: 721px) {
+    .nav {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      grid-template-areas:
+        ". logo icons"
+        "menu menu menu";
+      row-gap: var(--space-2);
+      padding-bottom: 0;
+    }
+    .nav-logo {
+      grid-area: logo;
+      font-size: var(--text-2xl);
+    }
+    .nav-icons {
+      grid-area: icons;
+      justify-self: end;
+    }
+    .nav-menu {
+      grid-area: menu;
+      justify-content: center;
+      font-size: var(--text-xs);
+    }
+    .nav-menu a {
+      display: inline-block;
+      padding: var(--space-2) 0 var(--space-3);
+      border-bottom: 1px solid transparent;
+    }
+    .nav-menu a.active {
+      border-bottom-color: var(--color-gold);
+    }
+  }
+
   .nav-icons {
     display: flex;
     gap: 8px;
-    color: var(--color-gold-light);
+    color: var(--color-cream);
     align-items: center;
   }
   .nav-icon-btn,
@@ -210,11 +245,12 @@ function isActive(href: string): boolean {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-gold-light);
+    color: var(--color-cream);
+    transition: color var(--transition-fast);
   }
   .nav-icon-btn:hover,
   .nav-filter-toggle:hover {
-    background: rgba(201, 168, 76, 0.1);
+    color: var(--color-gold-light);
   }
 
   /* Hamburguesa: oculta en desktop, visible en mobile */
