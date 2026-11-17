@@ -83,16 +83,18 @@ const visibleProducts = products.slice(0, 8);
     border-color: var(--color-cream);
   }
 
+  /* Columnas fluidas: ocupan todo el ancho (4 en desktop) en vez de quedar
+     fijas a 230px con un hueco a la derecha. */
   .featured-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 230px));
-    gap: 16px;
-    justify-content: start;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    column-gap: var(--space-4);
+    row-gap: var(--space-6);
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: 640px) {
     .featured-grid {
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 </style>
