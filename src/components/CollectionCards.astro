@@ -9,7 +9,7 @@ import CollectionCard from "./CollectionCard.astro";
       Nuestra <em>colección</em> especial
     </h2>
   </div>
-  <div class="collections-grid" data-reveal-stagger>
+  <div class="collections-grid">
     {ALL_GENDERS.map((gender) => (
       <div data-reveal>
         <CollectionCard gender={gender} />

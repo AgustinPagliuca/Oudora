@@ -22,7 +22,7 @@ const { brand, products } = Astro.props;
     <span class="brand-count" data-brand-count>{products.length} piezas</span>
   </header>
 
-  <div class="product-grid" data-reveal-stagger>
+  <div class="product-grid">
     {products.map((product) => (
       <div data-reveal>
         <ProductCard product={product} brand={brand} />
