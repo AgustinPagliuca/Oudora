@@ -52,6 +52,7 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
           class="hero-slide-bg"
           draggable="false"
           loading={idx === 0 ? "eager" : "lazy"}
+          fetchpriority={idx === 0 ? "high" : "low"}
         />
         <div class="hero-slide-overlay" aria-hidden="true"></div>
         <div class="hero-slide-content">
@@ -59,7 +60,6 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
             class="hero-slide-text"
             {...(idx === 0 ? { "data-fade-in-on-load": "" } : {})}
           >
-            {slide.overline && <p class="hero-slide-overline">{slide.overline}</p>}
             <h1 class="hero-slide-title">
               {parseTitleEmphasis(slide.title).map((p) =>
                 p.emphasis ? <em>{p.text}</em> : <>{p.text}</>
@@ -96,16 +96,33 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     </button>
   )}
   {hasMany && (
-    <div class="hero-indicators">
-      {slides.map((_, idx) => (
-        <button
-          type="button"
-          class="hero-indicator"
-          data-indicator={idx}
-          data-active={idx === 0 ? "true" : "false"}
-          aria-label={`Slide ${idx + 1}`}
-        ></button>
-      ))}
+    <div class="hero-controls">
+      <div class="hero-indicators">
+        {slides.map((_, idx) => (
+          <button
+            type="button"
+            class="hero-indicator"
+            data-indicator={idx}
+            data-active={idx === 0 ? "true" : "false"}
+            aria-label={`Slide ${idx + 1}`}
+          ></button>
+        ))}
+      </div>
+      <button
+        type="button"
+        class="hero-pause"
+        data-hero-pause
+        aria-label="Pausar el carrusel"
+        aria-pressed="false"
+      >
+        <svg class="hero-pause-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <rect x="6" y="5" width="4" height="14"></rect>
+          <rect x="14" y="5" width="4" height="14"></rect>
+        </svg>
+        <svg class="hero-play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M7 5v14l12-7z"></path>
+        </svg>
+      </button>
     </div>
   )}
 </section>
@@ -121,6 +138,7 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
       const indicators = carousel.querySelectorAll<HTMLButtonElement>("[data-indicator]");
       const prevBtn = carousel.querySelector<HTMLButtonElement>("[data-hero-prev]");
       const nextBtn = carousel.querySelector<HTMLButtonElement>("[data-hero-next]");
+      const pauseBtn = carousel.querySelector<HTMLButtonElement>("[data-hero-pause]");
 
       if (slides.length <= 1) return;
 
@@ -133,6 +151,9 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
 
       let currentIndex = 0;
       let autoTimer: number | null = null;
+      // Pausa elegida por el usuario (botón) o por preferir menos movimiento:
+      // mientras esté activa, el carrusel no avanza solo.
+      let userPaused = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
       // Estado del drag
       let activePointerId: number | null = null;
@@ -158,7 +179,7 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
       function prev(): void { show((currentIndex - 1 + slides.length) % slides.length); }
 
       function startAuto(): void {
-        if (autoTimer !== null) return;
+        if (autoTimer !== null || userPaused) return;
         autoTimer = window.setInterval(next, AUTO_INTERVAL);
       }
       function pauseAuto(): void {
@@ -251,6 +272,22 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
         });
       });
 
+      function syncPauseButton(): void {
+        if (pauseBtn === null) return;
+        pauseBtn.setAttribute("aria-pressed", userPaused ? "true" : "false");
+        pauseBtn.setAttribute(
+          "aria-label",
+          userPaused ? "Reanudar el carrusel" : "Pausar el carrusel",
+        );
+      }
+      pauseBtn?.addEventListener("click", () => {
+        userPaused = !userPaused;
+        if (userPaused) pauseAuto();
+        else startAuto();
+        syncPauseButton();
+      });
+      syncPauseButton();
+
       // Pausar auto-rotate cuando la pestaña no está visible
       document.addEventListener("visibilitychange", () => {
         if (document.hidden) pauseAuto();
@@ -267,7 +304,7 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     position: relative;
     background: var(--color-bg-deep);
     overflow: hidden;
-    min-height: clamp(440px, 60vh, 620px);
+    min-height: clamp(480px, 72vh, 680px);
     /* Crítico para el swipe: el browser maneja scroll vertical (pan-y),
        nosotros manejamos el gesto horizontal. Sin esto, el navegador
        compite por capturar el touch y se rompe el drag. */
@@ -280,7 +317,7 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
   .hero-track {
     display: flex;
     width: 100%;
-    min-height: clamp(440px, 60vh, 620px);
+    min-height: clamp(480px, 72vh, 680px);
     transform: translate3d(0, 0, 0);
     transition: transform 1s cubic-bezier(0.2, 0.9, 0.3, 1);
     will-change: transform;
@@ -294,7 +331,7 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     position: relative;
     flex: 0 0 100%;
     min-width: 100%;
-    min-height: clamp(440px, 60vh, 620px);
+    min-height: clamp(480px, 72vh, 680px);
   }
 
   /* Imagen de fondo: cubre todo el slide. draggable=false en el HTML
@@ -337,47 +374,27 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     position: relative;
     z-index: 2;
     display: flex;
-    align-items: center;
-    min-height: clamp(440px, 60vh, 620px);
-    max-width: 1240px;
+    /* Texto abajo a la izquierda, estilo editorial. */
+    align-items: flex-end;
+    min-height: clamp(480px, 72vh, 680px);
+    max-width: var(--max-content-width);
     margin: 0 auto;
-    padding: 60px clamp(24px, 5vw, 72px);
+    padding: var(--space-8) clamp(24px, 5vw, 72px) var(--space-9);
   }
 
   .hero-slide-text {
-    max-width: 560px;
-  }
-
-  .hero-slide-overline {
-    font-family: var(--font-sans);
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-uppercase);
-    text-transform: uppercase;
-    color: var(--color-gold);
-    margin: 0 0 var(--space-4);
-    font-weight: 500;
-    position: relative;
-    padding-left: 56px;
-  }
-  .hero-slide-overline::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 40px;
-    height: 0.5px;
-    background: var(--color-gold);
-    opacity: 0.7;
+    max-width: 640px;
   }
 
   .hero-slide-title {
     font-family: var(--font-serif);
-    font-size: clamp(36px, 5.2vw, 68px);
+    font-size: clamp(2.75rem, 1.6rem + 4vw, 5rem);
     font-weight: 400;
-    line-height: 1.05;
+    line-height: 1;
     color: var(--color-cream);
     margin: 0 0 var(--space-5);
     letter-spacing: var(--tracking-tight);
+    text-wrap: balance;
     text-shadow: 0 2px 24px rgba(0, 0, 0, 0.5);
   }
   .hero-slide-title em {
@@ -397,100 +414,101 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
   }
 
-  /* CTA: misma signature animation que el botón AGREGAR del card —
-     coherencia visual en toda la app. Pointer-events: auto para que el
-     click no se confunda con drag del carousel. */
+  /* CTA: botón rectangular claro; el hover solo cambia el color. */
   .hero-slide-cta {
-    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 12px;
-    padding: 14px 32px;
-    border: 0.5px solid var(--color-gold);
-    color: var(--color-gold-light);
-    background: rgba(7, 6, 5, 0.55);
+    gap: var(--space-3);
+    min-height: 48px;
+    padding: 0 var(--space-6);
+    background: var(--color-cream);
+    color: var(--color-bg);
     font-family: var(--font-sans);
     font-size: var(--text-xs);
     letter-spacing: var(--tracking-button);
     text-transform: uppercase;
-    border-radius: var(--radius-pill);
     text-decoration: none;
-    font-weight: 600;
-    backdrop-filter: blur(4px);
-    overflow: hidden;
-    isolation: isolate;
-    transition: color 0.35s var(--ease-premium),
-                transform 0.35s var(--ease-premium),
-                border-color 0.35s var(--ease-premium);
-  }
-  .hero-slide-cta::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: var(--color-gold);
-    clip-path: inset(0 100% 0 0);
-    transition: clip-path 0.4s var(--ease-premium);
-    z-index: -1;
+    font-weight: 700;
+    transition: background-color var(--transition-fast);
   }
   .hero-slide-cta:hover {
-    color: var(--color-bg);
-    border-color: var(--color-gold);
-    transform: translateX(3px);
+    background: #ffffff;
   }
-  .hero-slide-cta:hover::before {
-    clip-path: inset(0 0 0 0);
+  .hero-slide-cta:focus-visible {
+    outline: 2px solid var(--color-gold-light);
+    outline-offset: 3px;
   }
 
   .hero-arrow {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.55);
-    border: 0.5px solid rgba(212, 179, 92, 0.3);
-    color: var(--color-gold);
+    background: transparent;
+    border: 1px solid rgba(245, 237, 216, 0.4);
+    color: var(--color-cream);
     width: 44px;
     height: 44px;
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     cursor: pointer;
     z-index: 3;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all var(--transition-default);
-    backdrop-filter: blur(4px);
+    transition: border-color var(--transition-fast), color var(--transition-fast);
   }
   .hero-arrow:hover {
-    background: rgba(0, 0, 0, 0.8);
-    border-color: var(--color-gold);
+    border-color: var(--color-cream);
+    color: #ffffff;
   }
   .hero-arrow-prev { left: 18px; }
   .hero-arrow-next { right: 18px; }
 
-  .hero-indicators {
+  /* Indicadores y pausa abajo a la derecha. */
+  .hero-controls {
     position: absolute;
-    bottom: 26px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: var(--space-6);
+    right: clamp(24px, 5vw, 72px);
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: var(--space-3);
     z-index: 3;
   }
+  .hero-indicators {
+    display: flex;
+    gap: var(--space-2);
+  }
+  /* Línea visible fina, con área de toque de 24px de alto. */
   .hero-indicator {
-    width: 14px;
-    height: 3px;
-    border-radius: 2px;
-    background: rgba(245, 237, 216, 0.4);
+    width: 28px;
+    height: 24px;
     border: none;
     padding: 0;
     cursor: pointer;
-    transition: all var(--transition-default);
+    background: linear-gradient(rgba(245, 237, 216, 0.4), rgba(245, 237, 216, 0.4))
+      center / 100% 2px no-repeat;
+    transition: background-size var(--transition-fast);
   }
-  .hero-indicator:hover {
-    background: rgba(245, 237, 216, 0.7);
-  }
+  .hero-indicator:hover,
   .hero-indicator[data-active="true"] {
-    width: 32px;
-    background: var(--color-gold-light);
+    background-image: linear-gradient(var(--color-cream), var(--color-cream));
+  }
+  .hero-pause {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-cream);
+  }
+  .hero-pause:hover {
+    color: #ffffff;
+  }
+  .hero-play-icon,
+  .hero-pause[aria-pressed="true"] .hero-pause-icon {
+    display: none;
+  }
+  .hero-pause[aria-pressed="true"] .hero-play-icon {
+    display: block;
   }
 
   /* Mobile: degradado vertical para que texto al pie quede legible */
@@ -513,20 +531,24 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     }
     .hero-slide-content {
       align-items: flex-end;
-      padding: 32px 24px 64px;
+      padding: var(--space-6) var(--space-5) 88px;
     }
     .hero-slide-text {
       max-width: 100%;
     }
-    .hero-slide-title {
-      font-size: clamp(30px, 8vw, 42px);
+    .hero-slide-cta {
+      display: flex;
+      justify-content: center;
     }
     /* En mobile escondemos las flechas: ya tenés swipe */
     .hero-arrow {
       display: none;
     }
-    .hero-indicators {
-      bottom: 18px;
+    .hero-controls {
+      bottom: var(--space-4);
+      left: 50%;
+      right: auto;
+      translate: -50% 0;
     }
   }
 </style>
