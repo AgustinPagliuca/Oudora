@@ -106,29 +106,25 @@ a {
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   Scroll-reveal: aparición progresiva al hacer scroll.
-   El controller scroll-reveal.ts agrega `is-revealed` cuando el
-   elemento entra al viewport. Acá definimos los dos estados.
-   Respetamos prefers-reduced-motion deshabilitando la animación.
+   Scroll-reveal: aparición progresiva al hacer scroll, solo con CSS.
+   La animación está atada a la posición del elemento en el viewport
+   (animation-timeline: view()), así que nunca queda contenido oculto
+   esperando a un script: si el navegador no lo soporta o el usuario
+   pidió menos movimiento, el contenido se muestra directamente.
    ───────────────────────────────────────────────────────────────── */
-[data-reveal] {
-  opacity: 0;
-  transform: translateY(18px);
-  transition:
-    opacity 0.7s var(--ease-premium),
-    transform 0.7s var(--ease-premium);
-  will-change: opacity, transform;
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+  }
 }
-[data-reveal].is-revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-@media (prefers-reduced-motion: reduce) {
-  [data-reveal],
-  [data-reveal].is-revealed {
-    opacity: 1;
-    transform: none;
-    transition: none;
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    [data-reveal] {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
   }
 }
 
