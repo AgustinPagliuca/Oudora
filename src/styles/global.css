@@ -167,3 +167,29 @@ input[type="search"]::-webkit-search-decoration {
 input[type="search"]::-ms-clear {
   display: none;
 }
+
+/* ─────────────────────────────────────────────────────────────────
+   Transiciones entre páginas (View Transitions entre documentos).
+   Al navegar dentro del sitio, el contenido hace un fundido corto en
+   vez de un corte en blanco. El header y el botón de WhatsApp tienen
+   nombre propio para quedar quietos durante la transición.
+   Es una mejora progresiva: los navegadores sin soporte navegan normal,
+   y con prefers-reduced-motion no se activa.
+   ───────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  nav.nav {
+    view-transition-name: site-header;
+  }
+  .whatsapp-fab-wrapper {
+    view-transition-name: whatsapp-fab;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.25s;
+  }
+}
