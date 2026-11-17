@@ -76,10 +76,10 @@ const { brand, products } = Astro.props;
     white-space: nowrap;
   }
 
-  /* Columnas fluidas: llenan el ancho disponible al lado del sidebar. */
+  /* Columnas fluidas: 4 en desktop a todo el ancho del catálogo. */
   .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     column-gap: var(--space-4);
     row-gap: var(--space-6);
   }
