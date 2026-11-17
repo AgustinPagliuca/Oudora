@@ -22,7 +22,7 @@ const visibleProducts = products.slice(0, 8);
     <a href="/catalogo" class="featured-link">Ver todo el catálogo →</a>
   </header>
 
-  <div class="featured-grid" data-reveal-stagger>
+  <div class="featured-grid">
     {
       visibleProducts.map((product) => {
         const brand = getBrandById(product.brandId);
