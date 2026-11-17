@@ -6,12 +6,13 @@
 
 :root {
   /* ── Colores: paleta dark cálido + dorado ────────────────── */
-  /* Para revertir al negro absoluto original: --color-bg: #0a0908; */
-  --color-bg: #2D251A;
-  --color-bg-elevated: #121008;
+  /* Fondo casi negro cálido; las superficies (cards, paneles) son un
+     escalón MÁS CLARAS que el fondo para que la elevación se lea. */
+  --color-bg: #0B0A08;
+  --color-bg-elevated: #1A1712;
   --color-bg-deep: #070605;
-  --color-bg-card: #121008;
-  --color-bg-card-hover: #1c1910;
+  --color-bg-card: #1A1712;
+  --color-bg-card-hover: #24201A;
 
   --color-gold: #c9a84c;
   --color-gold-light: #e8c97a;
@@ -20,7 +21,8 @@
   --color-cream: #f5edd8;
   --color-text: #ddd5c0;
   --color-text-muted: #9a8e78;
-  --color-text-faint: #6b6557;
+  /* Mínimo 4.5:1 (WCAG AA) sobre --color-bg y --color-bg-card. */
+  --color-text-faint: #8f8573;
 
   --color-border: rgba(201, 168, 76, 0.18);
   --color-border-strong: rgba(201, 168, 76, 0.35);
@@ -34,16 +36,20 @@
 
   /* Escala tipográfica unificada. Cada componente debería usar estas vars
      en vez de inventar su propio font-size, así toda la app respeta el
-     mismo rhythm vertical. */
-  --text-xs: 11px;
-  --text-sm: 13px;
-  --text-base: 15px;
-  --text-md: 17px;
-  --text-lg: 20px;
-  --text-xl: 24px;
-  --text-2xl: 32px;
-  --text-3xl: 40px;
-  --text-display: 56px;
+     mismo rhythm vertical.
+     En rem para respetar el tamaño de fuente que el usuario configura en el
+     navegador (con la base de 16px, los valores son los mismos de antes:
+     11, 13, 15, 17, 20, 24px). Los títulos grandes escalan con clamp(),
+     con máximo ≤ 2.5× el mínimo para que el zoom siga funcionando. */
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: clamp(1.75rem, 1.5rem + 0.8vw, 2rem);
+  --text-3xl: clamp(2rem, 1.5rem + 1.6vw, 2.5rem);
+  --text-display: clamp(2.5rem, 1.6rem + 3vw, 3.5rem);
 
   /* Tracking (letter-spacing) tipado. Antes cada lugar inventaba 0.5px, 1px,
      1.5px, 2px, 2.5px, 6px... Ahora hay 5 valores semánticos. */
