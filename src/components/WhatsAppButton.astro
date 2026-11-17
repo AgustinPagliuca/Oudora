@@ -8,18 +8,7 @@ const href = `https://wa.me/${CONTACT.whatsappE164}?text=${prefilledMessage}`;
 ---
 
 <div class="whatsapp-fab-wrapper">
-  <div class="whatsapp-tip" data-whatsapp-tip>
-    <button
-      type="button"
-      class="whatsapp-tip-close"
-      data-whatsapp-tip-close
-      aria-label="Cerrar mensaje"
-    >
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
-        <line x1="6" y1="6" x2="18" y2="18" />
-        <line x1="18" y1="6" x2="6" y2="18" />
-      </svg>
-    </button>
+  <div class="whatsapp-tip" aria-hidden="true">
     <p class="whatsapp-tip-text">
       <span class="whatsapp-tip-greeting">¡Hola!</span>
       ¿Tenés dudas sobre qué perfume es para vos?
@@ -39,28 +28,6 @@ const href = `https://wa.me/${CONTACT.whatsappE164}?text=${prefilledMessage}`;
     </svg>
   </a>
 </div>
-
-<script>
-  // Cerrar el tip al hacer click en la X. Sin persistencia: si la persona
-  // recarga la página, el tip vuelve a aparecer (criterio de simplicidad —
-  // si más adelante molesta, sumamos localStorage).
-  function initWhatsAppTip(): void {
-    const closeBtn = document.querySelector<HTMLButtonElement>(
-      "[data-whatsapp-tip-close]",
-    );
-    const tip = document.querySelector<HTMLElement>("[data-whatsapp-tip]");
-    if (closeBtn === null || tip === null) return;
-    closeBtn.addEventListener("click", () => {
-      tip.classList.add("is-dismissed");
-    });
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initWhatsAppTip, { once: true });
-  } else {
-    initWhatsAppTip();
-  }
-</script>
 
 <style>
   /* Wrapper: contiene botón + tip, los dos en el mismo rincón fixed */
@@ -85,31 +52,20 @@ const href = `https://wa.me/${CONTACT.whatsappE164}?text=${prefilledMessage}`;
     justify-content: center;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
     text-decoration: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    animation: whatsapp-pulse 2.5s ease-in-out infinite;
+    transition: background-color var(--transition-fast);
     flex-shrink: 0;
   }
   .whatsapp-fab:hover {
-    transform: scale(1.08);
-    box-shadow: 0 6px 22px rgba(37, 211, 102, 0.5);
-    animation: none;
+    background: #1ebe5b;
   }
-  .whatsapp-fab:active {
-    transform: scale(0.98);
-  }
-
-  @keyframes whatsapp-pulse {
-    0%, 100% {
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35),
-                  0 0 0 0 rgba(37, 211, 102, 0.45);
-    }
-    50% {
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35),
-                  0 0 0 12px rgba(37, 211, 102, 0);
-    }
+  .whatsapp-fab:focus-visible {
+    outline: 2px solid var(--color-cream);
+    outline-offset: 3px;
   }
 
-  /* ── Tip: bocadillo a la izquierda del botón ───────────────────── */
+  /* ── Tip: bocadillo a la izquierda del botón ───────────────────────
+     No se abre solo: aparece únicamente cuando el usuario apunta o
+     enfoca el botón, para no tapar contenido que nadie pidió. */
   .whatsapp-tip {
     position: relative;
     max-width: 230px;
@@ -117,16 +73,15 @@ const href = `https://wa.me/${CONTACT.whatsappE164}?text=${prefilledMessage}`;
     background: #4d3f2c;
     border: 0.5px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-md);
-    /* Dos animaciones que no se pisan: la entrada anima `opacity`, el
-       bounce anima `transform`. Bounce arranca cuando termina la entrada. */
     opacity: 0;
-    animation:
-      whatsapp-tip-in 0.5s var(--ease-premium) 0.3s forwards,
-      whatsapp-tip-bounce 2.5s ease-in-out 0.8s infinite;
-  }
-  .whatsapp-tip.is-dismissed {
-    animation: whatsapp-tip-out 0.25s var(--ease-premium) forwards;
+    visibility: hidden;
     pointer-events: none;
+    transition: opacity var(--transition-fast), visibility var(--transition-fast);
+  }
+  .whatsapp-fab-wrapper:has(.whatsapp-fab:hover) .whatsapp-tip,
+  .whatsapp-fab-wrapper:has(.whatsapp-fab:focus-visible) .whatsapp-tip {
+    opacity: 1;
+    visibility: visible;
   }
 
   /* Tail/punta del bocadillo apuntando al botón WA (a la derecha) */
@@ -159,38 +114,6 @@ const href = `https://wa.me/${CONTACT.whatsappE164}?text=${prefilledMessage}`;
     margin-top: 2px;
     color: #ffffff;
     font-weight: 600;
-  }
-
-  .whatsapp-tip-close {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 20px;
-    height: 20px;
-    border: none;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.6);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: background var(--transition-fast), color var(--transition-fast);
-  }
-  .whatsapp-tip-close:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: #ffffff;
-  }
-
-  @keyframes whatsapp-tip-in {
-    to { opacity: 1; }
-  }
-  @keyframes whatsapp-tip-out {
-    to { opacity: 0; transform: translateY(6px); }
-  }
-  @keyframes whatsapp-tip-bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
   }
 
   /* ── Mobile: tip arriba del botón en vez de a la izquierda ──────── */
@@ -229,17 +152,8 @@ const href = `https://wa.me/${CONTACT.whatsappE164}?text=${prefilledMessage}`;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .whatsapp-fab {
-      animation: none;
-    }
     .whatsapp-tip {
-      opacity: 1;
-      animation: none;
-    }
-    .whatsapp-tip.is-dismissed {
-      animation: none;
-      opacity: 0;
-      visibility: hidden;
+      transition: none;
     }
   }
 </style>
