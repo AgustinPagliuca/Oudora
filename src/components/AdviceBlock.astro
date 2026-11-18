@@ -1,0 +1,131 @@
+---
+import { CONTACT } from "@/constants/ui";
+
+/**
+ * Bloque de asesoramiento del home: imagen + texto + CTA a WhatsApp.
+ * Usa los mismos datos de contacto que el botón flotante.
+ */
+
+const prefilledMessage = encodeURIComponent(
+  "Hola! Quiero que me ayuden a elegir un perfume.",
+);
+const whatsappHref = `https://wa.me/${CONTACT.whatsappE164}?text=${prefilledMessage}`;
+---
+
+<section class="advice" aria-labelledby="advice-title">
+  <img
+    src="/collections/masculino.jpg"
+    alt=""
+    class="advice-image"
+    loading="lazy"
+  />
+  <div class="advice-body">
+    <h2 class="advice-title" id="advice-title">Te ayudamos a elegir tu fragancia</h2>
+    <p class="advice-text">
+      Perfumería árabe y de diseñador desde Buenos Aires. Contanos qué te
+      gusta y te recomendamos por WhatsApp. Armás tu pedido en la web y
+      coordinamos el pago en efectivo o transferencia.
+    </p>
+    <div class="advice-actions">
+      <a
+        href={whatsappHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="advice-cta"
+      >
+        Hablar por WhatsApp
+      </a>
+      <a href="/nosotros" class="advice-link">Conocé OUDORA</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .advice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+  }
+
+  .advice-image {
+    flex: 1 1 480px;
+    min-width: 0;
+    width: 100%;
+    aspect-ratio: 5 / 4;
+    object-fit: cover;
+  }
+
+  .advice-body {
+    flex: 1 1 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--space-5);
+    padding: clamp(40px, 6vw, 96px) clamp(16px, 5vw, 72px);
+  }
+
+  .advice-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-3xl);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: var(--tracking-tight);
+    color: var(--surface-text, var(--color-cream));
+    text-wrap: balance;
+  }
+
+  .advice-text {
+    max-width: 46ch;
+    font-size: var(--text-md);
+    line-height: 1.6;
+    color: var(--surface-muted, var(--color-text-muted));
+    text-wrap: pretty;
+  }
+
+  .advice-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .advice-cta {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 var(--space-6);
+    background: var(--surface-text, var(--color-cream));
+    color: var(--surface-bg, var(--color-bg));
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: var(--tracking-button);
+    text-transform: uppercase;
+    transition: background-color var(--transition-fast);
+  }
+  .advice-cta:hover {
+    background: var(--surface-accent, var(--color-gold-light));
+  }
+
+  .advice-link {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-uppercase);
+    text-transform: uppercase;
+    color: var(--surface-text, var(--color-cream));
+    border-bottom: 1px solid currentColor;
+    padding-bottom: var(--space-1);
+    transition: color var(--transition-fast);
+  }
+  .advice-link:hover {
+    color: var(--surface-accent, var(--color-gold-light));
+  }
+
+  .advice-cta:focus-visible,
+  .advice-link:focus-visible {
+    outline: 2px solid var(--surface-accent, var(--color-gold-light));
+    outline-offset: 3px;
+  }
+</style>
