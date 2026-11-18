@@ -97,6 +97,7 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
   )}
   {hasMany && (
     <div class="hero-controls">
+      <span class="hero-counter" data-hero-counter aria-hidden="true">01 / {String(slides.length).padStart(2, "0")}</span>
       <div class="hero-indicators">
         {slides.map((_, idx) => (
           <button
@@ -139,6 +140,7 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
       const prevBtn = carousel.querySelector<HTMLButtonElement>("[data-hero-prev]");
       const nextBtn = carousel.querySelector<HTMLButtonElement>("[data-hero-next]");
       const pauseBtn = carousel.querySelector<HTMLButtonElement>("[data-hero-pause]");
+      const counter = carousel.querySelector<HTMLElement>("[data-hero-counter]");
 
       if (slides.length <= 1) return;
 
@@ -173,6 +175,10 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
         indicators.forEach((ind, i) => {
           ind.dataset.active = i === currentIndex ? "true" : "false";
         });
+        if (counter !== null) {
+          const pad = (n: number): string => String(n).padStart(2, "0");
+          counter.textContent = `${pad(currentIndex + 1)} / ${pad(slides.length)}`;
+        }
       }
 
       function next(): void { show((currentIndex + 1) % slides.length); }
@@ -472,6 +478,12 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     align-items: center;
     gap: var(--space-3);
     z-index: 3;
+  }
+  /* Contador "01 / 03" (visual; los indicadores ya tienen su etiqueta). */
+  .hero-counter {
+    font-size: var(--text-sm);
+    color: var(--color-cream);
+    font-variant-numeric: tabular-nums lining-nums;
   }
   .hero-indicators {
     display: flex;
