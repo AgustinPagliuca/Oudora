@@ -74,8 +74,8 @@ export const DEVELOPER_CREDIT = {
 } as const;
 
 export const NAV_LINKS = [
-  { label: "Inicio", href: "/" },
-  { label: "Catálogo", href: "/catalogo" },
+  { label: "Perfumes árabes", href: "/catalogo?catalogo=arabe" },
+  { label: "De diseñador", href: "/catalogo?catalogo=disenador" },
   { label: "Marcas", href: "/marcas" },
   { label: "Nosotros", href: "/nosotros" },
   { label: "Contacto", href: "/contacto" },

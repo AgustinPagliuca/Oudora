@@ -785,8 +785,13 @@ export function initCatalogController(): void {
   const state = getInitialState();
   const refresh = (): void => applyFilters(state);
 
-  // Lee filtros iniciales desde el query string (ej: /catalogo?gender=femenino)
+  // Lee filtros iniciales desde el query string
+  // (ej: /catalogo?gender=femenino, /catalogo?catalogo=disenador)
   const params = new URLSearchParams(window.location.search);
+  const initialCatalog = params.get("catalogo");
+  if (initialCatalog === "arabe" || initialCatalog === "disenador") {
+    state.catalog = initialCatalog;
+  }
   const initialGender = params.get("gender");
   if (
     initialGender === "femenino" ||
@@ -804,6 +809,19 @@ export function initCatalogController(): void {
   setupClearButton(state, refresh);
   setupSidebarMobile();
   setupSortMenu();
+
+  // Si el link pidió otro catálogo (ej: "De diseñador" del menú), marcar
+  // esa pestaña y mostrar sus filtros de marca y precio.
+  if (state.catalog !== DEFAULT_CATALOG) {
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-catalog-tab]")
+      .forEach((tab) => {
+        const isActive = tab.dataset.catalogTab === state.catalog;
+        tab.classList.toggle("active", isActive);
+        tab.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+    toggleBrandGroups(state.catalog);
+  }
 
   // Si vino con filtro de género preseteado, marca visualmente el chip activo
   if (state.genders.size > 0) {
