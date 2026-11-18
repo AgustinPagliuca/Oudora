@@ -35,6 +35,8 @@ const { reviews } = Astro.props;
     padding: var(--space-9) clamp(16px, 4vw, 32px);
     max-width: var(--max-content-width);
     margin: 0 auto;
+    /* Separador sutil cuando sigue a otra sección crema. */
+    border-top: 1px solid var(--surface-tint, transparent);
   }
 
   .reviews-title {
@@ -43,12 +45,12 @@ const { reviews } = Astro.props;
     font-family: var(--font-serif);
     font-size: var(--text-3xl);
     font-weight: 400;
-    color: var(--color-cream);
+    color: var(--surface-text, var(--color-cream));
     letter-spacing: var(--tracking-tight);
     text-wrap: balance;
   }
   .reviews-title em {
-    color: var(--color-gold);
+    color: var(--surface-accent, var(--color-gold));
     font-style: italic;
   }
 
@@ -69,12 +71,12 @@ const { reviews } = Astro.props;
   }
 
   .review-stars {
-    color: var(--color-gold);
+    color: var(--surface-accent, var(--color-gold));
     font-size: var(--text-base);
     letter-spacing: var(--tracking-uppercase);
   }
   .review-stars-off {
-    color: rgba(201, 168, 76, 0.25);
+    color: var(--surface-line, rgba(201, 168, 76, 0.25));
   }
 
   .review-body {
@@ -82,7 +84,7 @@ const { reviews } = Astro.props;
     font-family: var(--font-serif);
     font-size: var(--text-xl);
     line-height: 1.35;
-    color: var(--color-cream);
+    color: var(--surface-text, var(--color-cream));
     text-wrap: balance;
   }
 
@@ -90,7 +92,7 @@ const { reviews } = Astro.props;
     font-size: var(--text-xs);
     font-weight: 600;
     letter-spacing: var(--tracking-uppercase);
-    color: var(--color-text-muted);
+    color: var(--surface-muted, var(--color-text-muted));
     text-transform: uppercase;
   }
 

@@ -47,9 +47,8 @@ const featuredReviews = REVIEWS.filter((r) => r.featured).slice(0, 6);
 
   <div class="surface-light">
     <AdviceBlock />
+    <ReviewsSection reviews={featuredReviews} />
   </div>
-
-  <ReviewsSection reviews={featuredReviews} />
 
   <Footer />
 </Layout>
