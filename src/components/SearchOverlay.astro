@@ -155,6 +155,10 @@
   /* Campo grande con subrayado (sin caja ni píldora). */
   .search-overlay-input-wrap {
     flex: 1;
+    /* Sin min-width: 0 el campo no se achica (un input tiene ancho propio
+       de ~20 caracteres) y empujaba el botón de cerrar fuera de la
+       pantalla en mobile. */
+    min-width: 0;
     display: flex;
     align-items: center;
     gap: var(--space-3);
@@ -169,6 +173,7 @@
   }
   .search-overlay-input-wrap input {
     flex: 1;
+    width: 100%;
     min-width: 0;
     background: none;
     border: none;
@@ -304,6 +309,17 @@
   }
   .search-overlay-cta[hidden] {
     display: none;
+  }
+
+  /* Mobile: campo un poco más chico y menos aire arriba. */
+  @media (max-width: 640px) {
+    .search-overlay-header {
+      padding-top: var(--space-5);
+      gap: var(--space-2);
+    }
+    .search-overlay-input-wrap input {
+      font-size: var(--text-xl);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
