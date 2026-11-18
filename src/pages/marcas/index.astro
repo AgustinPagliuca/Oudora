@@ -2,121 +2,430 @@
 import Layout from "@/layouts/Layout.astro";
 import Nav from "@/components/Nav.astro";
 import Footer from "@/components/Footer.astro";
-import PageHeader from "@/components/PageHeader.astro";
 
 import { BRANDS, getBrandsByCatalog } from "@/data/brands";
 import { PRODUCTS } from "@/data/products";
 import { ALL_CATALOGS, CATALOG_LABELS } from "@/constants/ui";
 import { countProductsByBrand } from "@/lib/grouping";
 import { getProductsByCatalog } from "@/lib/filters";
+import type { Product } from "@/types/catalog";
+
+/** Primera foto disponible de un producto (portada o imagen suelta). */
+function coverOf(product: Product): string | undefined {
+  return product.images?.[0]?.url ?? product.imageUrl;
+}
 
 const catalogGroups = ALL_CATALOGS.map((catalog) => {
   const productsInCatalog = getProductsByCatalog(PRODUCTS, catalog);
-  const brandsInCatalog = getBrandsByCatalog(catalog);
   const brandsWithCount = countProductsByBrand(
     productsInCatalog,
-    brandsInCatalog,
-  );
+    getBrandsByCatalog(catalog),
+  )
+    .map((brand) => {
+      const ofBrand = productsInCatalog.filter((p) => p.brandId === brand.id);
+      // Foto de la tarjeta: la de un destacado si hay, si no la primera.
+      const withImage = ofBrand.filter((p) => coverOf(p) !== undefined);
+      const pick = withImage.find((p) => p.featured === true) ?? withImage[0];
+      return { ...brand, cover: pick !== undefined ? coverOf(pick) : undefined };
+    })
+    // Las marcas con más fragancias primero.
+    .sort((a, b) => b.productCount - a.productCount);
   return {
     catalog,
     label: CATALOG_LABELS[catalog],
     brands: brandsWithCount,
   };
 });
+
+// Marca destacada: la que más fragancias tiene, con tres de sus frascos.
+const allBrands = catalogGroups.flatMap((g) => g.brands);
+const featuredBrand = [...allBrands].sort((a, b) => b.productCount - a.productCount)[0];
+const featuredProducts =
+  featuredBrand === undefined
+    ? []
+    : (() => {
+        const ofBrand = PRODUCTS.filter(
+          (p) => p.brandId === featuredBrand.id && coverOf(p) !== undefined,
+        );
+        const featuredFirst = [
+          ...ofBrand.filter((p) => p.featured === true),
+          ...ofBrand.filter((p) => p.featured !== true),
+        ];
+        return featuredFirst.slice(0, 3);
+      })();
+const featuredNames = featuredProducts.map((p) => p.name);
+const featuredNamesText =
+  featuredNames.length > 1
+    ? `${featuredNames.slice(0, -1).join(", ")} y ${featuredNames[featuredNames.length - 1]}`
+    : (featuredNames[0] ?? "");
 ---
 
 <Layout title="Marcas">
   <Nav />
   <div class="surface-light">
-  <PageHeader
-    title="Marcas"
-    subtitle={`${BRANDS.length} marcas · ${PRODUCTS.length} fragancias`}
-    breadcrumbsTrail={[{ label: "Inicio", href: "/" }, { label: "Marcas" }]}
-  />
+    <header class="brands-head">
+      <nav class="brands-crumbs" aria-label="Migas de navegación">
+        <a href="/">Inicio</a> · <span aria-current="page">Marcas</span>
+      </nav>
+      <h1 class="brands-title">Las casas que elegimos</h1>
+      <p class="brands-lead">
+        {BRANDS.length} marcas y {PRODUCTS.length} fragancias originales. Perfumería
+        árabe de tradición y las casas de diseñador más buscadas.
+      </p>
+      <div class="brands-filters" role="group" aria-label="Filtrar marcas">
+        <button type="button" class="brands-filter" aria-pressed="true" data-brands-filter="todas">Todas</button>
+        {ALL_CATALOGS.map((catalog) => (
+          <button type="button" class="brands-filter" aria-pressed="false" data-brands-filter={catalog}>
+            {catalog === "arabe" ? "Árabes" : "De diseñador"}
+          </button>
+        ))}
+      </div>
+    </header>
 
-  <section class="brands-index">
-    {
-      catalogGroups.map((group) => (
-        <div class="brands-group">
-          <h2 class="brands-group-title">{group.label}</h2>
-          <div class="brands-grid">
-            {group.brands.map((brand) => (
-              <a class="brands-card" href={`/marcas/${brand.slug}`}>
-                <h3 class="brands-card-name">{brand.name}</h3>
-                <p class="brands-card-count">
-                  {brand.productCount}{" "}
-                  {brand.productCount === 1 ? "fragancia" : "fragancias"}
-                </p>
-              </a>
-            ))}
-          </div>
+    {featuredBrand !== undefined && featuredProducts.length > 0 && (
+      <section
+        class="brands-featured"
+        aria-labelledby="brands-featured-title"
+        data-brands-section={featuredBrand.catalog}
+      >
+        <div class="brands-featured-media">
+          {featuredProducts.map((p) => (
+            <img src={coverOf(p)} alt="" loading="lazy" />
+          ))}
         </div>
-      ))
-    }
-  </section>
+        <div class="brands-featured-body">
+          <p class="brands-featured-kicker">Marca destacada</p>
+          <h2 class="brands-featured-title" id="brands-featured-title">{featuredBrand.name}</h2>
+          <p class="brands-featured-text">
+            La casa detrás de {featuredNamesText}. {featuredBrand.productCount} fragancias
+            en el catálogo.
+          </p>
+          <a class="brands-featured-cta" href={`/marcas/${featuredBrand.slug}`}>
+            Ver {featuredBrand.name}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </a>
+        </div>
+      </section>
+    )}
+
+    {catalogGroups.map((group) => (
+      <section class="brands-group" aria-labelledby={`brands-${group.catalog}`} data-brands-section={group.catalog}>
+        <div class="brands-group-head">
+          <h2 class="brands-group-title" id={`brands-${group.catalog}`}>{group.label}</h2>
+          <span class="brands-group-count">{group.brands.length} marcas</span>
+        </div>
+        <div class="brands-grid">
+          {group.brands.map((brand) => (
+            <a class="brand-tile" href={`/marcas/${brand.slug}`}>
+              <span class="brand-tile-media">
+                {brand.cover !== undefined ? (
+                  <img src={brand.cover} alt="" loading="lazy" class="brand-tile-img" />
+                ) : (
+                  <span class="brand-tile-initials" aria-hidden="true">
+                    {brand.name.split(" ").map((w) => w[0]).join("").slice(0, 2)}
+                  </span>
+                )}
+              </span>
+              <span class="brand-tile-row">
+                <span class="brand-tile-name">{brand.name}</span>
+                <span class="brand-tile-count">
+                  {brand.productCount} {brand.productCount === 1 ? "fragancia" : "fragancias"}
+                </span>
+              </span>
+              <span class="brand-tile-cta">
+                {brand.productCount === 0 ? "Próximamente" : "Ver fragancias"}
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
   </div>
 
   <Footer />
 </Layout>
 
+<script>
+  // Filtro Todas / Árabes / De diseñador: muestra u oculta las secciones.
+  const buttons = document.querySelectorAll<HTMLButtonElement>("[data-brands-filter]");
+  const sections = document.querySelectorAll<HTMLElement>("[data-brands-section]");
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const value = button.dataset.brandsFilter ?? "todas";
+      buttons.forEach((b) => b.setAttribute("aria-pressed", b === button ? "true" : "false"));
+      sections.forEach((section) => {
+        section.hidden = value !== "todas" && section.dataset.brandsSection !== value;
+      });
+    });
+  });
+</script>
 
 <style>
-  /* Marcas sobre crema: lista editorial con nombres grandes en serif y
-     líneas finas, sin cajas. El hover solo cambia el color. */
-  .brands-index {
+  .brands-head {
     display: flex;
     flex-direction: column;
-    gap: var(--space-8);
+    align-items: center;
+    gap: var(--space-3);
     max-width: var(--max-content-width);
     margin: 0 auto;
-    padding: var(--space-5) clamp(16px, 4vw, 32px) var(--space-8);
+    padding: var(--space-7) clamp(16px, 4vw, 32px) var(--space-6);
+    text-align: center;
+  }
+  .brands-crumbs {
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-uppercase);
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+  .brands-crumbs a:hover {
+    color: var(--color-gold-ink);
+  }
+  .brands-crumbs [aria-current] {
+    color: var(--color-ink);
+  }
+  .brands-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-display);
+    font-weight: 400;
+    line-height: 1.05;
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+  .brands-lead {
+    max-width: 52ch;
+    color: var(--color-ink-muted);
+  }
+  .brands-filters {
+    display: flex;
+    gap: var(--space-6);
+    margin-top: var(--space-3);
+  }
+  .brands-filter {
+    position: relative;
+    padding: var(--space-2) 0;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    transition: color var(--transition-fast);
+  }
+  .brands-filter:hover,
+  .brands-filter[aria-pressed="true"] {
+    color: var(--color-ink);
+  }
+  .brands-filter[aria-pressed="true"]::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    border-bottom: 1px solid currentColor;
   }
 
-  .brands-group-title {
-    margin-bottom: var(--space-4);
+  /* Marca destacada */
+  .brands-featured {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    max-width: var(--max-content-width);
+    margin: 0 auto var(--space-8);
+    background: #ffffff;
+  }
+  .brands-featured[hidden],
+  .brands-group[hidden] {
+    display: none;
+  }
+  .brands-featured-media {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .brands-featured-media img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: contain;
+    padding: var(--space-5);
+  }
+  .brands-featured-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-7);
+    border-left: 1px solid rgba(26, 23, 18, 0.08);
+  }
+  .brands-featured-kicker {
     font-size: var(--text-xs);
     font-weight: 600;
     letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
+    color: var(--color-gold-ink);
+  }
+  .brands-featured-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-3xl);
+    font-weight: 400;
+    line-height: 1.05;
+    color: var(--color-ink);
+  }
+  .brands-featured-text {
+    max-width: 34ch;
+    color: var(--color-ink-muted);
+  }
+  .brands-featured-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 48px;
+    margin-top: var(--space-2);
+    padding: 0 var(--space-6);
+    background: var(--color-ink);
+    color: var(--color-surface-light);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: var(--tracking-button);
+    text-transform: uppercase;
+    transition: background-color var(--transition-fast);
+  }
+  .brands-featured-cta:hover {
+    background: var(--color-gold-ink);
+  }
+  .brands-featured-cta svg {
+    transition: transform var(--transition-fast);
+  }
+  .brands-featured-cta:hover svg {
+    transform: translateX(4px);
+  }
+
+  /* Grupos y tarjetas */
+  .brands-group {
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+    padding: 0 clamp(16px, 4vw, 32px) var(--space-8);
+  }
+  .brands-group-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid rgba(26, 23, 18, 0.18);
+  }
+  .brands-group-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-2xl);
+    font-weight: 400;
+    color: var(--color-ink);
+  }
+  .brands-group-count {
+    font-size: var(--text-sm);
     color: var(--color-ink-muted);
   }
 
   .brands-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    column-gap: var(--space-4);
-    border-top: 1px solid rgba(26, 23, 18, 0.2);
+    gap: var(--space-7) var(--space-4);
   }
 
-  .brands-card {
+  .brand-tile {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
+    flex-direction: column;
     gap: var(--space-3);
-    padding: var(--space-5) 0;
-    border-bottom: 1px solid rgba(26, 23, 18, 0.2);
   }
-  .brands-card:hover .brands-card-name {
-    color: var(--color-gold-ink);
-  }
-  .brands-card:focus-visible {
+  .brand-tile:focus-visible {
     outline: 2px solid var(--color-gold-ink);
-    outline-offset: 2px;
+    outline-offset: 4px;
   }
-
-  .brands-card-name {
+  .brand-tile-media {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: #ffffff;
+  }
+  .brand-tile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: var(--space-6);
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .brand-tile:hover .brand-tile-img {
+    transform: scale(1.06);
+  }
+  .brand-tile-initials {
+    font-family: var(--font-serif);
+    font-size: var(--text-display);
+    color: rgba(26, 23, 18, 0.25);
+  }
+  .brand-tile-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+  .brand-tile-name {
     font-family: var(--font-serif);
     font-size: var(--text-xl);
-    font-weight: 400;
     line-height: 1.15;
     color: var(--color-ink);
     transition: color var(--transition-fast);
   }
-
-  .brands-card-count {
+  .brand-tile:hover .brand-tile-name {
+    color: var(--color-gold-ink);
+  }
+  .brand-tile-count {
     flex-shrink: 0;
     font-size: var(--text-xs);
     color: var(--color-ink-muted);
     font-variant-numeric: tabular-nums lining-nums;
+  }
+  .brand-tile-cta {
+    align-self: flex-start;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    border-bottom: 1px solid transparent;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+  }
+  .brand-tile:hover .brand-tile-cta {
+    color: var(--color-ink);
+    border-bottom-color: currentColor;
+  }
+
+  @media (max-width: 860px) {
+    .brands-featured {
+      grid-template-columns: 1fr;
+    }
+    .brands-featured-body {
+      border-left: 0;
+      padding: var(--space-6) var(--space-5);
+    }
+  }
+  @media (max-width: 640px) {
+    .brands-title {
+      font-size: var(--text-3xl);
+    }
+    .brands-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-6) var(--space-3);
+    }
+    .brand-tile-row {
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .brand-tile-img,
+    .brands-featured-cta svg {
+      transition: none;
+    }
+    .brand-tile:hover .brand-tile-img,
+    .brands-featured-cta:hover svg {
+      transform: none;
+    }
   }
 </style>
