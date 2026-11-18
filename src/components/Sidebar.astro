@@ -295,7 +295,7 @@ const { groups, activeCatalog } = Astro.props;
   .sidebar-label {
     font-size: var(--text-xs);
     letter-spacing: var(--tracking-uppercase);
-    color: var(--color-text-muted);
+    color: var(--surface-muted, var(--color-text-muted));
     text-transform: uppercase;
     font-weight: 600;
   }
@@ -312,24 +312,24 @@ const { groups, activeCatalog } = Astro.props;
     width: 200px;
     min-height: 40px;
     padding: 0 var(--space-3);
-    border: 1px solid rgba(245, 237, 216, 0.22);
-    color: var(--color-text-muted);
+    border: 1px solid var(--surface-line, rgba(245, 237, 216, 0.22));
+    color: var(--surface-muted, var(--color-text-muted));
     transition: border-color var(--transition-fast);
   }
   .sidebar-search:focus-within {
-    border-color: var(--color-cream);
+    border-color: var(--surface-text, var(--color-cream));
   }
   .sidebar-search input {
     flex: 1;
     background: none;
     border: none;
     outline: none;
-    color: var(--color-cream);
+    color: var(--surface-text, var(--color-cream));
     font-size: var(--text-sm);
     min-width: 0;
   }
   .sidebar-search input::placeholder {
-    color: var(--color-text-muted);
+    color: var(--surface-muted, var(--color-text-muted));
   }
 
   /* Desplegables Marca / Precio */
@@ -343,8 +343,8 @@ const { groups, activeCatalog } = Astro.props;
     gap: var(--space-2);
     min-height: 40px;
     padding: 0 var(--space-4);
-    border: 1px solid rgba(245, 237, 216, 0.22);
-    color: var(--color-cream);
+    border: 1px solid var(--surface-line, rgba(245, 237, 216, 0.22));
+    color: var(--surface-text, var(--color-cream));
     font-size: var(--text-xs);
     font-weight: 600;
     letter-spacing: var(--tracking-wide);
@@ -358,13 +358,13 @@ const { groups, activeCatalog } = Astro.props;
   }
   .filter-drop-toggle:hover,
   .filter-drop[open] .filter-drop-toggle {
-    border-color: var(--color-cream);
+    border-color: var(--surface-text, var(--color-cream));
   }
   /* Marca con alguna marca elegida: el botón queda marcado. */
   .filter-drop:has([data-filter-brand]:not([data-filter-brand=""]).active) .filter-drop-toggle {
-    background: var(--color-cream);
-    border-color: var(--color-cream);
-    color: var(--color-bg);
+    background: var(--surface-text, var(--color-cream));
+    border-color: var(--surface-text, var(--color-cream));
+    color: var(--surface-bg, var(--color-bg));
   }
   .filter-drop-chevron {
     transition: transform var(--transition-fast);
@@ -383,8 +383,8 @@ const { groups, activeCatalog } = Astro.props;
     overflow-y: auto;
     overscroll-behavior: contain;
     padding: var(--space-2);
-    background: var(--color-bg-elevated);
-    border: 1px solid rgba(245, 237, 216, 0.12);
+    background: var(--surface-bg, var(--color-bg-elevated));
+    border: 1px solid var(--surface-line, rgba(245, 237, 216, 0.12));
     box-shadow: var(--elev-3);
   }
 
@@ -401,18 +401,18 @@ const { groups, activeCatalog } = Astro.props;
     min-height: 40px;
     padding: 0 var(--space-3);
     font-size: var(--text-sm);
-    color: var(--color-text-muted);
+    color: var(--surface-muted, var(--color-text-muted));
     transition: color var(--transition-fast), background-color var(--transition-fast);
   }
   .sidebar-row:hover {
-    color: var(--color-cream);
+    color: var(--surface-text, var(--color-cream));
   }
   .sidebar-row.active {
-    color: var(--color-cream);
-    background: rgba(245, 237, 216, 0.08);
+    color: var(--surface-text, var(--color-cream));
+    background: var(--surface-tint, rgba(245, 237, 216, 0.08));
   }
   .sidebar-row strong {
-    color: var(--color-text-faint);
+    color: var(--surface-faint, var(--color-text-faint));
     font-weight: 500;
     font-size: var(--text-xs);
     font-variant-numeric: tabular-nums;
@@ -427,8 +427,8 @@ const { groups, activeCatalog } = Astro.props;
   .sidebar-chip {
     min-height: 40px;
     padding: 0 var(--space-3);
-    border: 1px solid rgba(245, 237, 216, 0.22);
-    color: var(--color-text-muted);
+    border: 1px solid var(--surface-line, rgba(245, 237, 216, 0.22));
+    color: var(--surface-muted, var(--color-text-muted));
     font-size: var(--text-xs);
     font-weight: 600;
     letter-spacing: var(--tracking-wide);
@@ -437,13 +437,13 @@ const { groups, activeCatalog } = Astro.props;
       background-color var(--transition-fast);
   }
   .sidebar-chip:hover {
-    color: var(--color-cream);
-    border-color: var(--color-cream);
+    color: var(--surface-text, var(--color-cream));
+    border-color: var(--surface-text, var(--color-cream));
   }
   .sidebar-chip.active {
-    background: var(--color-cream);
-    border-color: var(--color-cream);
-    color: var(--color-bg);
+    background: var(--surface-text, var(--color-cream));
+    border-color: var(--surface-text, var(--color-cream));
+    color: var(--surface-bg, var(--color-bg));
   }
 
   .price-slider {
@@ -458,7 +458,7 @@ const { groups, activeCatalog } = Astro.props;
     left: 0;
     right: 0;
     height: 2px;
-    background: rgba(245, 237, 216, 0.2);
+    background: var(--surface-line, rgba(245, 237, 216, 0.2));
     transform: translateY(-50%);
     pointer-events: none;
   }
@@ -469,7 +469,7 @@ const { groups, activeCatalog } = Astro.props;
     left: 0%;
     right: 0%;
     height: 2px;
-    background: var(--color-cream);
+    background: var(--surface-text, var(--color-cream));
     transform: translateY(-50%);
     pointer-events: none;
     transition: left 0.05s linear, right 0.05s linear;
@@ -494,22 +494,22 @@ const { groups, activeCatalog } = Astro.props;
     appearance: none;
     width: 18px;
     height: 18px;
-    background: var(--color-cream);
-    border: 2px solid var(--color-bg);
+    background: var(--surface-text, var(--color-cream));
+    border: 2px solid var(--surface-bg, var(--color-bg));
     border-radius: var(--radius-circle);
     cursor: grab;
     pointer-events: auto;
-    box-shadow: 0 0 0 1px var(--color-cream);
+    box-shadow: 0 0 0 1px var(--surface-text, var(--color-cream));
   }
   .price-slider-input::-moz-range-thumb {
     width: 18px;
     height: 18px;
-    background: var(--color-cream);
-    border: 2px solid var(--color-bg);
+    background: var(--surface-text, var(--color-cream));
+    border: 2px solid var(--surface-bg, var(--color-bg));
     border-radius: var(--radius-circle);
     cursor: grab;
     pointer-events: auto;
-    box-shadow: 0 0 0 1px var(--color-cream);
+    box-shadow: 0 0 0 1px var(--surface-text, var(--color-cream));
   }
 
   .price-slider-input::-webkit-slider-runnable-track,
@@ -532,7 +532,7 @@ const { groups, activeCatalog } = Astro.props;
     display: flex;
     justify-content: space-between;
     font-size: var(--text-sm);
-    color: var(--color-cream);
+    color: var(--surface-text, var(--color-cream));
     font-variant-numeric: tabular-nums lining-nums;
     padding: var(--space-2) var(--space-2) var(--space-1);
   }
@@ -543,13 +543,13 @@ const { groups, activeCatalog } = Astro.props;
     font-size: var(--text-xs);
     letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
-    color: var(--color-text-muted);
+    color: var(--surface-muted, var(--color-text-muted));
     text-decoration: underline;
     text-underline-offset: 3px;
     transition: color var(--transition-fast);
   }
   .sidebar-clear:hover {
-    color: var(--color-cream);
+    color: var(--surface-text, var(--color-cream));
   }
 
   /* ── Mobile: drawer con backdrop ───────────────────────── */
@@ -576,6 +576,16 @@ const { groups, activeCatalog } = Astro.props;
       gap: var(--space-5);
       padding: var(--space-5) var(--space-4);
       background: var(--color-bg-elevated);
+      /* El drawer es oscuro aunque la página esté sobre crema: vuelve a
+         los colores de fondo oscuro para todo lo que tiene adentro. */
+      --surface-bg: var(--color-bg-elevated);
+      --surface-text: var(--color-cream);
+      --surface-muted: var(--color-text-muted);
+      --surface-faint: var(--color-text-faint);
+      --surface-accent: var(--color-gold-light);
+      --surface-line: rgba(245, 237, 216, 0.22);
+      --surface-tint: rgba(245, 237, 216, 0.08);
+      color: var(--color-cream);
       transform: translateX(-100%);
       transition: transform var(--transition-default);
       overflow-y: auto;
