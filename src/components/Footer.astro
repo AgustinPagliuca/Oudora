@@ -193,9 +193,8 @@ const currentYear = new Date().getFullYear();
     margin: var(--space-7) auto 0;
     padding: 0 clamp(16px, 4vw, 32px);
     font-family: var(--font-serif);
-    /* Ocupa el ancho del contenido sin desbordar (≈ 3,5 × font-size). */
-    font-size: clamp(4rem, 18vw, 16.5rem);
-    line-height: 0.8;
+    font-size: var(--text-display);
+    line-height: 1;
     letter-spacing: 0.06em;
     color: var(--color-cream);
     white-space: nowrap;
