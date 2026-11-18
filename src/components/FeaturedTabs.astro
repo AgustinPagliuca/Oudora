@@ -1,0 +1,251 @@
+---
+import type { Product } from "@/types/catalog";
+import { getBrandById } from "@/data/brands";
+import ProductCard from "@/components/ProductCard.astro";
+
+/**
+ * Destacados del home en una sola sección con pestañas (Árabes / De
+ * diseñador). Patrón de pestañas accesible:
+ * - role="tablist"/"tab"/"tabpanel", selección marcada con aria-selected.
+ * - Flechas izquierda/derecha, Inicio y Fin mueven el foco y seleccionan
+ *   (la selección sigue al foco); solo la pestaña activa está en el orden
+ *   de tabulación.
+ * - Los paneles ocultos pasan (por script) a hidden="until-found": la
+ *   búsqueda del navegador (Ctrl+F) los encuentra y el evento beforematch
+ *   activa su pestaña. Donde no se soporta, quedan con hidden normal.
+ * El estado inicial ya viene en el HTML, así que sin JS se ve la primera
+ * pestaña.
+ */
+
+interface FeaturedTab {
+  readonly id: string;
+  readonly label: string;
+  readonly products: readonly Product[];
+}
+
+interface Props {
+  title: string;
+  tabs: readonly FeaturedTab[];
+}
+
+const { title, tabs } = Astro.props;
+---
+
+<section class="featured-tabs" data-featured-tabs aria-labelledby="featured-tabs-title">
+  <header class="featured-tabs-header">
+    <h2 class="featured-tabs-title" id="featured-tabs-title">{title}</h2>
+    <div class="featured-tablist" role="tablist" aria-labelledby="featured-tabs-title">
+      {
+        tabs.map((tab, index) => (
+          <button
+            type="button"
+            role="tab"
+            id={`featured-tab-${tab.id}`}
+            class="featured-tab"
+            aria-selected={index === 0 ? "true" : "false"}
+            tabindex={index === 0 ? 0 : -1}
+            data-featured-tab={tab.id}
+          >
+            {tab.label}
+          </button>
+        ))
+      }
+    </div>
+  </header>
+
+  <div class="featured-tabs-panels">
+  {
+    tabs.map((tab, index) => (
+      <div
+        role="tabpanel"
+        id={`featured-panel-${tab.id}`}
+        aria-labelledby={`featured-tab-${tab.id}`}
+        data-featured-panel={tab.id}
+        hidden={index !== 0}
+      >
+        <div class="featured-tabs-grid">
+          {tab.products.slice(0, 8).map((product) => {
+            const brand = getBrandById(product.brandId);
+            if (brand === undefined) return null;
+            return (
+              <div data-reveal>
+                <ProductCard product={product} brand={brand} />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    ))
+  }
+  </div>
+
+  <a href="/catalogo" class="featured-tabs-link">Ver todo el catálogo</a>
+</section>
+
+<script>
+  function initFeaturedTabs(): void {
+    const root = document.querySelector<HTMLElement>("[data-featured-tabs]");
+    if (root === null) return;
+    const tabs = Array.from(
+      root.querySelectorAll<HTMLButtonElement>("[data-featured-tab]"),
+    );
+    const panels = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-featured-panel]"),
+    );
+
+    function select(id: string, moveFocus: boolean): void {
+      tabs.forEach((tab) => {
+        const isActive = tab.dataset.featuredTab === id;
+        tab.setAttribute("aria-selected", isActive ? "true" : "false");
+        tab.tabIndex = isActive ? 0 : -1;
+        if (isActive && moveFocus) tab.focus();
+      });
+      panels.forEach((panel) => {
+        if (panel.dataset.featuredPanel === id) {
+          panel.removeAttribute("hidden");
+        } else {
+          panel.setAttribute("hidden", "until-found");
+        }
+      });
+    }
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => select(tab.dataset.featuredTab ?? "", false));
+      tab.addEventListener("keydown", (event) => {
+        let next = -1;
+        if (event.key === "ArrowRight") next = (index + 1) % tabs.length;
+        else if (event.key === "ArrowLeft") next = (index - 1 + tabs.length) % tabs.length;
+        else if (event.key === "Home") next = 0;
+        else if (event.key === "End") next = tabs.length - 1;
+        if (next === -1) return;
+        event.preventDefault();
+        select(tabs[next].dataset.featuredTab ?? "", true);
+      });
+    });
+
+    // Astro renderiza `hidden` como booleano; acá lo pasamos a
+    // "until-found" para que Ctrl+F pueda encontrar los paneles ocultos.
+    panels.forEach((panel) => {
+      if (panel.hasAttribute("hidden")) panel.setAttribute("hidden", "until-found");
+    });
+
+    // Ctrl+F encontró texto en un panel oculto: activar su pestaña.
+    panels.forEach((panel) => {
+      panel.addEventListener("beforematch", () => {
+        select(panel.dataset.featuredPanel ?? "", false);
+      });
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initFeaturedTabs, { once: true });
+  } else {
+    initFeaturedTabs();
+  }
+</script>
+
+<style>
+  .featured-tabs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-6);
+    padding: var(--space-8) clamp(16px, 4vw, 32px);
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+  }
+
+  .featured-tabs-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .featured-tabs-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-3xl);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: var(--tracking-tight);
+    color: var(--surface-text, var(--color-cream));
+    text-align: center;
+  }
+
+  .featured-tablist {
+    display: flex;
+    gap: var(--space-6);
+  }
+
+  /* La pestaña activa se marca con color Y subrayado (no solo color).
+     El subrayado es un pseudo-elemento con borde: no cambia el tamaño
+     y sigue visible en modo de alto contraste. */
+  .featured-tab {
+    position: relative;
+    padding: var(--space-2) 0;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--surface-muted, var(--color-text-muted));
+    transition: color var(--transition-fast);
+  }
+  .featured-tab:hover {
+    color: var(--surface-text, var(--color-cream));
+  }
+  .featured-tab[aria-selected="true"] {
+    color: var(--surface-text, var(--color-cream));
+  }
+  .featured-tab[aria-selected="true"]::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    border-block-end: 1px solid currentColor;
+  }
+  .featured-tab:focus-visible {
+    outline: 2px solid var(--surface-accent, var(--color-gold-light));
+    outline-offset: 4px;
+  }
+
+  /* Los paneles no llevan padding ni fondo propios (hidden="until-found"
+     solo oculta el contenido); el espaciado va en la grilla interna. */
+  /* Todos los paneles en la misma celda: un panel oculto con
+     hidden="until-found" sigue en el layout y si no sumaría un gap. */
+  .featured-tabs-panels {
+    display: grid;
+    width: 100%;
+  }
+  [data-featured-panel] {
+    grid-area: 1 / 1;
+  }
+
+  .featured-tabs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    column-gap: var(--space-4);
+    row-gap: var(--space-6);
+  }
+
+  .featured-tabs-link {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-uppercase);
+    text-transform: uppercase;
+    color: var(--surface-text, var(--color-cream));
+    border-bottom: 1px solid currentColor;
+    padding-bottom: var(--space-1);
+    transition: color var(--transition-fast);
+  }
+  .featured-tabs-link:hover {
+    color: var(--surface-accent, var(--color-gold-light));
+  }
+
+  @media (max-width: 640px) {
+    .featured-tabs {
+      padding-block: var(--space-7);
+    }
+    .featured-tabs-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>
