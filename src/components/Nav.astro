@@ -55,7 +55,7 @@ function isActive(href: string): boolean {
   </div>
 
   <a href="/" class="nav-logo" aria-label={`${SITE_METADATA.name} inicio`}>
-    Oud<em>ora</em>
+    Oud<span class="nav-logo-accent">ora</span>
   </a>
 
   <ul class="nav-menu" role="menubar">
@@ -219,13 +219,16 @@ function isActive(href: string): boolean {
     font-size: var(--text-xl);
     color: var(--color-cream);
     letter-spacing: var(--tracking-logo);
+    /* El tracking deja espacio después de la última letra: lo compensamos
+       a la izquierda para que el logo quede centrado ópticamente. */
+    padding-left: var(--tracking-logo);
     text-transform: uppercase;
     font-weight: 400;
     white-space: nowrap;
   }
-  .nav-logo em {
+  /* "ORA" en dorado, en la misma serif recta que el resto (sin cursiva). */
+  .nav-logo-accent {
     color: var(--color-gold);
-    font-style: italic;
   }
 
   .nav-menu {
@@ -406,6 +409,7 @@ function isActive(href: string): boolean {
     .nav-logo {
       font-size: var(--text-lg);
       letter-spacing: 0.28em;
+      padding-left: 0.28em;
       grid-column: 2;
       justify-self: center;
     }
