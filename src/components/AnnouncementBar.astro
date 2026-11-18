@@ -1,9 +1,10 @@
 ---
 /**
- * Barra de avisos rotativos arriba del nav.
- * Si hay varios avisos, rotan cada 5 segundos y muestran flechas manuales.
- * Si hay solo uno, queda estático sin flechas.
- * Si no hay ninguno, no se renderiza nada.
+ * Barra de avisos rotativos arriba del nav (estilo editorial: fina, negra,
+ * texto crema en minúscula, íconos de línea en vez de emojis).
+ * - Varios avisos: rotan cada 5 s con un fundido. Se pausan al pasar el
+ *   mouse o enfocar la barra, y no rotan solos con "reducir movimiento".
+ * - Uno solo: queda fijo. Ninguno: no se renderiza.
  */
 
 import { ANNOUNCEMENTS } from "@/data/catalog.generated";
@@ -12,49 +13,64 @@ import type { AnnouncementIcon } from "@/types/catalog";
 const items = ANNOUNCEMENTS;
 const hasMany = items.length > 1;
 
-const ICON_EMOJI: Record<AnnouncementIcon, string> = {
-  "truck": "🚚",
-  "gift": "🎁",
-  "percent": "🏷️",
-  "credit-card": "💳",
-  "star": "⭐",
-  "clock": "⏰",
-  "map-pin": "📍",
+/** Trazos de íconos de línea (viewBox 24×24, stroke currentColor). */
+const ICON_PATHS: Record<AnnouncementIcon, string> = {
+  "truck": "M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM17 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z",
+  "gift": "M4 11h16v9H4zM3 7h18v4H3zM12 7v13M12 7c-1.5-3-5-3-5-1s3 1 5 1c2 0 5 1 5-1s-3.5-2-5 1Z",
+  "percent": "M19 5 5 19M7 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z",
+  "credit-card": "M3 6h18v12H3zM3 10h18",
+  "star": "m12 4 2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.6-4.8 2.6.9-5.4L4.2 9.7l5.4-.8Z",
+  "clock": "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 7v5l3 2",
+  "map-pin": "M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11ZM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z",
 };
 ---
 
 {items.length > 0 && (
-  <div class="announcement-bar" data-announcement-bar data-count={items.length}>
-    <div class="announcement-inner">
-      <div class="announcement-track" aria-live="polite">
-        {items.map((a, idx) => (
-          <div class="announcement-slide" data-slide={idx} data-active={idx === 0 ? "true" : "false"}>
-            {a.icon && (
-              <span class="announcement-icon" data-icon={a.icon} aria-hidden="true">{ICON_EMOJI[a.icon]}</span>
-            )}
-            <span>{a.text}</span>
-          </div>
-        ))}
-      </div>
+  <div
+    class="announcement-bar"
+    data-announcement-bar
+    data-count={items.length}
+    role="region"
+    aria-label="Avisos"
+  >
+    <div class="announcement-track">
+      {items.map((a, idx) => (
+        <p class="announcement-slide" data-slide={idx} data-active={idx === 0 ? "true" : "false"}>
+          {a.icon && (
+            <svg
+              class="announcement-icon"
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d={ICON_PATHS[a.icon]} />
+            </svg>
+          )}
+          <span>{a.text}</span>
+        </p>
+      ))}
     </div>
   </div>
 )}
 
 {hasMany && (
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    function initAnnouncements(): void {
       const bar = document.querySelector<HTMLElement>("[data-announcement-bar]");
       if (bar === null) return;
-
       const slides = bar.querySelectorAll<HTMLElement>("[data-slide]");
       if (slides.length <= 1) return;
 
-      const prevBtn = bar.querySelector<HTMLButtonElement>("[data-announcement-prev]");
-      const nextBtn = bar.querySelector<HTMLButtonElement>("[data-announcement-next]");
-
+      const AUTO_INTERVAL = 5000;
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       let currentIndex = 0;
       let autoTimer: number | null = null;
-      const AUTO_INTERVAL = 5000;
 
       function show(index: number): void {
         slides.forEach((s, i) => {
@@ -62,12 +78,11 @@ const ICON_EMOJI: Record<AnnouncementIcon, string> = {
         });
         currentIndex = index;
       }
-
-      function next(): void { show((currentIndex + 1) % slides.length); }
-      function prev(): void { show((currentIndex - 1 + slides.length) % slides.length); }
-
+      function next(): void {
+        show((currentIndex + 1) % slides.length);
+      }
       function startAuto(): void {
-        if (autoTimer !== null) return;
+        if (autoTimer !== null || reducedMotion) return;
         autoTimer = window.setInterval(next, AUTO_INTERVAL);
       }
       function pauseAuto(): void {
@@ -77,103 +92,76 @@ const ICON_EMOJI: Record<AnnouncementIcon, string> = {
         }
       }
 
-      prevBtn?.addEventListener("click", () => { pauseAuto(); prev(); startAuto(); });
-      nextBtn?.addEventListener("click", () => { pauseAuto(); next(); startAuto(); });
-
-      // Pausa cuando la pestaña no está activa (ahorra batería)
+      // Pausa mientras se lee (mouse o foco) y con la pestaña oculta.
+      bar.addEventListener("mouseenter", pauseAuto);
+      bar.addEventListener("mouseleave", startAuto);
+      bar.addEventListener("focusin", pauseAuto);
+      bar.addEventListener("focusout", startAuto);
       document.addEventListener("visibilitychange", () => {
         if (document.hidden) pauseAuto();
         else startAuto();
       });
 
       startAuto();
-    });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initAnnouncements, { once: true });
+    } else {
+      initAnnouncements();
+    }
   </script>
 )}
 
 <style>
   .announcement-bar {
-    background: #050403;
-    border-bottom: 0.5px solid rgba(201, 168, 76, 0.18);
-    padding: 8px 12px;
-    width: 100%;
+    background: var(--color-bg-deep);
+    padding: var(--space-2) var(--space-4);
   }
-  .announcement-inner {
+
+  /* Todos los avisos en la misma celda: el alto no salta al rotar. */
+  .announcement-track {
+    display: grid;
     max-width: var(--max-content-width);
     margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    position: relative;
   }
-  .announcement-track {
-    flex: 1;
-    text-align: center;
-    min-height: 18px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+
   .announcement-slide {
-    display: none;
+    grid-area: 1 / 1;
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-uppercase);
-    text-transform: uppercase;
-    color: var(--color-gold);
-    font-weight: 600;
+    gap: var(--space-2);
+    margin: 0;
+    font-size: var(--text-sm);
+    font-weight: 500;
     line-height: 1.4;
-    max-width: 100%;
+    color: var(--color-text);
+    text-align: center;
     font-variant-numeric: tabular-nums lining-nums;
-    font-feature-settings: "tnum" 1, "lnum" 1;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-slow), visibility var(--transition-slow);
   }
   .announcement-slide[data-active="true"] {
-    display: flex;
-    animation: announcement-fade 0.4s ease-out;
+    opacity: 1;
+    visibility: visible;
   }
-  .announcement-slide > span:last-child {
-    text-align: center;
-    flex: 0 1 auto;
-    min-width: 0;
-  }
-  @keyframes announcement-fade {
-    from { opacity: 0; transform: translateY(-2px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+
   .announcement-icon {
-    display: inline-flex;
-    align-items: center;
-    font-size: 14px;
-    line-height: 1;
     flex-shrink: 0;
-  }
-  /* Ajustes finos por emoji (cada uno tiene un baseline distinto según el SO) */
-  .announcement-icon[data-icon="credit-card"] {
-    transform: translateY(-1.5px);
-  }
-  .announcement-icon[data-icon="map-pin"] {
-    transform: translateY(-1px);
+    color: var(--color-gold);
   }
 
   @media (max-width: 720px) {
-    .announcement-bar {
-      padding: 7px 6px;
-    }
     .announcement-slide {
-      font-size: 9.5px;
-      letter-spacing: var(--tracking-wide);
-      gap: 6px;
-      line-height: 1.35;
+      font-size: var(--text-xs);
     }
-    .announcement-icon {
-      font-size: 13px;
-    }
-    .announcement-inner {
-      gap: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .announcement-slide {
+      transition: none;
     }
   }
 </style>
