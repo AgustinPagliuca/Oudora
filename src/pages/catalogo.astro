@@ -60,9 +60,9 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
   <Nav />
   <div class="surface-light">
   <PageHeader
-    title="Nuestro"
-    highlight="catálogo"
+    title={CATALOG_LABELS[DEFAULT_CATALOG]}
     subtitle="Fragancias importadas, originales y listas para enviar"
+    breadcrumbsTrail={[{ label: "Inicio", href: "/" }, { label: "Catálogo" }]}
   />
 
   <div class="catalog-tabs" role="group" aria-label="Tipo de perfume">
@@ -185,8 +185,23 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
 <script>
   import { initCatalogController } from "@/scripts/catalog-controller";
 
+  // El título de la página acompaña a la pestaña elegida
+  // ("Perfumes árabes" / "Perfumes de diseñador").
+  function syncTitleWithTabs(): void {
+    const title = document.querySelector<HTMLElement>(".page-header-title");
+    if (title === null) return;
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-catalog-tab]")
+      .forEach((tab) => {
+        tab.addEventListener("click", () => {
+          title.textContent = tab.textContent?.trim() ?? title.textContent;
+        });
+      });
+  }
+
   function boot(): void {
     initCatalogController();
+    syncTitleWithTabs();
   }
 
   if (document.readyState === "loading") {
