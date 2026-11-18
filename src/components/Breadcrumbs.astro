@@ -49,7 +49,7 @@ const { trail } = Astro.props;
     font-size: var(--text-xs);
     letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
-    color: var(--color-text-muted);
+    color: var(--surface-muted, var(--color-text-muted));
   }
   .breadcrumbs li {
     display: inline-flex;
@@ -57,17 +57,17 @@ const { trail } = Astro.props;
     gap: 6px;
   }
   .breadcrumbs a {
-    color: var(--color-text-muted);
+    color: var(--surface-muted, var(--color-text-muted));
     transition: color var(--transition-fast);
   }
   .breadcrumbs a:hover {
-    color: var(--color-gold-light);
+    color: var(--surface-accent, var(--color-gold-light));
   }
   .breadcrumbs [aria-current="page"] {
-    color: var(--color-gold-light);
+    color: var(--surface-text, var(--color-gold-light));
   }
   .breadcrumbs-sep {
-    color: var(--color-gold);
+    color: var(--surface-accent, var(--color-gold));
     opacity: 0.5;
   }
 </style>
