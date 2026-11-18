@@ -24,6 +24,13 @@
   /* Mínimo 4.5:1 (WCAG AA) sobre --color-bg y --color-bg-card. */
   --color-text-faint: #8f8573;
 
+  /* Superficie clara (crema) para secciones de producto, con su tinta.
+     Todos los pares cumplen ≥ 4.5:1 sobre --color-surface-light. */
+  --color-surface-light: #f3ede3;
+  --color-ink: #1a1712;
+  --color-ink-muted: #5e5545;
+  --color-gold-ink: #7a5c22;
+
   --color-border: rgba(201, 168, 76, 0.18);
   --color-border-strong: rgba(201, 168, 76, 0.35);
   --color-border-subtle: rgba(255, 255, 255, 0.05);
