@@ -9,6 +9,12 @@ const isCatalogPage = normalizedPath === "/catalogo";
 
 const whatsappHref = `https://wa.me/${CONTACT.whatsappE164}`;
 
+/** Entradas del menú que apuntan a un catálogo (?catalogo=…): se marcan
+ *  activas en el navegador, porque la página se genera estática. */
+function catalogOf(href: string): string | undefined {
+  return new URL(href, "https://oudora.local").searchParams.get("catalogo") ?? undefined;
+}
+
 function isActive(href: string): boolean {
   if (href === "/") return normalizedPath === "/";
   return normalizedPath === href || normalizedPath.startsWith(`${href}/`);
@@ -60,6 +66,8 @@ function isActive(href: string): boolean {
             href={link.href}
             role="menuitem"
             class={isActive(link.href) ? "active" : ""}
+            aria-current={isActive(link.href) ? "page" : undefined}
+            data-nav-catalog={catalogOf(link.href)}
           >
             {link.label}
           </a>
@@ -118,6 +126,8 @@ function isActive(href: string): boolean {
             <a
               href={link.href}
               class={isActive(link.href) ? "active" : ""}
+              aria-current={isActive(link.href) ? "page" : undefined}
+              data-nav-catalog={catalogOf(link.href)}
             >
               {link.label}
             </a>
@@ -162,6 +172,31 @@ function isActive(href: string): boolean {
       }
     });
   })();
+</script>
+
+<script>
+  import { DEFAULT_CATALOG } from "@/constants/ui";
+
+  // En /catalogo, marcar como activa la entrada del catálogo que se está
+  // viendo (por la URL al cargar, y al cambiar de pestaña).
+  function syncCatalogNav(catalog: string): void {
+    document
+      .querySelectorAll<HTMLAnchorElement>("[data-nav-catalog]")
+      .forEach((link) => {
+        const isActive = link.dataset.navCatalog === catalog;
+        link.classList.toggle("active", isActive);
+        if (isActive) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+      });
+  }
+
+  if (window.location.pathname.replace(/\/$/, "") === "/catalogo") {
+    const fromUrl = new URLSearchParams(window.location.search).get("catalogo");
+    syncCatalogNav(fromUrl ?? DEFAULT_CATALOG);
+    window.addEventListener("catalog:change", (event) => {
+      syncCatalogNav((event as CustomEvent<string>).detail);
+    });
+  }
 </script>
 
 <style>

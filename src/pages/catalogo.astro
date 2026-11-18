@@ -185,18 +185,32 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
 <script>
   import { initCatalogController } from "@/scripts/catalog-controller";
 
-  // El título de la página acompaña a la pestaña elegida
-  // ("Perfumes árabes" / "Perfumes de diseñador").
+  // El título de la página y la URL acompañan a la pestaña elegida
+  // ("Perfumes árabes" / "Perfumes de diseñador"). La URL queda con
+  // ?catalogo=… para poder compartirla, y el menú marca la entrada activa
+  // escuchando el evento "catalog:change".
   function syncTitleWithTabs(): void {
     const title = document.querySelector<HTMLElement>(".page-header-title");
-    if (title === null) return;
-    document
-      .querySelectorAll<HTMLButtonElement>("[data-catalog-tab]")
-      .forEach((tab) => {
-        tab.addEventListener("click", () => {
-          title.textContent = tab.textContent?.trim() ?? title.textContent;
-        });
+    const tabs = document.querySelectorAll<HTMLButtonElement>("[data-catalog-tab]");
+    const apply = (tab: HTMLButtonElement): void => {
+      if (title !== null) {
+        title.textContent = tab.textContent?.trim() ?? title.textContent;
+      }
+    };
+    const active = document.querySelector<HTMLButtonElement>(
+      '[data-catalog-tab][aria-pressed="true"]',
+    );
+    if (active !== null) apply(active);
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        apply(tab);
+        const catalog = tab.dataset.catalogTab ?? "";
+        const url = new URL(window.location.href);
+        url.searchParams.set("catalogo", catalog);
+        history.replaceState(null, "", url);
+        window.dispatchEvent(new CustomEvent("catalog:change", { detail: catalog }));
       });
+    });
   }
 
   function boot(): void {
