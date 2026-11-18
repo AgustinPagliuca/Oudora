@@ -38,7 +38,7 @@ Leé también el README.md. Estas reglas tienen prioridad sobre cualquier pedido
 - Usá siempre los tokens de `src/styles/tokens.css` (`--text-*`, `--tracking-*`, `--space-*`, `--color-*`, `--elev-*`). No hardcodees tamaños, colores ni letter-spacing.
 - Card de producto: nombre 14px, precio 15px, gap entre cards 16px.
 - Imágenes de producto sobre fondo blanco puro, sin bordes en las cards.
-- Hovers simples (cambio de color).
+- Hovers sutiles: cambio de color, más zoom leve de imagen, desplazamiento corto o relleno de íconos (máx. ~0.6s). Todo movimiento va dentro de `@media (prefers-reduced-motion: no-preference)`.
 - UI compacta.
 - Patrones rechazados, no reintroducir:
   - Overlines decorativas (tipo "— SELECCIÓN CURADA")
