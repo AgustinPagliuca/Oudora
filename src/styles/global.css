@@ -207,7 +207,9 @@ input[type="search"]::-ms-clear {
   --surface-muted: var(--color-ink-muted);
   --surface-faint: var(--color-ink-muted);
   --surface-accent: var(--color-gold-ink);
-  --surface-line: rgba(26, 23, 18, 0.28);
+  /* Bordes de controles (inputs, botones): ≥ 3:1 sobre el crema. */
+  --surface-line: rgba(26, 23, 18, 0.5);
+  --surface-tint: rgba(26, 23, 18, 0.06);
   background: var(--color-surface-light);
   color: var(--color-ink);
 }
