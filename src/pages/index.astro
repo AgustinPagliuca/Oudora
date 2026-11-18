@@ -33,23 +33,40 @@ const featuredReviews = REVIEWS.filter((r) => r.featured).slice(0, 6);
 <Layout>
   <Nav />
   {HERO_SLIDES.length > 0 ? <HeroCarousel slides={HERO_SLIDES} /> : <Hero />}
-  <div class="surface-light">
-    <FeaturedTabs
-      title="Los más elegidos"
-      tabs={[
-        { id: "arabe", label: "Árabes", products: arabesFeatured },
-        { id: "disenador", label: "De diseñador", products: disenadorFeatured },
-      ]}
-    />
+  {/* Todo lo que sigue al hero sube por encima de él al scrollear. */}
+  <div class="home-unfold">
+    <div class="surface-light">
+      <FeaturedTabs
+        title="Los más elegidos"
+        tabs={[
+          { id: "arabe", label: "Árabes", products: arabesFeatured },
+          { id: "disenador", label: "De diseñador", products: disenadorFeatured },
+        ]}
+      />
+    </div>
+
+    <CollectionCards />
+
+    <div class="surface-light">
+      <AdviceBlock />
+      <ReviewsSection reviews={featuredReviews} />
+    </div>
+
+    <Footer />
   </div>
-
-  <CollectionCards />
-
-  <div class="surface-light">
-    <AdviceBlock />
-    <ReviewsSection reviews={featuredReviews} />
-  </div>
-
-  <Footer />
 </Layout>
+
+<style>
+  /* La línea de tiempo se declara acá y la usa el hero (HeroCarousel):
+     timeline-scope en body la hace visible para elementos hermanos. */
+  :global(body) {
+    timeline-scope: --home-unfold;
+  }
+  .home-unfold {
+    position: relative;
+    z-index: 1;
+    background: var(--color-bg);
+    view-timeline: --home-unfold block;
+  }
+</style>
 
