@@ -34,17 +34,19 @@ const featuredReviews = REVIEWS.filter((r) => r.featured).slice(0, 6);
   {HERO_SLIDES.length > 0 ? <HeroCarousel slides={HERO_SLIDES} /> : <Hero />}
   <CollectionCards />
 
-  <FeaturedStrip
-    title="Destacados"
-    highlight="árabes"
-    products={arabesFeatured}
-  />
+  <div class="surface-light">
+    <FeaturedStrip
+      title="Destacados"
+      highlight="árabes"
+      products={arabesFeatured}
+    />
 
-  <FeaturedStrip
-    title="Destacados"
-    highlight="diseñador"
-    products={disenadorFeatured}
-  />
+    <FeaturedStrip
+      title="Destacados"
+      highlight="diseñador"
+      products={disenadorFeatured}
+    />
+  </div>
 
   <ReviewsSection reviews={featuredReviews} />
 

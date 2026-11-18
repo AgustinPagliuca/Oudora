@@ -56,13 +56,13 @@ const visibleProducts = products.slice(0, 8);
   .featured-title {
     font-family: var(--font-serif);
     font-size: clamp(22px, 3vw, 28px);
-    color: var(--color-cream);
+    color: var(--surface-text, var(--color-cream));
     letter-spacing: var(--tracking-tight);
     font-weight: 400;
     line-height: 1.1;
   }
   .featured-title em {
-    color: var(--color-gold);
+    color: var(--surface-accent, var(--color-gold));
     font-style: italic;
   }
 
@@ -72,15 +72,14 @@ const visibleProducts = products.slice(0, 8);
     font-size: var(--text-xs);
     letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
-    color: var(--color-gold);
+    color: var(--surface-accent, var(--color-gold));
     text-decoration: none;
-    border-bottom: 0.5px solid rgba(201, 168, 76, 0.3);
+    border-bottom: 1px solid currentColor;
     padding-bottom: 3px;
-    transition: color var(--transition-fast), border-color var(--transition-fast);
+    transition: color var(--transition-fast);
   }
   .featured-link:hover {
-    color: var(--color-cream);
-    border-color: var(--color-cream);
+    color: var(--surface-text, var(--color-cream));
   }
 
   /* Columnas fluidas: ocupan todo el ancho (4 en desktop) en vez de quedar

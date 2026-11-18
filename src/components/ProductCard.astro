@@ -159,11 +159,11 @@ const hasDiscountLabel = (product.labels ?? []).some(
     font-family: var(--font-serif);
     font-style: italic;
     font-size: var(--text-base);
-    color: var(--color-text-muted);
+    color: var(--surface-muted, var(--color-text-muted));
     transition: color var(--transition-fast);
   }
   .product-brand a:hover {
-    color: var(--color-gold-light);
+    color: var(--surface-accent, var(--color-gold-light));
   }
 
   .product-name {
@@ -173,7 +173,7 @@ const hasDiscountLabel = (product.labels ?? []).some(
     font-size: 14px;
     letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
-    color: var(--color-cream);
+    color: var(--surface-text, var(--color-cream));
     font-weight: 600;
     text-wrap: balance;
     display: -webkit-box;
@@ -186,12 +186,12 @@ const hasDiscountLabel = (product.labels ?? []).some(
     transition: color var(--transition-fast);
   }
   .product-name a:hover {
-    color: var(--color-gold-light);
+    color: var(--surface-accent, var(--color-gold-light));
   }
 
   .product-presentation {
     font-size: var(--text-sm);
-    color: var(--color-text-faint);
+    color: var(--surface-faint, var(--color-text-faint));
   }
 
   .product-footer {
@@ -206,7 +206,7 @@ const hasDiscountLabel = (product.labels ?? []).some(
   .product-price {
     font-family: var(--font-sans);
     font-size: 15px;
-    color: var(--color-cream);
+    color: var(--surface-text, var(--color-cream));
     line-height: 1;
     font-weight: 600;
     font-variant-numeric: tabular-nums lining-nums;
@@ -217,8 +217,8 @@ const hasDiscountLabel = (product.labels ?? []).some(
     min-height: 40px;
     padding: 0 var(--space-5);
     background: transparent;
-    border: 1px solid var(--color-text-muted);
-    color: var(--color-cream);
+    border: 1px solid var(--surface-muted, var(--color-text-muted));
+    color: var(--surface-text, var(--color-cream));
     font-size: var(--text-xs);
     font-weight: 600;
     letter-spacing: var(--tracking-button);
@@ -230,12 +230,12 @@ const hasDiscountLabel = (product.labels ?? []).some(
                 border-color var(--transition-fast);
   }
   .product-add:hover {
-    background: var(--color-cream);
-    border-color: var(--color-cream);
-    color: var(--color-bg);
+    background: var(--surface-text, var(--color-cream));
+    border-color: var(--surface-text, var(--color-cream));
+    color: var(--surface-bg, var(--color-bg));
   }
   .product-add:focus-visible {
-    outline: 2px solid var(--color-gold-light);
+    outline: 2px solid var(--surface-accent, var(--color-gold-light));
     outline-offset: 2px;
   }
 

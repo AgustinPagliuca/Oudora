@@ -193,3 +193,21 @@ input[type="search"]::-ms-clear {
     animation-duration: 0.25s;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────
+   Superficie crema: envolver una sección con .surface-light pinta el
+   fondo claro y redefine las variables --surface-* que usan los
+   componentes (cards, encabezados) para su texto. Fuera de esta clase
+   las variables no existen y cada componente usa sus colores de fondo
+   oscuro como fallback.
+   ───────────────────────────────────────────────────────────────── */
+.surface-light {
+  --surface-bg: var(--color-surface-light);
+  --surface-text: var(--color-ink);
+  --surface-muted: var(--color-ink-muted);
+  --surface-faint: var(--color-ink-muted);
+  --surface-accent: var(--color-gold-ink);
+  --surface-line: rgba(26, 23, 18, 0.28);
+  background: var(--color-surface-light);
+  color: var(--color-ink);
+}
