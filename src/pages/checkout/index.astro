@@ -32,6 +32,7 @@ const fieldRules = CHECKOUT_FIELD_RULES;
 <Layout title="Finalizar compra · OUDORA">
   <Nav />
 
+  <div class="surface-light checkout-surface">
   <main class="checkout" data-checkout>
     <header class="checkout-header">
       <h1 class="checkout-title">Finalizá tu compra</h1>
@@ -444,6 +445,7 @@ const fieldRules = CHECKOUT_FIELD_RULES;
       </div>
     </section>
   </main>
+  </div>
 
   <Footer />
 </Layout>
@@ -454,633 +456,544 @@ const fieldRules = CHECKOUT_FIELD_RULES;
 </script>
 
 <style>
+  /* Checkout sobre superficie crema (como el catálogo): pasos en línea,
+     paneles blancos sin sombra, campos rectangulares y botones del
+     sistema. Errores en rojo con contraste ≥ 4.5:1 sobre blanco y crema. */
+  .checkout-surface {
+    min-height: 60vh;
+  }
+
   .checkout {
-    max-width: 880px;
+    max-width: 760px;
     margin: 0 auto;
-    padding: clamp(28px, 4vw, 56px) clamp(20px, 5vw, 48px) 80px;
-    color: var(--color-text);
-    position: relative;
+    padding: var(--space-8) clamp(16px, 4vw, 32px) var(--space-8);
+    color: var(--color-ink);
   }
 
   .checkout-header {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: var(--space-6);
   }
   .checkout-title {
     font-family: var(--font-serif);
-    font-size: clamp(30px, 4vw, 44px);
+    font-size: var(--text-3xl);
     font-weight: 400;
-    color: var(--color-cream);
-    margin: 0 0 12px;
-    letter-spacing: var(--tracking-normal);
+    line-height: 1.1;
+    color: var(--color-ink);
   }
   .checkout-subtitle {
+    max-width: 52ch;
+    margin: var(--space-3) auto 0;
     font-size: var(--text-sm);
-    line-height: 1.65;
-    color: var(--color-text-muted);
-    max-width: 560px;
-    margin: 0 auto;
+    line-height: 1.6;
+    color: var(--color-ink-muted);
   }
 
-  /* ── Stepper ─────────────────────────────────────────────────── */
+  /* ── Pasos ─────────────────────────────────────────────────────── */
   .stepper {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 12px;
+    gap: var(--space-3);
     list-style: none;
-    margin: 0 0 32px;
+    margin: 0 0 var(--space-6);
     padding: 0;
   }
   .stepper-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-2);
   }
   .stepper-circle {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: rgba(201, 168, 76, 0.12);
-    color: var(--color-text-muted);
-    border: 0.5px solid rgba(212, 179, 92, 0.3);
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--color-ink-muted);
+    border-radius: var(--radius-circle);
     font-size: var(--text-sm);
     font-weight: 600;
-    font-family: var(--font-sans);
-    transition: all var(--transition-default);
+    color: var(--color-ink-muted);
+    font-variant-numeric: tabular-nums lining-nums;
   }
   .stepper-label {
     font-size: var(--text-xs);
-    letter-spacing: var(--tracking-uppercase);
+    font-weight: 600;
+    letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
-    color: var(--color-text-muted);
-    font-weight: 500;
-    transition: color var(--transition-default);
+    color: var(--color-ink-muted);
   }
   .stepper-item[data-state="active"] .stepper-circle {
-    background: var(--color-gold);
-    color: var(--color-bg-deep);
-    border-color: var(--color-gold);
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-surface-light);
   }
-  .stepper-item[data-state="active"] .stepper-label {
-    color: var(--color-gold-light);
+  .stepper-item[data-state="active"] .stepper-label,
+  .stepper-item[data-state="done"] .stepper-label {
+    color: var(--color-ink);
   }
   .stepper-item[data-state="done"] .stepper-circle {
-    background: rgba(201, 168, 76, 0.25);
-    color: var(--color-gold-light);
-    border-color: var(--color-gold);
-  }
-  .stepper-item[data-state="done"] .stepper-label {
-    color: var(--color-text);
+    border-color: var(--color-ink);
+    color: var(--color-ink);
   }
   .stepper-divider {
-    width: 40px;
+    flex: 1;
     height: 1px;
-    background: rgba(212, 179, 92, 0.25);
+    background: rgba(26, 23, 18, 0.2);
   }
 
-  /* ── Panels (steps) ───────────────────────────────────────────── */
+  /* ── Paneles ───────────────────────────────────────────────────── */
   .panel {
-    background:
-      linear-gradient(
-        180deg,
-        rgba(26, 22, 14, 0.85) 0%,
-        rgba(14, 12, 7, 0.85) 100%
-      );
-    border: 0.5px solid rgba(201, 168, 76, 0.22);
-    border-radius: var(--radius-md);
-    padding: clamp(20px, 3vw, 32px);
-    margin-bottom: 16px;
-    position: relative;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    background: #ffffff;
+    padding: clamp(20px, 4vw, 40px);
+    margin-bottom: var(--space-4);
   }
-  /* Hairline gold sutil arriba del panel activo */
-  .panel::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 24px;
-    right: 24px;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(201, 168, 76, 0.5) 50%,
-      transparent 100%
-    );
-    pointer-events: none;
+  .panel[hidden],
+  .step[hidden] {
+    display: none;
   }
+
   .step-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 24px;
+    margin-bottom: var(--space-5);
   }
+  /* El número ya está en los pasos de arriba. */
   .step-number {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: var(--color-gold);
-    color: var(--color-bg-deep);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--text-sm);
-    font-weight: 600;
-    font-family: var(--font-sans);
+    display: none;
   }
   .step-title {
     font-family: var(--font-serif);
-    font-size: clamp(20px, 2.4vw, 26px);
+    font-size: var(--text-xl);
     font-weight: 400;
-    color: var(--color-cream);
-    margin: 0;
-    letter-spacing: var(--tracking-normal);
+    color: var(--color-ink);
   }
   .step-description {
+    margin: calc(-1 * var(--space-3)) 0 var(--space-5);
     font-size: var(--text-sm);
-    color: var(--color-text-muted);
-    margin: -12px 0 24px;
-    line-height: 1.6;
+    color: var(--color-ink-muted);
   }
 
-  /* ── Shipping options ─────────────────────────────────────────── */
+  /* ── Envío ─────────────────────────────────────────────────────── */
   .shipping-options {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
   }
   .shipping-option {
     position: relative;
+    display: block;
+    padding: var(--space-5);
+    border: 1px solid var(--surface-line, rgba(26, 23, 18, 0.5));
     cursor: pointer;
-    border: 0.5px solid rgba(201, 168, 76, 0.2);
-    border-radius: var(--radius-md);
-    background: linear-gradient(
-      180deg,
-      rgba(40, 32, 18, 0.4) 0%,
-      rgba(14, 12, 7, 0.4) 100%
-    );
-    padding: 20px;
-    transition: all var(--transition-default);
+    transition: border-color var(--transition-fast);
   }
   .shipping-option:hover {
-    border-color: rgba(212, 179, 92, 0.55);
-    background: linear-gradient(
-      180deg,
-      rgba(50, 40, 22, 0.5) 0%,
-      rgba(20, 16, 10, 0.5) 100%
-    );
-    transform: translateY(-1px);
+    border-color: var(--color-ink);
   }
   .shipping-option input[type="radio"] {
     position: absolute;
-    opacity: 0;
-    pointer-events: none;
+    top: var(--space-4);
+    right: var(--space-4);
+    accent-color: var(--color-ink);
   }
+  /* Elegida: borde más marcado con outline (no cambia el tamaño). */
   .shipping-option:has(input[type="radio"]:checked) {
-    border: 1px solid var(--color-gold);
-    background: linear-gradient(
-      180deg,
-      rgba(70, 56, 30, 0.55) 0%,
-      rgba(24, 20, 12, 0.55) 100%
-    );
-    box-shadow:
-      0 0 0 1px var(--color-gold),
-      0 8px 24px rgba(201, 168, 76, 0.12);
+    border-color: var(--color-ink);
+    outline: 1px solid var(--color-ink);
+  }
+  .shipping-option:has(input:focus-visible) {
+    outline: 2px solid var(--color-gold-ink);
+    outline-offset: 2px;
   }
   .shipping-option-body {
     display: flex;
-    align-items: stretch;
-    gap: 14px;
-    height: 100%;
+    flex-direction: column;
+    gap: var(--space-3);
   }
   .shipping-option-icon {
-    color: var(--color-gold);
-    flex-shrink: 0;
-    padding-top: 2px;
+    color: var(--color-ink);
   }
   .shipping-option-text {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    min-width: 0;
+    gap: var(--space-1);
+    padding-right: var(--space-5);
   }
   .shipping-option-title {
-    font-family: var(--font-serif);
-    font-size: var(--text-md);
-    color: var(--color-cream);
-    margin: 0 0 6px;
-    font-weight: 400;
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--color-ink);
   }
   .shipping-option-description {
     font-size: var(--text-sm);
-    color: var(--color-text-muted);
     line-height: 1.5;
-    margin: 0 0 14px;
-    flex: 1;
+    color: var(--color-ink-muted);
   }
   .shipping-option-cost {
     font-size: var(--text-xs);
-    letter-spacing: var(--tracking-uppercase);
-    text-transform: uppercase;
-    color: var(--color-gold-light);
-    margin: 0;
     font-weight: 600;
-    margin-top: auto;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-gold-ink);
   }
 
-  /* ── Form ──────────────────────────────────────────────────────── */
+  /* ── Formulario ────────────────────────────────────────────────── */
   .form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
   }
   .form-field {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: var(--space-2);
     min-width: 0;
+  }
+  .form-field[hidden] {
+    display: none;
   }
   .form-field-full {
     grid-column: 1 / -1;
   }
   .form-field label {
     font-size: var(--text-xs);
-    letter-spacing: var(--tracking-uppercase);
+    font-weight: 600;
+    letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
-    color: var(--color-text-muted);
-    font-weight: 500;
-    font-family: var(--font-sans);
+    color: var(--color-ink);
   }
   .required-mark {
-    color: var(--color-gold);
-    margin-left: 2px;
+    color: var(--color-gold-ink);
   }
   .optional-mark {
-    color: var(--color-text-muted);
     text-transform: none;
     letter-spacing: 0;
     font-weight: 400;
-    margin-left: 4px;
-    font-size: var(--text-xs);
+    color: var(--color-ink-muted);
   }
   .form-field input,
   .form-field select,
   .form-field textarea {
-    background: rgba(0, 0, 0, 0.35);
-    border: 0.5px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    padding: 12px 14px;
-    color: var(--color-cream);
-    font-family: var(--font-sans);
-    font-size: var(--text-sm);
-    transition: border-color var(--transition-fast), background var(--transition-fast);
     width: 100%;
-    box-sizing: border-box;
+    min-height: 48px;
+    padding: 0 var(--space-3);
+    background: #ffffff;
+    border: 1px solid rgba(26, 23, 18, 0.5);
+    border-radius: 0;
+    color: var(--color-ink);
+    font-family: inherit;
+    font-size: var(--text-base);
+    color-scheme: light;
+    transition: border-color var(--transition-fast);
+  }
+  .form-field textarea {
+    min-height: 96px;
+    padding: var(--space-3);
+    resize: vertical;
+  }
+  .form-field input::placeholder,
+  .form-field textarea::placeholder {
+    color: var(--color-ink-muted);
   }
   .form-field input:focus,
   .form-field select:focus,
   .form-field textarea:focus {
-    outline: none;
-    border-color: var(--color-gold);
-    background: rgba(0, 0, 0, 0.5);
-  }
-  .form-field textarea {
-    resize: vertical;
-    min-height: 70px;
-    font-family: var(--font-sans);
+    outline: 2px solid var(--color-gold-ink);
+    outline-offset: 1px;
+    border-color: var(--color-ink);
   }
   .form-field input[data-invalid="true"],
   .form-field select[data-invalid="true"],
   .form-field textarea[data-invalid="true"] {
     border-color: #c2363a;
-    background: rgba(194, 54, 58, 0.08);
+    background: rgba(194, 54, 58, 0.05);
   }
   .error-text {
-    color: #e88a8d;
+    margin: 0;
     font-size: var(--text-xs);
-    margin: 4px 0 0;
     line-height: 1.4;
+    color: #b3262b;
+  }
+  .error-text[hidden] {
+    display: none;
   }
 
-  /* ── Aviso de privacidad (art. 6 Ley 25.326) ───────────────────── */
   .privacy-notice {
     margin-top: var(--space-5);
     padding: var(--space-4);
-    border: 0.5px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--color-surface-light);
+    font-size: var(--text-xs);
+    line-height: 1.6;
+    color: var(--color-ink-muted);
   }
   .privacy-notice p {
-    font-size: var(--text-xs);
-    line-height: 1.7;
-    color: var(--color-text-muted);
     margin: 0 0 var(--space-2);
   }
   .privacy-notice p:last-child {
     margin-bottom: 0;
   }
   .privacy-notice strong {
-    color: var(--color-text);
-    font-weight: 600;
+    color: var(--color-ink);
   }
   .privacy-notice a {
-    color: var(--color-gold-light);
-    transition: color var(--transition-fast);
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
   .privacy-notice a:hover {
-    color: var(--color-gold);
+    color: var(--color-gold-ink);
   }
   .privacy-notice-mark {
-    color: var(--color-gold);
+    color: var(--color-gold-ink);
   }
 
-  /* ── Aceptación de los documentos legales ──────────────────────── */
   .consent {
     margin-top: var(--space-5);
     padding: var(--space-4);
-    border: 0.5px solid var(--color-border-strong);
-    border-radius: var(--radius-md);
-    background: rgba(201, 168, 76, 0.05);
+    border: 1px solid transparent;
   }
   .consent-label {
     display: flex;
     align-items: flex-start;
     gap: var(--space-3);
-    cursor: pointer;
     font-size: var(--text-sm);
-    line-height: 1.6;
-    color: var(--color-text);
+    line-height: 1.5;
+    color: var(--color-ink);
+    cursor: pointer;
   }
   .consent-label input[type="checkbox"] {
     flex-shrink: 0;
     width: 18px;
     height: 18px;
     margin-top: 2px;
-    accent-color: var(--color-gold);
-    cursor: pointer;
+    accent-color: var(--color-ink);
   }
   .consent-label a {
-    color: var(--color-gold-light);
-    transition: color var(--transition-fast);
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
   .consent-label a:hover {
-    color: var(--color-gold);
+    color: var(--color-gold-ink);
   }
   .consent[data-invalid="true"] {
     border-color: #c2363a;
-    background: rgba(194, 54, 58, 0.08);
+    background: rgba(194, 54, 58, 0.05);
   }
 
-  /* ── Actions ───────────────────────────────────────────────────── */
+  /* ── Botones ───────────────────────────────────────────────────── */
   .step-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    margin-top: 28px;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
   }
   .step-actions-final {
-    flex-direction: column-reverse;
+    justify-content: space-between;
   }
   .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 14px 28px;
-    font-family: var(--font-sans);
+    gap: var(--space-2);
+    min-height: 48px;
+    padding: 0 var(--space-6);
+    border: 1px solid transparent;
+    font-family: inherit;
     font-size: var(--text-xs);
-    letter-spacing: var(--tracking-uppercase);
+    font-weight: 700;
+    letter-spacing: var(--tracking-button);
     text-transform: uppercase;
-    font-weight: 600;
-    border-radius: var(--radius-pill);
     cursor: pointer;
-    border: none;
-    text-decoration: none;
-    transition: all var(--transition-default);
+    transition: background-color var(--transition-fast), color var(--transition-fast);
   }
-  .btn-primary {
-    background: var(--color-gold);
-    color: var(--color-bg-deep);
+  .btn:focus-visible {
+    outline: 2px solid var(--color-gold-ink);
+    outline-offset: 2px;
   }
-  .btn-primary:hover {
-    background: var(--color-gold-light);
+  .btn-primary,
+  .btn-whatsapp {
+    background: var(--color-ink);
+    color: var(--color-surface-light);
+  }
+  .btn-primary:hover,
+  .btn-whatsapp:hover {
+    background: var(--color-gold-ink);
   }
   .btn-ghost {
+    border-color: var(--color-ink);
+    color: var(--color-ink);
     background: transparent;
-    color: var(--color-text);
-    border: 0.5px solid var(--color-border);
   }
   .btn-ghost:hover {
-    border-color: var(--color-gold);
-    color: var(--color-cream);
-  }
-  .btn-whatsapp {
-    background: #25d366;
-    color: white;
-    padding: 18px 32px;
-    font-size: var(--text-sm);
-    width: 100%;
-  }
-  .btn-whatsapp:hover {
-    background: #1eb155;
-    transform: translateY(-1px);
+    background: var(--color-ink);
+    color: var(--color-surface-light);
   }
   .btn-whatsapp svg {
     flex-shrink: 0;
   }
 
-  /* ── Summary (step 3) ─────────────────────────────────────────── */
-  .summary {
-    margin-bottom: 8px;
-  }
+  /* ── Resumen ───────────────────────────────────────────────────── */
   .summary-section-title {
+    margin: 0 0 var(--space-3);
     font-size: var(--text-xs);
+    font-weight: 600;
     letter-spacing: var(--tracking-uppercase);
     text-transform: uppercase;
-    color: var(--color-text-muted);
-    font-weight: 600;
-    margin: 0 0 14px;
-    padding-bottom: 8px;
-    border-bottom: 0.5px solid var(--color-border);
+    color: var(--color-ink-muted);
   }
   .summary-section-title:not(:first-child) {
-    margin-top: 28px;
+    margin-top: var(--space-6);
   }
   .summary-lines {
     list-style: none;
-    margin: 0 0 18px;
+    margin: 0;
     padding: 0;
   }
-  .summary-lines li {
+  /* Las filas del resumen y los datos del comprador los genera
+     checkout-controller.ts con innerHTML/createElement: no llevan el
+     atributo de scope de Astro, así que se alcanzan con :global(). */
+  .summary-lines :global(li) {
     display: flex;
     justify-content: space-between;
-    gap: 16px;
-    padding: 10px 0;
-    border-bottom: 0.5px dashed rgba(212, 179, 92, 0.15);
+    gap: var(--space-4);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid rgba(26, 23, 18, 0.12);
     font-size: var(--text-sm);
-    color: var(--color-cream);
+    color: var(--color-ink);
   }
-  .summary-line-qty {
-    color: var(--color-text-muted);
-    font-size: var(--text-xs);
-    margin-left: 4px;
+  .summary-lines :global(li > span:last-child) {
+    flex-shrink: 0;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .summary-lines :global(.summary-line-qty) {
+    margin-left: var(--space-2);
+    color: var(--color-ink-muted);
   }
   .summary-totals {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: var(--radius-sm);
-    padding: 14px 18px;
+    margin-top: var(--space-3);
   }
   .summary-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 6px 0;
+    padding: var(--space-2) 0;
     font-size: var(--text-sm);
-    color: var(--color-text);
+    color: var(--color-ink-muted);
   }
   .summary-row > span:last-child {
-    font-variant-numeric: tabular-nums;
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums lining-nums;
   }
   .summary-total {
-    border-top: 0.5px solid var(--color-border);
-    padding-top: 12px;
-    margin-top: 6px;
+    margin-top: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-ink);
     font-size: var(--text-md);
-    color: var(--color-cream);
-    font-weight: 500;
+    font-weight: 600;
+    color: var(--color-ink);
   }
   .summary-total-note {
+    margin-left: var(--space-1);
     font-size: var(--text-xs);
-    color: var(--color-text-muted);
     font-weight: 400;
-    margin-left: 4px;
-    font-style: italic;
+    color: var(--color-ink-muted);
   }
   .summary-buyer {
-    margin: 0;
     display: grid;
-    grid-template-columns: 120px 1fr;
-    gap: 10px 18px;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2) var(--space-4);
+    margin: 0;
     font-size: var(--text-sm);
   }
-  .summary-buyer dt {
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-uppercase);
-    font-size: var(--text-xs);
-    font-weight: 500;
+  .summary-buyer :global(dt) {
+    color: var(--color-ink-muted);
   }
-  .summary-buyer dd {
+  .summary-buyer :global(dd) {
     margin: 0;
-    color: var(--color-cream);
-    word-break: break-word;
-  }
-  .footnote {
-    margin: 16px 0 0;
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
-    text-align: center;
-    line-height: 1.6;
+    color: var(--color-ink);
+    overflow-wrap: anywhere;
   }
 
-  /* ── Pantalla de éxito post-submit ────────────────────────────── */
-  .success {
+  .footnote {
+    margin-top: var(--space-4);
+    font-size: var(--text-xs);
+    line-height: 1.6;
+    color: var(--color-ink-muted);
     text-align: center;
-    padding: clamp(40px, 6vw, 64px) clamp(20px, 4vw, 48px);
+  }
+
+  /* ── Éxito y carrito vacío ─────────────────────────────────────── */
+  .success,
+  .empty-cart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    text-align: center;
+  }
+  .success[hidden],
+  .empty-cart[hidden] {
+    display: none;
   }
   .success-icon {
-    color: var(--color-gold);
-    margin: 0 auto 22px;
-    display: inline-flex;
+    color: var(--color-ink);
   }
-  .success-title {
+  .success-title,
+  .empty-cart h2 {
     font-family: var(--font-serif);
-    font-size: clamp(26px, 3.5vw, 36px);
-    color: var(--color-cream);
-    margin: 0 0 14px;
+    font-size: var(--text-2xl);
     font-weight: 400;
-    letter-spacing: var(--tracking-normal);
+    color: var(--color-ink);
   }
-  .success-text {
-    color: var(--color-text);
-    font-size: var(--text-base);
-    line-height: 1.65;
-    max-width: 480px;
-    margin: 0 auto 18px;
+  .success-text,
+  .empty-cart p {
+    max-width: 44ch;
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    color: var(--color-ink-muted);
   }
   .success-fallback {
-    color: var(--color-text-muted);
     font-size: var(--text-sm);
-    margin: 0 0 32px;
+    color: var(--color-ink-muted);
   }
   .success-fallback a {
-    color: var(--color-gold-light);
+    color: var(--color-ink);
     text-decoration: underline;
-    text-underline-offset: 3px;
+    text-underline-offset: 2px;
   }
   .success-fallback a:hover {
-    color: var(--color-gold);
+    color: var(--color-gold-ink);
   }
   .success-actions {
     display: flex;
-    gap: 12px;
-    justify-content: center;
     flex-wrap: wrap;
-  }
-
-  /* ── Empty state ──────────────────────────────────────────────── */
-  .empty-cart {
-    text-align: center;
-    padding: 60px 24px;
-  }
-  .empty-cart h2 {
-    font-family: var(--font-serif);
-    font-size: var(--text-xl);
-    color: var(--color-cream);
-    margin: 0 0 12px;
-    font-weight: 400;
-  }
-  .empty-cart p {
-    color: var(--color-text-muted);
-    margin: 0 0 24px;
-    font-size: var(--text-sm);
+    justify-content: center;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
   }
   .empty-cart .btn {
-    margin: 0 auto;
+    margin-top: var(--space-3);
   }
 
-  /* ── Mobile ──────────────────────────────────────────────────── */
   @media (max-width: 720px) {
-    .stepper {
-      gap: 8px;
+    .checkout {
+      padding-top: var(--space-6);
     }
-    .stepper-divider {
-      width: 20px;
+    .stepper {
+      gap: var(--space-2);
     }
     .stepper-label {
       display: none;
     }
-    .shipping-options {
-      grid-template-columns: 1fr;
+    .stepper-item[data-state="active"] .stepper-label {
+      display: inline;
     }
+    .shipping-options,
     .form-grid {
       grid-template-columns: 1fr;
     }
-    .form-field-full {
-      grid-column: 1;
-    }
-    .summary-buyer {
-      grid-template-columns: 1fr;
-      gap: 4px 0;
-    }
-    .summary-buyer dt {
-      margin-top: 8px;
-    }
-    .step-actions {
+    .step-actions,
+    .step-actions-final {
       flex-direction: column-reverse;
     }
     .step-actions .btn {
