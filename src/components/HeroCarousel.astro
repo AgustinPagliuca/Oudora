@@ -484,6 +484,9 @@ function parseTitleEmphasis(title: string): Array<{ text: string; emphasis: bool
     font-size: var(--text-sm);
     color: var(--color-cream);
     font-variant-numeric: tabular-nums lining-nums;
+    /* En mobile los controles van centrados en poco ancho: sin esto el
+       contador se partía en "01 /" y "03". */
+    white-space: nowrap;
   }
   .hero-indicators {
     display: flex;
