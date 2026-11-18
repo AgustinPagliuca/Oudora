@@ -273,9 +273,11 @@ function renderSummary(ctx: CheckoutContext, buyer: BuyerData): void {
   if (shippingCostEl !== null) {
     shippingCostEl.textContent = isDomicilio ? "A calcular" : "Sin cargo";
     shippingCostEl.style.fontStyle = isDomicilio ? "italic" : "normal";
+    // --surface-* existen cuando el checkout está sobre crema (.surface-light);
+    // si no, quedan los colores de fondo oscuro.
     shippingCostEl.style.color = isDomicilio
-      ? "var(--color-text-muted)"
-      : "var(--color-gold-light)";
+      ? "var(--surface-muted, var(--color-text-muted))"
+      : "var(--surface-accent, var(--color-gold-light))";
   }
 
   const totalEl = document.querySelector<HTMLElement>("[data-summary-total]");
