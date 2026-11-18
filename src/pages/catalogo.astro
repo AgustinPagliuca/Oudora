@@ -64,10 +64,25 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
     subtitle="Fragancias importadas, originales y listas para enviar"
   />
 
-  <div class="catalog-shell">
-    <Sidebar groups={sidebarGroups} activeCatalog={DEFAULT_CATALOG} />
+  <div class="catalog-tabs" role="group" aria-label="Tipo de perfume">
+    {
+      ALL_CATALOGS.map((catalog) => (
+        <button
+          type="button"
+          class={`catalog-tab ${catalog === DEFAULT_CATALOG ? "active" : ""}`}
+          aria-pressed={catalog === DEFAULT_CATALOG ? "true" : "false"}
+          data-catalog-tab={catalog}
+        >
+          {CATALOG_LABELS[catalog]}
+        </button>
+      ))
+    }
+  </div>
 
-    <main class="catalog-main">
+  <div class="catalog-filters">
+    <div class="catalog-filters-inner">
+      <Sidebar groups={sidebarGroups} activeCatalog={DEFAULT_CATALOG} />
+
       <div class="catalog-toolbar">
         <p class="catalog-result" data-result-count>{totalArabes} fragancias</p>
 
@@ -86,7 +101,7 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
               <polyline points="17 8 21 12 17 16" />
               <line x1="14" y1="12" x2="21" y2="12" />
             </svg>
-            <span>Filtrar y ordenar</span>
+            <span>Ordenar</span>
             <svg class="sort-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <polyline points="6 9 12 15 18 9" />
             </svg>
@@ -111,7 +126,11 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
+  <div class="catalog-shell">
+    <main class="catalog-main">
       <div class="catalog-content">
         {
           productGroupsByCatalog.map((group) =>
@@ -175,11 +194,57 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
 </script>
 
 <style>
+  /* Pestañas Árabes / De diseñador debajo del título. */
+  .catalog-tabs {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-6);
+    padding: 0 var(--space-4) var(--space-5);
+  }
+  .catalog-tab {
+    padding: var(--space-2) 0;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    border-bottom: 1px solid transparent;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+  }
+  .catalog-tab:hover {
+    color: var(--color-cream);
+  }
+  .catalog-tab.active {
+    color: var(--color-cream);
+    border-bottom-color: var(--color-gold);
+  }
+
+  /* Barra de filtros horizontal, fija debajo del header en desktop. */
+  .catalog-filters {
+    border-block: 1px solid var(--color-border-subtle);
+    background: var(--color-bg);
+  }
+  .catalog-filters-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+    padding: var(--space-3) clamp(16px, 3vw, 32px);
+  }
+  @media (min-width: 921px) {
+    .catalog-filters {
+      position: sticky;
+      /* Alto del header de dos filas (Nav), que también es sticky. */
+      top: 112px;
+      z-index: 50;
+    }
+  }
+
   .catalog-shell {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    gap: 22px;
-    padding: 22px clamp(16px, 3vw, 32px) 32px;
+    padding: var(--space-6) clamp(16px, 3vw, 32px) var(--space-7);
     max-width: var(--max-content-width);
     margin: 0 auto;
   }
@@ -191,11 +256,8 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
   .catalog-toolbar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 18px;
-    padding: 0 4px;
+    gap: var(--space-4);
+    margin-left: auto;
   }
 
   /* ── Sort menu (botón Ordenar + dropdown) ───────────────────── */
@@ -205,30 +267,23 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
   .sort-toggle {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 14px 8px 12px;
+    gap: var(--space-2);
+    min-height: 40px;
+    padding: 0 var(--space-4);
     background: transparent;
-    border: 0.5px solid rgba(201, 168, 76, 0.4);
-    border-radius: var(--radius-pill);
+    border: 1px solid rgba(245, 237, 216, 0.22);
     color: var(--color-cream);
     font-family: var(--font-sans);
     font-size: var(--text-xs);
-    letter-spacing: var(--tracking-uppercase);
+    letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
     font-weight: 600;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: border-color var(--transition-fast);
   }
-  .sort-toggle:hover {
-    border-color: var(--color-gold);
-    background: rgba(201, 168, 76, 0.08);
-  }
+  .sort-toggle:hover,
   .sort-toggle[aria-expanded="true"] {
-    border-color: var(--color-gold);
-    background: rgba(201, 168, 76, 0.12);
-  }
-  .sort-toggle svg:first-of-type {
-    color: var(--color-gold);
+    border-color: var(--color-cream);
   }
   .sort-chevron {
     transition: transform var(--transition-fast);
@@ -243,11 +298,10 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
     top: calc(100% + 8px);
     right: 0;
     min-width: 240px;
-    background: linear-gradient(180deg, #1a1610 0%, #0e0c07 100%);
-    border: 0.5px solid rgba(201, 168, 76, 0.3);
-    border-radius: var(--radius-md);
-    padding: 6px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+    background: var(--color-bg-elevated);
+    border: 1px solid rgba(245, 237, 216, 0.12);
+    padding: var(--space-2);
+    box-shadow: var(--elev-3);
     z-index: 20;
     display: flex;
     flex-direction: column;
@@ -298,20 +352,16 @@ const totalArabes = getProductsByCatalog(PRODUCTS, "arabe").length;
     gap: 32px;
   }
 
+  /* Mobile: los filtros viven en el drawer (botón del Nav); en la barra
+     quedan el conteo y Ordenar. */
   @media (max-width: 920px) {
-    .catalog-shell {
-      grid-template-columns: 1fr;
+    .catalog-toolbar {
+      width: 100%;
+      justify-content: space-between;
     }
   }
 
-  /* En mobile el botón "Filtrar y ordenar" es más largo: aflojamos
-     el letter-spacing y dejamos que la toolbar wrappee si no entra. */
   @media (max-width: 520px) {
-    .sort-toggle {
-      padding: 8px 12px 8px 10px;
-      letter-spacing: var(--tracking-wide);
-      font-size: 10.5px;
-    }
     .sort-panel {
       /* No queremos que se desborde el viewport en mobile. Si la posición
          right: 0 lo hiciera pasarse a la izquierda del catálogo, lo limitamos
