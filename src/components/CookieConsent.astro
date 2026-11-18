@@ -60,10 +60,9 @@
     justify-content: space-between;
     gap: var(--space-4) var(--space-5);
     padding: var(--space-4) var(--space-5);
-    background: var(--color-bg-card);
-    border: 0.5px solid var(--color-border-strong);
-    border-radius: var(--radius-md);
-    box-shadow: var(--elev-3);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-subtle);
+    box-shadow: var(--elev-2);
     animation: cookie-banner-in 0.4s var(--ease-premium) both;
   }
 
@@ -76,14 +75,13 @@
   }
 
   .cookie-banner-link {
-    color: var(--color-gold-light);
-    border-bottom: 0.5px solid rgba(201, 168, 76, 0.4);
-    transition: color var(--transition-fast), border-color var(--transition-fast);
+    color: var(--color-cream);
+    border-bottom: 1px solid currentColor;
+    transition: color var(--transition-fast);
     white-space: nowrap;
   }
   .cookie-banner-link:hover {
-    color: var(--color-gold);
-    border-bottom-color: var(--color-gold);
+    color: var(--color-gold-light);
   }
 
   .cookie-banner-actions {
@@ -93,28 +91,32 @@
     flex-shrink: 0;
   }
 
-  /* Mismos tokens y forma que los .btn del checkout, un punto más compactos:
-     el banner es UI secundaria, no una acción principal de la página. */
+  /* Botones rectangulares del sistema. Aceptar y Rechazar tienen el
+     mismo tamaño: elegir cualquiera de los dos cuesta lo mismo. */
   .cookie-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 22px;
+    min-height: 44px;
+    padding: 0 var(--space-5);
     font-family: var(--font-sans);
     font-size: var(--text-xs);
-    letter-spacing: var(--tracking-uppercase);
+    font-weight: 700;
+    letter-spacing: var(--tracking-button);
     text-transform: uppercase;
-    font-weight: 600;
-    border-radius: var(--radius-pill);
-    border: none;
+    border: 1px solid transparent;
     cursor: pointer;
     white-space: nowrap;
-    transition: all var(--transition-default);
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+  }
+  .cookie-btn:focus-visible {
+    outline: 2px solid var(--color-gold-light);
+    outline-offset: 2px;
   }
 
   .cookie-btn-primary {
-    background: var(--color-gold);
-    color: var(--color-bg-deep);
+    background: var(--color-cream);
+    color: var(--color-bg);
   }
   .cookie-btn-primary:hover {
     background: var(--color-gold-light);
@@ -122,12 +124,12 @@
 
   .cookie-btn-ghost {
     background: transparent;
-    color: var(--color-text-muted);
-    border: 0.5px solid var(--color-border);
+    color: var(--color-cream);
+    border-color: var(--color-text-muted);
   }
   .cookie-btn-ghost:hover {
-    border-color: var(--color-gold);
-    color: var(--color-cream);
+    background: var(--color-cream);
+    color: var(--color-bg);
   }
 
   @keyframes cookie-banner-in {
@@ -150,7 +152,6 @@
       width: 100%;
       flex-direction: column;
       align-items: stretch;
-      border-radius: 0;
       border-left: none;
       border-right: none;
       border-bottom: none;
